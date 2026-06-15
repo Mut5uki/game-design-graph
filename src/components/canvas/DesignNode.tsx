@@ -1,6 +1,7 @@
 import { memo } from 'react'
 import { Handle, Position, type NodeProps } from '@xyflow/react'
 import { getNodeMeta, getRelationLabel } from '@/domain/templates/nodeTemplates'
+import { NODE_HANDLES } from '@/domain/templates/relationPins'
 import type { ImpactRole } from '@/domain/types'
 import { cn } from '@/lib/utils'
 
@@ -19,7 +20,7 @@ function DesignNodeCard({ data, selected, dragging }: NodeProps & { data: Design
   return (
     <div
       className={cn(
-        'rounded-lg border bg-white shadow-sm w-[200px]',
+        'relative rounded-lg border bg-white shadow-sm w-[200px]',
         !dragging && 'transition-[box-shadow,border-color] duration-100',
         selected && 'ring-2 shadow-md',
         impactRole === 'upstream' && 'bg-blue-50/80',
@@ -31,9 +32,32 @@ function DesignNodeCard({ data, selected, dragging }: NodeProps & { data: Design
       }}
     >
       <Handle
+        id={NODE_HANDLES.leftIn}
         type="target"
         position={Position.Left}
         className="gdg-handle gdg-handle-target"
+        title="输入"
+      />
+      <Handle
+        id={NODE_HANDLES.rightOut}
+        type="source"
+        position={Position.Right}
+        className="gdg-handle gdg-handle-source"
+        title="输出"
+      />
+      <Handle
+        id={NODE_HANDLES.topIn}
+        type="target"
+        position={Position.Top}
+        className="gdg-handle gdg-handle-top"
+        title="顶部输入"
+      />
+      <Handle
+        id={NODE_HANDLES.bottomOut}
+        type="source"
+        position={Position.Bottom}
+        className="gdg-handle gdg-handle-bottom"
+        title="底部输出"
       />
       <div className="px-3 py-2">
         <div className="flex items-center gap-2 min-w-0">
@@ -50,11 +74,6 @@ function DesignNodeCard({ data, selected, dragging }: NodeProps & { data: Design
           </div>
         )}
       </div>
-      <Handle
-        type="source"
-        position={Position.Right}
-        className="gdg-handle gdg-handle-source"
-      />
     </div>
   )
 }

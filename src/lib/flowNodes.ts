@@ -5,9 +5,13 @@ import {
   isCommentBlock,
   sortNodesForFlow,
 } from '@/domain/group/commentBlock'
+import { getListItems, isListBlock } from '@/domain/list/listBlock'
 import type { CommentBlockData } from '@/components/canvas/CommentBlockNode'
 import type { DesignNodeData } from '@/components/canvas/DesignNode'
+import type { ListBlockData } from '@/components/canvas/ListBlockNode'
+import { NODE_HANDLES } from '@/domain/templates/relationPins'
 import { buildInboundSummary } from '@/components/canvas/DesignNode'
+import { resolveDefaultEdgeHandles } from '@/lib/edgeHandles'
 
 export function buildFlowNodes(
   nodes: DesignNode[],
@@ -15,7 +19,7 @@ export function buildFlowNodes(
   nodeNames: Map<string, string>,
   impactMap: Map<string, ImpactRole>,
   selectedNodeIds: string[],
-): Node<DesignNodeData | CommentBlockData>[] {
+): Node<DesignNodeData | CommentBlockData | ListBlockData>[] {
   const sorted = sortNodesForFlow(nodes)
 
   return sorted.map((n) => {
@@ -38,6 +42,28 @@ export function buildFlowNodes(
         connectable: false,
         focusable: true,
         selected,
+      }
+    }
+
+    if (isListBlock(n)) {
+      return {
+        id: n.id,
+        type: 'list',
+        position: n.position,
+        parentId: n.parentGroupId,
+        extent: n.parentGroupId ? ('parent' as const) : undefined,
+        expandParent: false,
+        data: {
+          label: n.name,
+          listType: String(n.fields.listType ?? 'ability'),
+          items: getListItems(n),
+          description: String(n.fields.description ?? ''),
+        },
+        draggable: true,
+        selectable: true,
+        connectable: true,
+        selected,
+        zIndex: n.parentGroupId ? 1 : 0,
       }
     }
 
@@ -72,13 +98,31 @@ export function buildFlowEdges(
 
   return edges
     .filter((e) => !groupIds.has(e.from) && !groupIds.has(e.to))
-    .map((e) => ({
-      id: e.id,
-      source: e.from,
-      target: e.to,
-      type: 'design',
-      data: { relationType: e.relationType, label: e.label },
-      selected: selectedEdgeId === e.id,
-      zIndex: 2,
-    }))
+    .map((e) => {
+      const fromNode = nodes.find((n) => n.id === e.from)
+      const toNode = nodes.find((n) => n.id === e.to)
+      const handles =
+        fromNode && toNode
+          ? resolveDefaultEdgeHandles(fromNode, toNode, e.sourceHandle, e.targetHandle)
+          : {
+              sourceHandle: e.sourceHandle ?? NODE_HANDLES.rightOut,
+              targetHandle: e.targetHandle ?? NODE_HANDLES.leftIn,
+            }
+      return {
+        id: e.id,
+        source: e.from,
+        target: e.to,
+        sourceHandle: handles.sourceHandle,
+        targetHandle: handles.targetHandle,
+        type: 'design',
+        data: {
+          relationType: e.relationType,
+          label: e.label,
+          edgeId: e.id,
+        },
+        selected: selectedEdgeId === e.id,
+        interactionWidth: 48,
+        zIndex: 2,
+      }
+    })
 }

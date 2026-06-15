@@ -61,7 +61,19 @@ export const NODE_TYPE_META: Record<string, NodeTypeMeta> = {
       color: 'blue',
     },
   },
+  list: {
+    type: 'list',
+    label: '列表块',
+    color: '#0EA5E9',
+    defaultFields: {
+      description: '',
+      listType: 'ability',
+      items: [] as Array<{ id: string; name: string; note?: string; offsetX?: number }>,
+    },
+  },
 }
+
+import { getCustomNodeMeta, getCustomNodeTypesList } from './nodeTypeRegistry'
 
 export const NODE_TYPES = Object.values(NODE_TYPE_META)
 
@@ -77,7 +89,36 @@ export const RELATION_TYPE_META: Record<string, RelationTypeMeta> = {
 export const RELATION_TYPES = Object.values(RELATION_TYPE_META)
 
 export function getNodeMeta(type: string): NodeTypeMeta {
-  return NODE_TYPE_META[type] ?? NODE_TYPE_META.entity
+  if (NODE_TYPE_META[type]) return NODE_TYPE_META[type]
+  const custom = getCustomNodeMeta(type)
+  if (custom) return custom
+  if (type.startsWith('custom_')) {
+    return {
+      type,
+      label: type.replace(/^custom_/, '').replace(/_/g, ' '),
+      color: '#6B7280',
+      defaultFields: { description: '' },
+    }
+  }
+  return NODE_TYPE_META.entity
+}
+
+const PALETTE_BUILTIN_ORDER = ['ability', 'event', 'quest', 'buff', 'entity', 'list', 'group'] as const
+
+export function getPaletteNodeTypes(): NodeTypeMeta[] {
+  const builtIn = PALETTE_BUILTIN_ORDER.map((t) => NODE_TYPE_META[t]).filter(Boolean)
+  const customs = getCustomNodeTypesList()
+  const listIdx = builtIn.findIndex((m) => m.type === 'list')
+  if (listIdx === -1) return [...builtIn, ...customs]
+  return [...builtIn.slice(0, listIdx), ...customs, ...builtIn.slice(listIdx)]
+}
+
+export function getCreatableNodeTypes(): NodeTypeMeta[] {
+  return getPaletteNodeTypes().filter((m) => m.type !== 'group')
+}
+
+export function getListContentNodeTypes(): NodeTypeMeta[] {
+  return getPaletteNodeTypes().filter((m) => m.type !== 'group' && m.type !== 'list')
 }
 
 export function getRelationLabel(type: string): string {

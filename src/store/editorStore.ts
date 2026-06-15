@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import type { AiGraphOutput } from '@/ai/schemas/graphSchema'
 import type {
   Canvas,
+  CustomNodeTypeDefinition,
   DesignEdge,
   DesignNode,
   EditorView,
@@ -20,13 +21,16 @@ import {
   loadCanvasData,
   saveCanvasData,
   updateCanvas,
+  updateProject,
 } from '@/db/repositories'
 import { createDefaultNodeFields, createNodeId, debounce, generateId } from '@/lib/utils'
+import { resolveDefaultEdgeHandles } from '@/lib/edgeHandles'
 import {
   buildClipboardFromSelection,
   getGraphClipboard,
   setGraphClipboard,
 } from '@/lib/graphClipboard'
+import { getListItems, isListBlock, type ListBlockItem } from '@/domain/list/listBlock'
 import {
   COMMENT_DEFAULT_HEIGHT,
   COMMENT_DEFAULT_WIDTH,
@@ -36,6 +40,12 @@ import {
   nodeAbsolutePosition,
   relativeToGroup,
 } from '@/domain/group/commentBlock'
+import { getNodeMeta, NODE_TYPE_META } from '@/domain/templates/nodeTemplates'
+import {
+  createCustomTypeId,
+  pickCustomTypeColor,
+  syncCustomNodeTypes,
+} from '@/domain/templates/nodeTypeRegistry'
 
 export interface GraphSnapshot {
   nodes: DesignNode[]
@@ -76,7 +86,11 @@ interface EditorState {
   selectEdge: (id: string | null) => void
   clearSelection: () => void
 
-  addNode: (type: NodeType, position?: { x: number; y: number }) => DesignNode | null
+  addNode: (
+    type: NodeType,
+    position?: { x: number; y: number },
+    opts?: { name?: string; fields?: Record<string, unknown> },
+  ) => DesignNode | null
   updateNode: (id: string, patch: Partial<DesignNode>) => void
   updateNodeFields: (id: string, fields: Record<string, unknown>) => void
   deleteNodes: (ids: string[]) => void
@@ -85,9 +99,18 @@ interface EditorState {
   pasteSelection: () => void
   canPaste: () => boolean
 
-  addEdge: (from: string, to: string, relationType: RelationType) => DesignEdge | null
+  addEdge: (
+    from: string,
+    to: string,
+    relationType: RelationType,
+    handles?: { sourceHandle?: string | null; targetHandle?: string | null },
+  ) => DesignEdge | null
   updateEdge: (id: string, patch: Partial<DesignEdge>) => void
   deleteEdge: (id: string) => void
+
+  updateListItems: (nodeId: string, items: ListBlockItem[]) => void
+  reorderListItems: (nodeId: string, fromIndex: number, toIndex: number) => void
+  setListItemOffset: (nodeId: string, itemId: string, offsetX: number) => void
 
   moveNodes: (updates: Array<{ id: string; position: { x: number; y: number } }>) => void
   resizeCommentBlock: (id: string, width: number, height: number) => void
@@ -110,6 +133,9 @@ interface EditorState {
   addCanvasTab: (name: string) => Promise<Canvas | null>
   renameCanvas: (id: string, name: string) => Promise<void>
   removeCanvas: (id: string) => Promise<void>
+
+  addCustomNodeType: (label: string, color?: string) => Promise<CustomNodeTypeDefinition | null>
+  removeCustomNodeType: (type: string) => Promise<boolean>
 }
 
 function buildImpactMap(
@@ -190,7 +216,10 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   searchQuery: '',
   isLoading: false,
 
-  setProject: (project, canvases) => set({ project, canvases }),
+  setProject: (project, canvases) => {
+    syncCustomNodeTypes(project.settings.customNodeTypes)
+    set({ project, canvases })
+  },
 
   loadCanvas: async (canvasId) => {
     const { project, canvases } = get()
@@ -256,13 +285,15 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   clearSelection: () =>
     set({ selectedNodeIds: [], selectedEdgeId: null, impactMap: new Map() }),
 
-  addNode: (type, position = { x: 100, y: 100 }) => {
+  addNode: (type, position = { x: 100, y: 100 }, opts) => {
     const { project, canvas, nodes } = get()
     if (!project || !canvas) return null
 
     const existingIds = new Set(nodes.map((n) => n.id))
-    const defaultName = type === 'ability' ? '新能力' : type === 'event' ? '新事件' : type === 'quest' ? '新任务' : type === 'buff' ? '新效果' : type === 'group' ? '新区块' : '新实体'
-    const id = createNodeId(type, defaultName, existingIds)
+    const meta = getNodeMeta(type)
+    const defaultName = `新${meta.label}`
+    const name = opts?.name?.trim() || defaultName
+    const id = createNodeId(type, name, existingIds)
     const now = Date.now()
 
     const node: DesignNode = {
@@ -270,8 +301,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       projectId: project.id,
       canvasId: canvas.id,
       type,
-      name: defaultName,
-      fields: createDefaultNodeFields(type),
+      name,
+      fields: opts?.fields ? { ...createDefaultNodeFields(type), ...opts.fields } : createDefaultNodeFields(type),
       position,
       createdAt: now,
       updatedAt: now,
@@ -454,13 +485,25 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     get().persist()
   },
 
-  addEdge: (from, to, relationType) => {
+  addEdge: (from, to, relationType, handles) => {
     const { project, canvas, nodes, edges } = get()
     if (!project || !canvas || from === to) return null
     const fromNode = nodes.find((n) => n.id === from)
     const toNode = nodes.find((n) => n.id === to)
     if (!fromNode || !toNode || isCommentBlock(fromNode) || isCommentBlock(toNode)) return null
-    if (edges.some((e) => e.from === from && e.to === to && e.relationType === relationType))
+    const resolved = resolveDefaultEdgeHandles(fromNode, toNode, handles?.sourceHandle, handles?.targetHandle)
+    const sourceHandle = resolved.sourceHandle
+    const targetHandle = resolved.targetHandle
+    if (
+      edges.some(
+        (e) =>
+          e.from === from &&
+          e.to === to &&
+          e.relationType === relationType &&
+          (e.sourceHandle ?? null) === (sourceHandle ?? null) &&
+          (e.targetHandle ?? null) === (targetHandle ?? null),
+      )
+    )
       return null
 
     pushHistory(nodes, edges)
@@ -472,18 +515,68 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       from,
       to,
       relationType,
+      sourceHandle: sourceHandle ?? undefined,
+      targetHandle: targetHandle ?? undefined,
       createdAt: now,
       updatedAt: now,
     }
     const nextEdges = [...edges, edge]
     set({
       edges: nextEdges,
-      selectedEdgeId: edge.id,
       validationIssues: validateGraph(nodes, nextEdges),
       saveStatus: 'unsaved',
     })
     get().persist()
     return edge
+  },
+
+  updateListItems: (nodeId, items) => {
+    const { nodes, edges } = get()
+    const node = nodes.find((n) => n.id === nodeId)
+    if (!node || !isListBlock(node)) return
+    pushHistory(nodes, edges)
+    const nextNodes = nodes.map((n) =>
+      n.id === nodeId
+        ? { ...n, fields: { ...n.fields, items }, updatedAt: Date.now() }
+        : n,
+    )
+    set({ nodes: nextNodes, saveStatus: 'unsaved' })
+    get().persist()
+  },
+
+  reorderListItems: (nodeId, fromIndex, toIndex) => {
+    const { nodes, edges } = get()
+    const node = nodes.find((n) => n.id === nodeId)
+    if (!node || !isListBlock(node)) return
+    const items = getListItems(node)
+    if (fromIndex < 0 || fromIndex >= items.length || toIndex < 0 || toIndex >= items.length) return
+    const next = [...items]
+    const [moved] = next.splice(fromIndex, 1)
+    next.splice(toIndex, 0, moved)
+    pushHistory(nodes, edges)
+    const nextNodes = nodes.map((n) =>
+      n.id === nodeId
+        ? { ...n, fields: { ...n.fields, items: next }, updatedAt: Date.now() }
+        : n,
+    )
+    set({ nodes: nextNodes, saveStatus: 'unsaved' })
+    get().persist()
+  },
+
+  setListItemOffset: (nodeId, itemId, offsetX) => {
+    const { nodes } = get()
+    const node = nodes.find((n) => n.id === nodeId)
+    if (!node || !isListBlock(node)) return
+    const items = getListItems(node).map((it) =>
+      it.id === itemId ? { ...it, offsetX } : it,
+    )
+    const nextNodes = nodes.map((n) =>
+      n.id === nodeId
+        ? { ...n, fields: { ...n.fields, items }, updatedAt: Date.now() }
+        : n,
+    )
+    set({ nodes: nextNodes, saveStatus: 'unsaved' })
+    debouncedPersist()
   },
 
   updateEdge: (id, patch) => {
@@ -876,6 +969,48 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     if (canvas?.id === id) {
       await get().loadCanvas(next[0].id)
     }
+  },
+
+  addCustomNodeType: async (label, color) => {
+    const { project } = get()
+    const trimmed = label.trim()
+    if (!project || !trimmed) return null
+
+    const customs = project.settings.customNodeTypes ?? []
+    const typeId = createCustomTypeId(trimmed, customs, new Set(Object.keys(NODE_TYPE_META)))
+    const def: CustomNodeTypeDefinition = {
+      type: typeId,
+      label: trimmed,
+      color: color ?? pickCustomTypeColor(customs.length),
+      defaultFields: { description: '' },
+    }
+    const nextCustoms = [...customs, def]
+    const updatedProject: Project = {
+      ...project,
+      settings: { ...project.settings, customNodeTypes: nextCustoms },
+      updatedAt: Date.now(),
+    }
+    await updateProject(updatedProject)
+    syncCustomNodeTypes(nextCustoms)
+    set({ project: updatedProject })
+    return def
+  },
+
+  removeCustomNodeType: async (type) => {
+    const { project, nodes } = get()
+    if (!project || !type.startsWith('custom_')) return false
+    if (nodes.some((n) => n.type === type)) return false
+
+    const customs = (project.settings.customNodeTypes ?? []).filter((d) => d.type !== type)
+    const updatedProject: Project = {
+      ...project,
+      settings: { ...project.settings, customNodeTypes: customs },
+      updatedAt: Date.now(),
+    }
+    await updateProject(updatedProject)
+    syncCustomNodeTypes(customs)
+    set({ project: updatedProject })
+    return true
   },
 }))
 

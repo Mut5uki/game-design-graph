@@ -1,8 +1,13 @@
 import { useMemo } from 'react'
 import ReactMarkdown from 'react-markdown'
-import { getNodeMeta, RELATION_TYPES } from '@/domain/templates/nodeTemplates'
+import { getNodeMeta, getListContentNodeTypes, RELATION_TYPES } from '@/domain/templates/nodeTemplates'
 import type { DesignEdge, DesignNode } from '@/domain/types'
 import { COMMENT_COLOR_PRESETS, getCommentSize } from '@/domain/group/commentBlock'
+import {
+  createListItem,
+  getListContentType,
+  getListItems,
+} from '@/domain/list/listBlock'
 import { useEditorStore } from '@/store/editorStore'
 import { Button, Input, Label, Select, Textarea } from '@/components/ui/primitives'
 import { parseTagsInput, tagsToString } from '@/lib/utils'
@@ -82,6 +87,89 @@ function CommentBlockProperties({ node }: { node: DesignNode }) {
           删除区块
         </Button>
       </div>
+    </div>
+  )
+}
+
+function ListBlockProperties({ node }: { node: DesignNode }) {
+  const updateNode = useEditorStore((s) => s.updateNode)
+  const updateNodeFields = useEditorStore((s) => s.updateNodeFields)
+  const updateListItems = useEditorStore((s) => s.updateListItems)
+  const deleteNodes = useEditorStore((s) => s.deleteNodes)
+  const customNodeTypes = useEditorStore((s) => s.project?.settings.customNodeTypes)
+
+  const listContentTypes = useMemo(() => getListContentNodeTypes(), [customNodeTypes])
+
+  const items = getListItems(node)
+  const listType = getListContentType(node)
+  const desc = String(node.fields.description ?? '')
+
+  const setItems = (next: typeof items) => updateListItems(node.id, next)
+
+  return (
+    <div className="space-y-3">
+      <div>
+        <Label>列表标题</Label>
+        <Input value={node.name} onChange={(e) => updateNode(node.id, { name: e.target.value })} />
+      </div>
+      <div>
+        <Label>条目类型</Label>
+        <Select
+          value={listType}
+          onChange={(e) => updateNodeFields(node.id, { listType: e.target.value })}
+        >
+          {listContentTypes.map((t) => (
+            <option key={t.type} value={t.type}>{t.label}</option>
+          ))}
+        </Select>
+      </div>
+      <div>
+        <Label>说明</Label>
+        <Textarea
+          value={desc}
+          onChange={(e) => updateNodeFields(node.id, { description: e.target.value })}
+          placeholder="例如：第一章可获得的全部能力"
+        />
+      </div>
+      <div>
+        <div className="flex items-center justify-between mb-1">
+          <Label>条目 ({items.length})</Label>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => setItems([...items, createListItem(`条目 ${items.length + 1}`)])}
+          >
+            + 添加
+          </Button>
+        </div>
+        <div className="space-y-2 max-h-48 overflow-y-auto">
+          {items.map((item, index) => (
+            <div key={item.id} className="flex gap-1 items-center">
+              <Input
+                value={item.name}
+                onChange={(e) => {
+                  const next = [...items]
+                  next[index] = { ...item, name: e.target.value }
+                  setItems(next)
+                }}
+              />
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => setItems(items.filter((x) => x.id !== item.id))}
+              >
+                ×
+              </Button>
+            </div>
+          ))}
+        </div>
+        <p className="text-[10px] text-gray-400 mt-1">
+          画布内可拖动 ⋮⋮ 排序、↔ 微调行位置；每行左右各有连线端口
+        </p>
+      </div>
+      <Button variant="danger" size="sm" onClick={() => deleteNodes([node.id])}>
+        删除列表块
+      </Button>
     </div>
   )
 }
@@ -255,6 +343,11 @@ function EdgeProperties({ edge, nodes }: { edge: DesignEdge; nodes: DesignNode[]
           className="min-h-[60px] font-mono text-xs"
         />
       </div>
+      {(edge.sourceHandle || edge.targetHandle) && (
+        <p className="text-[10px] text-gray-400">
+          端口：{edge.sourceHandle ?? '—'} → {edge.targetHandle ?? '—'}
+        </p>
+      )}
       <Button variant="danger" size="sm" onClick={() => deleteEdge(edge.id)}>删除连线</Button>
     </div>
   )
@@ -300,6 +393,9 @@ export function PropertyPanel() {
   if (selectedNode) {
     if (selectedNode.type === 'group') {
       return <CommentBlockProperties node={selectedNode} />
+    }
+    if (selectedNode.type === 'list') {
+      return <ListBlockProperties node={selectedNode} />
     }
     return (
       <div className="space-y-4">

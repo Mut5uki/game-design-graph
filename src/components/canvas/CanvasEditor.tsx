@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent } from 'react'
 import {
   ReactFlow,
   Background,
@@ -9,28 +9,37 @@ import {
   applyNodeChanges,
   useNodesState,
   useReactFlow,
+  MarkerType,
   type Connection,
+  type Edge,
   type Node,
   type NodeChange,
   type OnSelectionChangeParams,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import type { NodeType } from '@/domain/types'
-import { isCommentBlock } from '@/domain/group/commentBlock'
+import type { NodeType, RelationType } from '@/domain/types'
+import { isCommentBlock, nodeAbsolutePosition } from '@/domain/group/commentBlock'
 import { DesignFlowNode } from './DesignNode'
 import { CommentBlockNode } from './CommentBlockNode'
 import { DesignFlowEdge } from './DesignEdge'
+import { DesignConnectionLine } from './DesignConnectionLine'
+import { ConnectionSpawnMenu } from './ConnectionSpawnMenu'
+import { RelationPickerPopup } from './RelationTypeChips'
+import { generateSpawnNodeDetails } from '@/ai/generateSpawnNode'
+import { decryptApiKey } from '@/lib/crypto'
 import { useEditorStore } from '@/store/editorStore'
 import { Button } from '@/components/ui/primitives'
-import { getNodeMeta } from '@/domain/templates/nodeTemplates'
+import { getNodeMeta, getRelationLabel } from '@/domain/templates/nodeTemplates'
 import { buildFlowEdges, buildFlowNodes } from '@/lib/flowNodes'
 import { ContextMenu } from '@/components/ui/ContextMenu'
 import { AiSelectionModal } from '@/components/panels/AiSelectionModal'
 import { useCanvasContextMenu } from './useCanvasContextMenu'
+import type { DesignEdgeData } from './DesignEdge'
 import type { DesignNodeData } from './DesignNode'
 import type { CommentBlockData } from './CommentBlockNode'
+import { ListBlockNode, type ListBlockData } from './ListBlockNode'
 
-const nodeTypes = { design: DesignFlowNode, comment: CommentBlockNode }
+const nodeTypes = { design: DesignFlowNode, comment: CommentBlockNode, list: ListBlockNode }
 const edgeTypes = { design: DesignFlowEdge }
 
 function CanvasInner() {
@@ -47,6 +56,7 @@ function CanvasInner() {
     resizeCommentBlock,
     autoAssignGroupsAfterMove,
     addEdge,
+    updateEdge,
     selectNode,
     selectNodes,
     selectEdge,
@@ -59,6 +69,55 @@ function CanvasInner() {
   } = useEditorStore()
 
   const [aiModalOpen, setAiModalOpen] = useState(false)
+  const [connectionMenu, setConnectionMenu] = useState<{
+    x: number
+    y: number
+    sourceNodeId: string
+    flowPosition: { x: number; y: number }
+  } | null>(null)
+  const [pendingConnect, setPendingConnect] = useState<{
+    source: string
+    target: string
+    sourceHandle?: string | null
+    targetHandle?: string | null
+    x: number
+    y: number
+  } | null>(null)
+  const [hoveredEdgeId, setHoveredEdgeId] = useState<string | null>(null)
+  const [edgeTooltip, setEdgeTooltip] = useState<{ x: number; y: number; text: string } | null>(
+    null,
+  )
+
+  const screenToFlow = useCallback(
+    (pos: { x: number; y: number }) => reactFlow.screenToFlowPosition(pos),
+    [reactFlow],
+  )
+
+  const addNodeAt = useCallback(
+    (type: NodeType, position: { x: number; y: number }) => {
+      const created = addNode(type, position)
+      if (created && type !== 'group') {
+        setTimeout(() => autoAssignGroupsAfterMove([created.id]), 0)
+      }
+    },
+    [addNode, autoAssignGroupsAfterMove],
+  )
+
+  const addConnectedNode = useCallback(
+    (fromNodeId: string, type: NodeType) => {
+      const from = nodes.find((n) => n.id === fromNodeId)
+      if (!from || type === 'group') return
+      const abs = nodeAbsolutePosition(from, nodes)
+      const pos = { x: abs.x + 280, y: abs.y }
+      const created = addNode(type, pos)
+      if (created) {
+        addEdge(fromNodeId, created.id, 'unlocks')
+        selectNode(created.id)
+        setTimeout(() => autoAssignGroupsAfterMove([created.id]), 0)
+      }
+    },
+    [nodes, addNode, addEdge, autoAssignGroupsAfterMove, selectNode],
+  )
 
   const {
     menu,
@@ -66,7 +125,18 @@ function CanvasInner() {
     closeMenu,
     onNodeContextMenu,
     onPaneContextMenu,
-  } = useCanvasContextMenu(() => setAiModalOpen(true))
+    onEdgeContextMenu,
+  } = useCanvasContextMenu({
+    onAiSelection: () => setAiModalOpen(true),
+    addNodeAt,
+    addConnectedNode,
+    screenToFlow,
+  })
+
+  const connectPointerRef = useRef({ x: 0, y: 0 })
+  const trackConnectPointer = useCallback((e: MouseEvent) => {
+    connectPointerRef.current = { x: e.clientX, y: e.clientY }
+  }, [])
 
   const nodeNames = useMemo(() => new Map(nodes.map((n) => [n.id, n.name])), [nodes])
 
@@ -88,18 +158,151 @@ function CanvasInner() {
     [edges, nodes, selectedEdgeId],
   )
 
+  const onConnectStart = useCallback(() => {
+    window.addEventListener('mousemove', trackConnectPointer)
+  }, [trackConnectPointer])
+
   const onConnect = useCallback(
     (conn: Connection) => {
       if (!conn.source || !conn.target) return
-      addEdge(conn.source, conn.target, 'requires')
+      setPendingConnect({
+        source: conn.source,
+        target: conn.target,
+        sourceHandle: conn.sourceHandle,
+        targetHandle: conn.targetHandle,
+        x: connectPointerRef.current.x,
+        y: connectPointerRef.current.y,
+      })
     },
-    [addEdge],
+    [],
+  )
+
+  const isValidConnection = useCallback(
+    (conn: Connection | { source: string | null; target: string | null }) => {
+      if (!conn.source || !conn.target || conn.source === conn.target) return false
+      const fromNode = nodes.find((n) => n.id === conn.source)
+      const toNode = nodes.find((n) => n.id === conn.target)
+      if (!fromNode || !toNode || isCommentBlock(fromNode) || isCommentBlock(toNode)) return false
+      return true
+    },
+    [nodes],
+  )
+
+  const onConnectEnd = useCallback(
+    (event: MouseEvent | TouchEvent, state: { fromNode: { id: string } | null; isValid: boolean | null }) => {
+      window.removeEventListener('mousemove', trackConnectPointer)
+      if (!state.fromNode || state.isValid === true) return
+      const clientX = 'clientX' in event ? event.clientX : event.changedTouches[0]?.clientX ?? 0
+      const clientY = 'clientY' in event ? event.clientY : event.changedTouches[0]?.clientY ?? 0
+      setConnectionMenu({
+        x: clientX,
+        y: clientY,
+        sourceNodeId: state.fromNode.id,
+        flowPosition: reactFlow.screenToFlowPosition({ x: clientX, y: clientY }),
+      })
+    },
+    [reactFlow, trackConnectPointer],
+  )
+
+  const handlePickRelation = useCallback(
+    (relationType: RelationType) => {
+      if (!pendingConnect) return
+      addEdge(pendingConnect.source, pendingConnect.target, relationType, {
+        sourceHandle: pendingConnect.sourceHandle,
+        targetHandle: pendingConnect.targetHandle,
+      })
+      setPendingConnect(null)
+    },
+    [pendingConnect, addEdge],
+  )
+
+  const handleConnectExisting = useCallback(
+    (targetId: string, relationType: RelationType) => {
+      if (!connectionMenu) return
+      addEdge(connectionMenu.sourceNodeId, targetId, relationType)
+      setConnectionMenu(null)
+    },
+    [connectionMenu, addEdge],
+  )
+
+  const handleCreateAndConnect = useCallback(
+    (type: NodeType, relationType: RelationType, name?: string) => {
+      if (!connectionMenu || type === 'group') return
+      const pos = {
+        x: connectionMenu.flowPosition.x - 100,
+        y: connectionMenu.flowPosition.y - 36,
+      }
+      const created = addNode(type, pos, name ? { name } : undefined)
+      if (created) {
+        addEdge(connectionMenu.sourceNodeId, created.id, relationType)
+        selectNode(created.id)
+        setTimeout(() => autoAssignGroupsAfterMove([created.id]), 0)
+      }
+      setConnectionMenu(null)
+    },
+    [connectionMenu, addNode, addEdge, autoAssignGroupsAfterMove, selectNode],
+  )
+
+  const handleCreateWithAi = useCallback(
+    async (name: string, type: NodeType, relationType: RelationType) => {
+      if (!connectionMenu || !project?.settings.deepseekApiKeyEncrypted) {
+        throw new Error('请先在设置中配置 DeepSeek API Key')
+      }
+      const source = nodes.find((n) => n.id === connectionMenu.sourceNodeId)
+      if (!source || source.type === 'group') {
+        throw new Error('无法从该节点创建连线')
+      }
+
+      const apiKey = await decryptApiKey(project.settings.deepseekApiKeyEncrypted)
+      const aiResult = await generateSpawnNodeDetails({
+        apiKey,
+        model: project.settings.deepseekModel,
+        context: {
+          name,
+          type,
+          relationType,
+          sourceNode: {
+            type: source.type,
+            name: source.name,
+            fields: source.fields,
+          },
+          existingIds: nodes.map((n) => n.id),
+          projectNodes: nodes.map((n) => ({
+            id: n.id,
+            type: n.type,
+            name: n.name,
+            fields: n.fields,
+          })),
+          projectEdges: edges.map((e) => ({
+            from: e.from,
+            to: e.to,
+            relationType: e.relationType,
+            label: e.label,
+          })),
+        },
+      })
+
+      const pos = {
+        x: connectionMenu.flowPosition.x - 100,
+        y: connectionMenu.flowPosition.y - 36,
+      }
+      const created = addNode(type, pos, { name: aiResult.name, fields: aiResult.fields })
+      if (created) {
+        addEdge(connectionMenu.sourceNodeId, created.id, relationType)
+        selectNode(created.id)
+        setTimeout(() => autoAssignGroupsAfterMove([created.id]), 0)
+      }
+      setConnectionMenu(null)
+    },
+    [connectionMenu, project, nodes, edges, addNode, addEdge, autoAssignGroupsAfterMove, selectNode],
   )
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
       setFlowNodes((current) =>
-        applyNodeChanges(changes, current) as Node<DesignNodeData | CommentBlockData>[],
+        applyNodeChanges(changes, current) as Node<
+          DesignNodeData | CommentBlockData | ListBlockData
+        >[],
       )
 
       const updates: Array<{ id: string; position: { x: number; y: number } }> = []
@@ -138,18 +341,56 @@ function CanvasInner() {
     [setFlowNodes, moveNodes, resizeCommentBlock, autoAssignGroupsAfterMove],
   )
 
+  const onPaneClick = useCallback(() => {
+    clearSelection()
+    closeMenu()
+    setConnectionMenu(null)
+    setPendingConnect(null)
+    setHoveredEdgeId(null)
+    setEdgeTooltip(null)
+  }, [clearSelection, closeMenu])
+
   const onSelectionChange = useCallback(
     ({ nodes: selNodes, edges: selEdges }: OnSelectionChangeParams) => {
+      const { selectedNodeIds: curNodeIds, selectedEdgeId: curEdgeId } = useEditorStore.getState()
+
       if (selEdges.length === 1 && selNodes.length === 0) {
+        if (curEdgeId === selEdges[0].id && curNodeIds.length === 0) return
         selectEdge(selEdges[0].id)
-      } else if (selNodes.length === 1 && selEdges.length === 0) {
+        return
+      }
+      if (selNodes.length === 1 && selEdges.length === 0) {
+        if (curNodeIds.length === 1 && curNodeIds[0] === selNodes[0].id && !curEdgeId) return
         selectNode(selNodes[0].id)
-      } else if (selNodes.length > 1) {
-        selectNodes(selNodes.map((n) => n.id))
-      } else if (selNodes.length === 0 && selEdges.length === 0) {
+        return
+      }
+      if (selNodes.length > 1) {
+        const ids = selNodes.map((n) => n.id)
+        if (
+          ids.length === curNodeIds.length &&
+          ids.every((id) => curNodeIds.includes(id)) &&
+          !curEdgeId
+        ) {
+          return
+        }
+        selectNodes(ids)
+        return
+      }
+      if (selNodes.length === 0 && selEdges.length === 0) {
+        if (curNodeIds.length === 0 && !curEdgeId) return
         clearSelection()
-      } else if (selNodes.length >= 1) {
-        selectNodes(selNodes.map((n) => n.id))
+        return
+      }
+      if (selNodes.length >= 1) {
+        const ids = selNodes.map((n) => n.id)
+        if (
+          ids.length === curNodeIds.length &&
+          ids.every((id) => curNodeIds.includes(id)) &&
+          !curEdgeId
+        ) {
+          return
+        }
+        selectNodes(ids)
       }
     },
     [selectEdge, selectNode, selectNodes, clearSelection],
@@ -159,6 +400,65 @@ function CanvasInner() {
     const vp = reactFlow.getViewport()
     setViewport({ x: vp.x, y: vp.y, zoom: vp.zoom })
   }, [reactFlow, setViewport])
+
+  const edgeTooltipText = useCallback((data: DesignEdgeData | undefined) => {
+    if (!data) return '连线'
+    return data.label || getRelationLabel(String(data.relationType ?? 'requires'))
+  }, [])
+
+  const onEdgeMouseEnter = useCallback(
+    (e: ReactMouseEvent, edge: { id: string; data?: unknown }) => {
+      setHoveredEdgeId(String(edge.id))
+      const data = edge.data as DesignEdgeData | undefined
+      setEdgeTooltip({
+        x: e.clientX,
+        y: e.clientY,
+        text: edgeTooltipText(data),
+      })
+    },
+    [edgeTooltipText],
+  )
+
+  const onEdgeMouseMove = useCallback(
+    (e: ReactMouseEvent, edge: { id: string; data?: unknown }) => {
+      if (hoveredEdgeId !== String(edge.id)) return
+      const data = edge.data as DesignEdgeData | undefined
+      setEdgeTooltip({
+        x: e.clientX,
+        y: e.clientY,
+        text: edgeTooltipText(data),
+      })
+    },
+    [hoveredEdgeId, edgeTooltipText],
+  )
+
+  const onEdgeMouseLeave = useCallback(() => {
+    setHoveredEdgeId(null)
+    setEdgeTooltip(null)
+  }, [])
+
+  const onEdgeClick = useCallback(
+    (_: ReactMouseEvent, edge: { id: string; data?: unknown }) => {
+      const data = edge.data as DesignEdgeData | undefined
+      selectEdge(String(data?.edgeId ?? edge.id))
+    },
+    [selectEdge],
+  )
+
+  const onReconnect = useCallback(
+    (oldEdge: Edge, newConnection: Connection) => {
+      if (!newConnection.source || !newConnection.target) return
+      const data = oldEdge.data as DesignEdgeData | undefined
+      const edgeId = String(data?.edgeId ?? oldEdge.id)
+      updateEdge(edgeId, {
+        from: newConnection.source,
+        to: newConnection.target,
+        sourceHandle: newConnection.sourceHandle ?? undefined,
+        targetHandle: newConnection.targetHandle ?? undefined,
+      })
+    },
+    [updateEdge],
+  )
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -193,10 +493,27 @@ function CanvasInner() {
         edgeTypes={edgeTypes}
         onNodesChange={onNodesChange}
         onConnect={onConnect}
+        onConnectStart={onConnectStart}
+        onConnectEnd={onConnectEnd}
+        isValidConnection={isValidConnection}
+        connectionLineComponent={DesignConnectionLine}
+        connectOnClick={false}
+        connectionRadius={32}
+        autoPanOnConnect
         onSelectionChange={onSelectionChange}
+        onPaneClick={onPaneClick}
         onMoveEnd={onMoveEnd}
         onNodeContextMenu={onNodeContextMenu}
         onPaneContextMenu={onPaneContextMenu}
+        onEdgeContextMenu={onEdgeContextMenu}
+        onEdgeMouseEnter={onEdgeMouseEnter}
+        onEdgeMouseMove={onEdgeMouseMove}
+        onEdgeMouseLeave={onEdgeMouseLeave}
+        onEdgeClick={onEdgeClick}
+        onReconnect={onReconnect}
+        edgesReconnectable
+        reconnectRadius={9}
+        edgesFocusable
         nodeClickDistance={6}
         autoPanOnNodeDrag
         selectionOnDrag
@@ -225,27 +542,18 @@ function CanvasInner() {
         defaultViewport={defaultViewport}
         fitView={nodes.length > 0 && defaultViewport.zoom === 1 && defaultViewport.x === 0}
         deleteKeyCode={null}
+        defaultEdgeOptions={{
+          markerEnd: { type: MarkerType.ArrowClosed, width: 12, height: 12, color: '#CBD5E1' },
+        }}
         proOptions={{ hideAttribution: true }}
       >
-        <defs>
-          <marker
-            id="arrow"
-            viewBox="0 0 10 10"
-            refX="8"
-            refY="5"
-            markerWidth="6"
-            markerHeight="6"
-            orient="auto-start-reverse"
-          >
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="#CBD5E1" />
-          </marker>
-        </defs>
         <Background gap={20} size={1} color="#E5E7EB" />
         <Controls showInteractive={false} className="!shadow-sm !border-gray-200" />
         <MiniMap
           nodeColor={(n) => {
-            const data = n.data as DesignNodeData | CommentBlockData
+            const data = n.data as DesignNodeData | CommentBlockData | ListBlockData
             if (n.type === 'comment') return '#64748B'
+            if (n.type === 'list') return '#0EA5E9'
             return getNodeMeta((data as DesignNodeData)?.nodeType).color
           }}
           className="!bg-white !border-gray-200"
@@ -284,12 +592,45 @@ function CanvasInner() {
             )}
           </div>
           <p className="text-[10px] text-gray-400 bg-white/80 px-2 py-0.5 rounded border border-gray-100">
-            右键菜单 · Ctrl+C/V 复制粘贴 · 拖节点进区块自动编组
+            从右侧针脚拖线 · 选中连线后拖动首尾端点可改接
           </p>
         </Panel>
       </ReactFlow>
 
       {menu && <ContextMenu x={menu.x} y={menu.y} items={menuItems} onClose={closeMenu} />}
+
+      {edgeTooltip && (
+        <div
+          className="fixed z-[120] pointer-events-none px-2.5 py-1.5 text-xs bg-gray-900/90 text-white rounded-md shadow-lg backdrop-blur-sm"
+          style={{ left: edgeTooltip.x + 14, top: edgeTooltip.y + 14 }}
+        >
+          <span className="font-medium">{edgeTooltip.text}</span>
+          <span className="ml-2 text-gray-400">拖动首尾改接 · 左键选中</span>
+        </div>
+      )}
+
+      {connectionMenu && (
+        <ConnectionSpawnMenu
+          x={connectionMenu.x}
+          y={connectionMenu.y}
+          sourceNodeId={connectionMenu.sourceNodeId}
+          nodes={nodes}
+          hasAiKey={Boolean(project?.settings.deepseekApiKeyEncrypted)}
+          onConnectExisting={handleConnectExisting}
+          onCreateNode={handleCreateAndConnect}
+          onCreateNodeWithAi={handleCreateWithAi}
+          onClose={() => setConnectionMenu(null)}
+        />
+      )}
+
+      {pendingConnect && (
+        <RelationPickerPopup
+          x={pendingConnect.x}
+          y={pendingConnect.y}
+          onPick={handlePickRelation}
+          onClose={() => setPendingConnect(null)}
+        />
+      )}
 
       {project && (
         <AiSelectionModal

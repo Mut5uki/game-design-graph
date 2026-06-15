@@ -1,4 +1,7 @@
-export type NodeType = 'ability' | 'event' | 'quest' | 'buff' | 'entity' | 'group'
+export type BuiltInNodeType = 'ability' | 'event' | 'quest' | 'buff' | 'entity' | 'group' | 'list'
+
+/** 内置类型 + 用户自定义（custom_ 前缀） */
+export type NodeType = BuiltInNodeType | (string & {})
 
 export type RelationType =
   | 'requires'
@@ -10,9 +13,17 @@ export type RelationType =
 
 export type DeepseekModel = 'deepseek-chat' | 'deepseek-reasoner'
 
+export interface CustomNodeTypeDefinition {
+  type: string
+  label: string
+  color: string
+  defaultFields?: Record<string, unknown>
+}
+
 export interface ProjectSettings {
   deepseekApiKeyEncrypted?: string
   deepseekModel: DeepseekModel
+  customNodeTypes?: CustomNodeTypeDefinition[]
 }
 
 export interface Project {
@@ -59,12 +70,14 @@ export interface DesignEdge {
   condition?: string
   label?: string
   priority?: number
+  sourceHandle?: string
+  targetHandle?: string
   createdAt: number
   updatedAt: number
 }
 
 export interface NodeTypeMeta {
-  type: NodeType
+  type: string
   label: string
   color: string
   defaultFields: Record<string, unknown>

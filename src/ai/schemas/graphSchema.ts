@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 export const aiNodeSchema = z.object({
   id: z.string(),
-  type: z.enum(['ability', 'event', 'quest', 'buff', 'entity', 'group']),
+  type: z.string().min(1),
   name: z.string(),
   fields: z
     .union([z.record(z.unknown()), z.null(), z.undefined()])
@@ -247,6 +247,47 @@ export function validateAiGraph(text: string): AiGraphOutput {
     throw new Error('AI 未生成任何节点或连线，请换一种描述重试')
   }
 
+  return result.data
+}
+
+export const aiSpawnNodeSchema = z.object({
+  node: z.object({
+    name: z.string().min(1),
+    fields: z
+      .union([z.record(z.unknown()), z.null(), z.undefined()])
+      .transform((v) => (v && typeof v === 'object' ? v : {})),
+  }),
+  explanation: z.string().optional(),
+})
+
+export type AiSpawnNodeOutput = z.infer<typeof aiSpawnNodeSchema>
+
+export function validateAiSpawnNode(text: string): AiSpawnNodeOutput {
+  const raw = parseAiJson(text)
+  const obj = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {}
+
+  const nodeRaw =
+    obj.node ??
+    (Array.isArray(obj.nodes) && obj.nodes.length > 0 ? obj.nodes[0] : null)
+
+  const normalized = {
+    node: nodeRaw,
+    explanation:
+      typeof obj.explanation === 'string'
+        ? obj.explanation
+        : typeof obj.summary === 'string'
+          ? obj.summary
+          : undefined,
+  }
+
+  const result = aiSpawnNodeSchema.safeParse(normalized)
+  if (!result.success) {
+    const detail = result.error.issues
+      .slice(0, 3)
+      .map((i) => `${i.path.join('.')}: ${i.message}`)
+      .join('；')
+    throw new Error(`AI 返回的数据格式不正确：${detail}`)
+  }
   return result.data
 }
 
