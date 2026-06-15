@@ -6,7 +6,7 @@ import { isCommentBlock } from '@/domain/group/commentBlock'
 
 import { isListBlock } from '@/domain/list/listBlock'
 
-import { RELATION_OPTIONS } from '@/domain/templates/relationPins'
+import { getRelationOptions } from '@/domain/templates/relationPins'
 
 import { getCreatableNodeTypes, getPaletteNodeTypes } from '@/domain/templates/nodeTemplates'
 
@@ -93,6 +93,12 @@ export function useCanvasContextMenu(options: CanvasContextMenuOptions) {
   } = useEditorStore()
 
   const customNodeTypes = useEditorStore((s) => s.project?.settings.customNodeTypes)
+  const customRelationTypes = useEditorStore((s) => s.project?.settings.customRelationTypes)
+  const relationColorOverrides = useEditorStore((s) => s.project?.settings.relationTypeColorOverrides)
+  const relationOptions = useMemo(
+    () => getRelationOptions(),
+    [customRelationTypes, relationColorOverrides],
+  )
 
 
 
@@ -208,7 +214,7 @@ export function useCanvasContextMenu(options: CanvasContextMenuOptions) {
 
     if (contextEdge) {
 
-      const items: ContextMenuItem[] = RELATION_OPTIONS.map((r) => ({
+      const items: ContextMenuItem[] = relationOptions.map((r) => ({
 
         id: `rel-${r.type}`,
 
@@ -497,6 +503,7 @@ export function useCanvasContextMenu(options: CanvasContextMenuOptions) {
     deleteEdge,
 
     customNodeTypes,
+    relationOptions,
 
   ])
 

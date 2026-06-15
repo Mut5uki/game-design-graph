@@ -3,6 +3,7 @@ import type { AiGraphOutput } from '@/ai/schemas/graphSchema'
 import type {
   Canvas,
   CustomNodeTypeDefinition,
+  CustomRelationTypeDefinition,
   DesignEdge,
   DesignNode,
   EditorView,
@@ -34,7 +35,6 @@ import { getListItems, isListBlock, type ListBlockItem } from '@/domain/list/lis
 import {
   COMMENT_DEFAULT_HEIGHT,
   COMMENT_DEFAULT_WIDTH,
-  COMMENT_HEADER_HEIGHT,
   findGroupContainingNode,
   isCommentBlock,
   nodeAbsolutePosition,
@@ -45,7 +45,14 @@ import {
   createCustomTypeId,
   pickCustomTypeColor,
   syncCustomNodeTypes,
+  syncNodeTypeColorOverrides,
 } from '@/domain/templates/nodeTypeRegistry'
+import {
+  createCustomRelationTypeId,
+  pickCustomRelationColor,
+  syncCustomRelationTypes,
+  syncRelationTypeColorOverrides,
+} from '@/domain/templates/relationTypeRegistry'
 
 export interface GraphSnapshot {
   nodes: DesignNode[]
@@ -135,7 +142,22 @@ interface EditorState {
   removeCanvas: (id: string) => Promise<void>
 
   addCustomNodeType: (label: string, color?: string) => Promise<CustomNodeTypeDefinition | null>
+  updateCustomNodeType: (
+    type: string,
+    patch: { label?: string; color?: string },
+  ) => Promise<boolean>
+  setNodeTypeColor: (type: string, color: string) => Promise<boolean>
+  resetNodeTypeColor: (type: string) => Promise<boolean>
   removeCustomNodeType: (type: string) => Promise<boolean>
+
+  addCustomRelationType: (label: string, color?: string) => Promise<CustomRelationTypeDefinition | null>
+  updateCustomRelationType: (
+    type: string,
+    patch: { label?: string; color?: string },
+  ) => Promise<boolean>
+  setRelationTypeColor: (type: string, color: string) => Promise<boolean>
+  resetRelationTypeColor: (type: string) => Promise<boolean>
+  removeCustomRelationType: (type: string) => Promise<boolean>
 }
 
 function buildImpactMap(
@@ -218,6 +240,9 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
   setProject: (project, canvases) => {
     syncCustomNodeTypes(project.settings.customNodeTypes)
+    syncNodeTypeColorOverrides(project.settings.nodeTypeColorOverrides)
+    syncCustomRelationTypes(project.settings.customRelationTypes)
+    syncRelationTypeColorOverrides(project.settings.relationTypeColorOverrides)
     set({ project, canvases })
   },
 
@@ -750,9 +775,9 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
     const padding = 48
     const groupX = minX - padding
-    const groupY = minY - padding - COMMENT_HEADER_HEIGHT
+    const groupY = minY - padding
     const width = Math.max(COMMENT_DEFAULT_WIDTH, maxX - minX + padding * 2)
-    const height = Math.max(COMMENT_DEFAULT_HEIGHT, maxY - minY + padding * 2 + COMMENT_HEADER_HEIGHT)
+    const height = Math.max(COMMENT_DEFAULT_HEIGHT, maxY - minY + padding * 2)
 
     const existingIds = new Set(nodes.map((n) => n.id))
     const groupId = createNodeId('group', '新区块', existingIds)
@@ -861,51 +886,113 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     if (!project || !canvas) return
     pushHistory(nodes, edges)
 
-    const existingIds = new Set(nodes.map((n) => n.id))
+    const existingById = new Map(nodes.map((n) => [n.id, n]))
     const now = Date.now()
-    const newNodes: DesignNode[] = patch.nodes.map((n, i) => ({
-      id: n.id,
-      projectId: project.id,
-      canvasId: canvas.id,
-      type: n.type,
-      name: n.name,
-      fields: n.fields,
-      position: n.position ?? { x: 100 + (i % 4) * 240, y: 100 + Math.floor(i / 4) * 120 },
-      createdAt: now,
-      updatedAt: now,
-    }))
-
-    for (const n of newNodes) existingIds.add(n.id)
-
-    const newEdges: DesignEdge[] = patch.edges.map((e) => ({
-      id: e.id ?? generateId('edge'),
-      projectId: project.id,
-      canvasId: canvas.id,
-      from: e.from,
-      to: e.to,
-      relationType: e.relationType,
-      condition: e.condition,
-      label: e.label,
-      createdAt: now,
-      updatedAt: now,
-    }))
 
     const mergedNodes = [...nodes]
-    for (const n of newNodes) {
-      const idx = mergedNodes.findIndex((x) => x.id === n.id)
-      if (idx >= 0) mergedNodes[idx] = n
-      else mergedNodes.push(n)
+    const needsPosition = new Set<string>()
+
+    for (const n of patch.nodes) {
+      const existing = existingById.get(n.id)
+      if (existing) {
+        const idx = mergedNodes.findIndex((x) => x.id === n.id)
+        mergedNodes[idx] = {
+          ...existing,
+          type: (n.type as NodeType) || existing.type,
+          name: n.name ?? existing.name,
+          fields: { ...existing.fields, ...n.fields },
+          position: n.position ?? existing.position,
+          updatedAt: now,
+        }
+      } else {
+        if (!n.position) needsPosition.add(n.id)
+        const created: DesignNode = {
+          id: n.id,
+          projectId: project.id,
+          canvasId: canvas.id,
+          type: n.type as NodeType,
+          name: n.name,
+          fields: { ...createDefaultNodeFields(n.type as NodeType), ...n.fields },
+          position: n.position ?? { x: 0, y: 0 },
+          createdAt: now,
+          updatedAt: now,
+        }
+        mergedNodes.push(created)
+        existingById.set(n.id, created)
+      }
     }
 
-    const mergedEdges = [...edges, ...newEdges.filter(
-      (ne) => !edges.some((e) => e.from === ne.from && e.to === ne.to && e.relationType === ne.relationType),
-    )]
+    if (needsPosition.size > 0) {
+      const nodeMap = new Map(mergedNodes.map((n) => [n.id, n]))
+      let fallback = { x: 120, y: 120 }
+      const firstExisting = mergedNodes.find((n) => !needsPosition.has(n.id))
+      if (firstExisting) fallback = { ...firstExisting.position }
 
-    const laidOut = applyAutoLayoutPositions(mergedNodes, mergedEdges)
+      let offset = 0
+      for (const id of needsPosition) {
+        const node = nodeMap.get(id)
+        if (!node) continue
+
+        const link = patch.edges.find((e) => e.from === id || e.to === id)
+        let anchor = fallback
+        if (link) {
+          const otherId = link.from === id ? link.to : link.from
+          const other = nodeMap.get(otherId)
+          if (other && !needsPosition.has(otherId)) anchor = other.position
+        }
+
+        node.position = {
+          x: anchor.x + 280 + (offset % 2) * 48,
+          y: anchor.y + Math.floor(offset / 2) * 96,
+        }
+        offset++
+      }
+    }
+
+    const mergedEdges = [...edges]
+    for (const e of patch.edges) {
+      const edgePayload = {
+        from: e.from,
+        to: e.to,
+        relationType: e.relationType,
+        condition: e.condition,
+        label: e.label,
+      }
+
+      if (e.id) {
+        const idx = mergedEdges.findIndex((x) => x.id === e.id)
+        if (idx >= 0) {
+          mergedEdges[idx] = { ...mergedEdges[idx], ...edgePayload, updatedAt: now }
+          continue
+        }
+      }
+
+      const dupIdx = mergedEdges.findIndex(
+        (x) => x.from === e.from && x.to === e.to && x.relationType === e.relationType,
+      )
+      if (dupIdx >= 0) {
+        mergedEdges[dupIdx] = {
+          ...mergedEdges[dupIdx],
+          condition: e.condition ?? mergedEdges[dupIdx].condition,
+          label: e.label ?? mergedEdges[dupIdx].label,
+          updatedAt: now,
+        }
+      } else {
+        mergedEdges.push({
+          id: e.id ?? generateId('edge'),
+          projectId: project.id,
+          canvasId: canvas.id,
+          ...edgePayload,
+          createdAt: now,
+          updatedAt: now,
+        })
+      }
+    }
+
     set({
-      nodes: laidOut,
+      nodes: mergedNodes,
       edges: mergedEdges,
-      validationIssues: validateGraph(laidOut, mergedEdges),
+      validationIssues: validateGraph(mergedNodes, mergedEdges),
       saveStatus: 'unsaved',
     })
     get().persist()
@@ -996,6 +1083,79 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     return def
   },
 
+  updateCustomNodeType: async (type, patch) => {
+    const { project } = get()
+    if (!project || !type.startsWith('custom_')) return false
+
+    const trimmedLabel = patch.label?.trim()
+    if (patch.label !== undefined && !trimmedLabel) return false
+
+    const customs = project.settings.customNodeTypes ?? []
+    const idx = customs.findIndex((d) => d.type === type)
+    if (idx === -1) return false
+
+    const nextCustoms = customs.map((d, i) =>
+      i === idx
+        ? {
+            ...d,
+            ...(trimmedLabel ? { label: trimmedLabel } : {}),
+            ...(patch.color ? { color: patch.color } : {}),
+          }
+        : d,
+    )
+    const updatedProject: Project = {
+      ...project,
+      settings: { ...project.settings, customNodeTypes: nextCustoms },
+      updatedAt: Date.now(),
+    }
+    await updateProject(updatedProject)
+    syncCustomNodeTypes(nextCustoms)
+    set({ project: updatedProject })
+    return true
+  },
+
+  setNodeTypeColor: async (type, color) => {
+    const { project } = get()
+    if (!project || !color) return false
+
+    if (type.startsWith('custom_')) {
+      return get().updateCustomNodeType(type, { color })
+    }
+
+    const overrides = { ...(project.settings.nodeTypeColorOverrides ?? {}), [type]: color }
+    const updatedProject: Project = {
+      ...project,
+      settings: { ...project.settings, nodeTypeColorOverrides: overrides },
+      updatedAt: Date.now(),
+    }
+    await updateProject(updatedProject)
+    syncNodeTypeColorOverrides(overrides)
+    set({ project: updatedProject })
+    return true
+  },
+
+  resetNodeTypeColor: async (type) => {
+    const { project } = get()
+    if (!project || type.startsWith('custom_')) return false
+
+    const overrides = { ...(project.settings.nodeTypeColorOverrides ?? {}) }
+    if (!(type in overrides)) return true
+    delete overrides[type]
+
+    const updatedProject: Project = {
+      ...project,
+      settings: {
+        ...project.settings,
+        nodeTypeColorOverrides: Object.keys(overrides).length ? overrides : undefined,
+      },
+      updatedAt: Date.now(),
+    }
+    await updateProject(updatedProject)
+    syncNodeTypeColorOverrides(updatedProject.settings.nodeTypeColorOverrides)
+    set({ project: updatedProject })
+    return true
+  },
+
   removeCustomNodeType: async (type) => {
     const { project, nodes } = get()
     if (!project || !type.startsWith('custom_')) return false
@@ -1009,6 +1169,120 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     }
     await updateProject(updatedProject)
     syncCustomNodeTypes(customs)
+    set({ project: updatedProject })
+    return true
+  },
+
+  addCustomRelationType: async (label, color) => {
+    const { project } = get()
+    const trimmed = label.trim()
+    if (!project || !trimmed) return null
+
+    const customs = project.settings.customRelationTypes ?? []
+    const typeId = createCustomRelationTypeId(trimmed, customs)
+    const def: CustomRelationTypeDefinition = {
+      type: typeId,
+      label: trimmed,
+      color: color ?? pickCustomRelationColor(customs.length),
+    }
+    const nextCustoms = [...customs, def]
+    const updatedProject: Project = {
+      ...project,
+      settings: { ...project.settings, customRelationTypes: nextCustoms },
+      updatedAt: Date.now(),
+    }
+    await updateProject(updatedProject)
+    syncCustomRelationTypes(nextCustoms)
+    set({ project: updatedProject })
+    return def
+  },
+
+  updateCustomRelationType: async (type, patch) => {
+    const { project } = get()
+    if (!project || !type.startsWith('rel_')) return false
+
+    const trimmedLabel = patch.label?.trim()
+    if (patch.label !== undefined && !trimmedLabel) return false
+
+    const customs = project.settings.customRelationTypes ?? []
+    const idx = customs.findIndex((d) => d.type === type)
+    if (idx === -1) return false
+
+    const nextCustoms = customs.map((d, i) =>
+      i === idx
+        ? {
+            ...d,
+            ...(trimmedLabel ? { label: trimmedLabel } : {}),
+            ...(patch.color ? { color: patch.color } : {}),
+          }
+        : d,
+    )
+    const updatedProject: Project = {
+      ...project,
+      settings: { ...project.settings, customRelationTypes: nextCustoms },
+      updatedAt: Date.now(),
+    }
+    await updateProject(updatedProject)
+    syncCustomRelationTypes(nextCustoms)
+    set({ project: updatedProject })
+    return true
+  },
+
+  setRelationTypeColor: async (type, color) => {
+    const { project } = get()
+    if (!project || !color) return false
+
+    if (type.startsWith('rel_')) {
+      return get().updateCustomRelationType(type, { color })
+    }
+
+    const overrides = { ...(project.settings.relationTypeColorOverrides ?? {}), [type]: color }
+    const updatedProject: Project = {
+      ...project,
+      settings: { ...project.settings, relationTypeColorOverrides: overrides },
+      updatedAt: Date.now(),
+    }
+    await updateProject(updatedProject)
+    syncRelationTypeColorOverrides(overrides)
+    set({ project: updatedProject })
+    return true
+  },
+
+  resetRelationTypeColor: async (type) => {
+    const { project } = get()
+    if (!project || type.startsWith('rel_')) return false
+
+    const overrides = { ...(project.settings.relationTypeColorOverrides ?? {}) }
+    if (!(type in overrides)) return true
+    delete overrides[type]
+
+    const updatedProject: Project = {
+      ...project,
+      settings: {
+        ...project.settings,
+        relationTypeColorOverrides: Object.keys(overrides).length ? overrides : undefined,
+      },
+      updatedAt: Date.now(),
+    }
+    await updateProject(updatedProject)
+    syncRelationTypeColorOverrides(updatedProject.settings.relationTypeColorOverrides)
+    set({ project: updatedProject })
+    return true
+  },
+
+  removeCustomRelationType: async (type) => {
+    const { project, edges } = get()
+    if (!project || !type.startsWith('rel_')) return false
+    if (edges.some((e) => e.relationType === type)) return false
+
+    const customs = (project.settings.customRelationTypes ?? []).filter((d) => d.type !== type)
+    const updatedProject: Project = {
+      ...project,
+      settings: { ...project.settings, customRelationTypes: customs },
+      updatedAt: Date.now(),
+    }
+    await updateProject(updatedProject)
+    syncCustomRelationTypes(customs)
     set({ project: updatedProject })
     return true
   },

@@ -18,7 +18,7 @@ import {
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import type { NodeType, RelationType } from '@/domain/types'
-import { isCommentBlock, nodeAbsolutePosition } from '@/domain/group/commentBlock'
+import { isCommentBlock, nodeAbsolutePosition, getCommentColor } from '@/domain/group/commentBlock'
 import { DesignFlowNode } from './DesignNode'
 import { CommentBlockNode } from './CommentBlockNode'
 import { DesignFlowEdge } from './DesignEdge'
@@ -41,6 +41,34 @@ import { ListBlockNode, type ListBlockData } from './ListBlockNode'
 
 const nodeTypes = { design: DesignFlowNode, comment: CommentBlockNode, list: ListBlockNode }
 const edgeTypes = { design: DesignFlowEdge }
+
+function hexWithAlpha(hex: string, alpha: string): string {
+  if (hex.startsWith('#') && hex.length === 7) return `${hex}${alpha}`
+  return hex
+}
+
+function minimapNodeColor(node: Node): string {
+  if (node.type === 'comment') return 'rgba(255, 255, 255, 0.45)'
+  if (node.type === 'list') return 'rgba(224, 242, 254, 0.95)'
+  const data = node.data as DesignNodeData
+  return hexWithAlpha(getNodeMeta(data?.nodeType).color, '55')
+}
+
+function minimapNodeStroke(node: Node): string {
+  if (node.type === 'comment') {
+    const data = node.data as CommentBlockData
+    return getCommentColor(data?.colorId).border
+  }
+  if (node.type === 'list') return '#7DD3FC'
+  const data = node.data as DesignNodeData
+  return hexWithAlpha(getNodeMeta(data?.nodeType).color, 'CC')
+}
+
+function minimapNodeClass(node: Node): string {
+  if (node.type === 'comment') return 'gdg-minimap-comment'
+  if (node.type === 'list') return 'gdg-minimap-list'
+  return 'gdg-minimap-design'
+}
 
 function CanvasInner() {
   const reactFlow = useReactFlow()
@@ -87,6 +115,12 @@ function CanvasInner() {
   const [edgeTooltip, setEdgeTooltip] = useState<{ x: number; y: number; text: string } | null>(
     null,
   )
+  const [nodeTooltip, setNodeTooltip] = useState<{
+    x: number
+    y: number
+    title: string
+    text: string
+  } | null>(null)
 
   const screenToFlow = useCallback(
     (pos: { x: number; y: number }) => reactFlow.screenToFlowPosition(pos),
@@ -257,6 +291,7 @@ function CanvasInner() {
       const aiResult = await generateSpawnNodeDetails({
         apiKey,
         model: project.settings.deepseekModel,
+        customNodeTypes: project.settings.customNodeTypes,
         context: {
           name,
           type,
@@ -279,6 +314,7 @@ function CanvasInner() {
             relationType: e.relationType,
             label: e.label,
           })),
+          customNodeTypes: project.settings.customNodeTypes,
         },
       })
 
@@ -348,6 +384,7 @@ function CanvasInner() {
     setPendingConnect(null)
     setHoveredEdgeId(null)
     setEdgeTooltip(null)
+    setNodeTooltip(null)
   }, [clearSelection, closeMenu])
 
   const onSelectionChange = useCallback(
@@ -406,8 +443,55 @@ function CanvasInner() {
     return data.label || getRelationLabel(String(data.relationType ?? 'requires'))
   }, [])
 
+  const nodeDescriptionPreview = useCallback(
+    (nodeId: string) => {
+      const node = nodes.find((n) => n.id === nodeId)
+      if (!node) return null
+      const desc = String(node.fields.description ?? '').trim()
+      if (!desc) return null
+      return { title: node.name, text: desc }
+    },
+    [nodes],
+  )
+
+  const showNodeTooltip = useCallback(
+    (e: ReactMouseEvent, nodeId: string) => {
+      const preview = nodeDescriptionPreview(nodeId)
+      if (!preview) {
+        setNodeTooltip(null)
+        return
+      }
+      setNodeTooltip({
+        x: e.clientX,
+        y: e.clientY,
+        title: preview.title,
+        text: preview.text,
+      })
+    },
+    [nodeDescriptionPreview],
+  )
+
+  const onNodeMouseEnter = useCallback(
+    (e: ReactMouseEvent, node: { id: string }) => {
+      showNodeTooltip(e, node.id)
+    },
+    [showNodeTooltip],
+  )
+
+  const onNodeMouseMove = useCallback(
+    (e: ReactMouseEvent, node: { id: string }) => {
+      showNodeTooltip(e, node.id)
+    },
+    [showNodeTooltip],
+  )
+
+  const onNodeMouseLeave = useCallback(() => {
+    setNodeTooltip(null)
+  }, [])
+
   const onEdgeMouseEnter = useCallback(
     (e: ReactMouseEvent, edge: { id: string; data?: unknown }) => {
+      setNodeTooltip(null)
       setHoveredEdgeId(String(edge.id))
       const data = edge.data as DesignEdgeData | undefined
       setEdgeTooltip({
@@ -502,6 +586,9 @@ function CanvasInner() {
         autoPanOnConnect
         onSelectionChange={onSelectionChange}
         onPaneClick={onPaneClick}
+        onNodeMouseEnter={onNodeMouseEnter}
+        onNodeMouseMove={onNodeMouseMove}
+        onNodeMouseLeave={onNodeMouseLeave}
         onMoveEnd={onMoveEnd}
         onNodeContextMenu={onNodeContextMenu}
         onPaneContextMenu={onPaneContextMenu}
@@ -550,13 +637,14 @@ function CanvasInner() {
         <Background gap={20} size={1} color="#E5E7EB" />
         <Controls showInteractive={false} className="!shadow-sm !border-gray-200" />
         <MiniMap
-          nodeColor={(n) => {
-            const data = n.data as DesignNodeData | CommentBlockData | ListBlockData
-            if (n.type === 'comment') return '#64748B'
-            if (n.type === 'list') return '#0EA5E9'
-            return getNodeMeta((data as DesignNodeData)?.nodeType).color
-          }}
-          className="!bg-white !border-gray-200"
+          nodeColor={minimapNodeColor}
+          nodeStrokeColor={minimapNodeStroke}
+          nodeStrokeWidth={1}
+          nodeClassName={minimapNodeClass}
+          nodeBorderRadius={4}
+          bgColor="#F8FAFC"
+          maskColor="rgba(240, 244, 248, 0.75)"
+          className="!bg-slate-50 !border-gray-200 !shadow-sm"
           zoomable
           pannable
         />
@@ -599,6 +687,18 @@ function CanvasInner() {
 
       {menu && <ContextMenu x={menu.x} y={menu.y} items={menuItems} onClose={closeMenu} />}
 
+      {nodeTooltip && (
+        <div
+          className="fixed z-[120] pointer-events-none max-w-[280px] px-3 py-2.5 text-xs bg-gray-900/92 text-white rounded-lg shadow-lg backdrop-blur-sm border border-white/10"
+          style={{ left: nodeTooltip.x + 14, top: nodeTooltip.y + 14 }}
+        >
+          <div className="font-medium text-[13px] leading-snug mb-1.5">{nodeTooltip.title}</div>
+          <p className="text-gray-300 leading-relaxed whitespace-pre-wrap line-clamp-8">
+            {nodeTooltip.text}
+          </p>
+        </div>
+      )}
+
       {edgeTooltip && (
         <div
           className="fixed z-[120] pointer-events-none px-2.5 py-1.5 text-xs bg-gray-900/90 text-white rounded-md shadow-lg backdrop-blur-sm"
@@ -640,7 +740,24 @@ function CanvasInner() {
           selectedNodes={nodes.filter(
             (n) => selectedNodeIds.includes(n.id) && !isCommentBlock(n),
           )}
+          allNodes={nodes.filter((n) => !isCommentBlock(n))}
+          relatedEdges={edges
+            .filter((e) => selectedNodeIds.includes(e.from) || selectedNodeIds.includes(e.to))
+            .map((e) => {
+              const nameById = new Map(nodes.map((n) => [n.id, n.name]))
+              return {
+                id: e.id,
+                from: e.from,
+                to: e.to,
+                fromName: nameById.get(e.from) ?? e.from,
+                toName: nameById.get(e.to) ?? e.to,
+                relationType: e.relationType,
+                label: e.label,
+                condition: e.condition,
+              }
+            })}
           allNodeIds={nodes.map((n) => n.id)}
+          allEdgeIds={edges.map((e) => e.id)}
           onApply={applyAiPatch}
         />
       )}

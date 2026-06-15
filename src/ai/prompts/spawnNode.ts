@@ -1,5 +1,6 @@
-import type { NodeType, RelationType } from '@/domain/types'
-import { NODE_TYPE_META, getRelationLabel } from '@/domain/templates/nodeTemplates'
+import type { NodeType, RelationType, CustomNodeTypeDefinition } from '@/domain/types'
+import { getNodeMeta, getRelationLabel } from '@/domain/templates/nodeTemplates'
+import { formatAiNodeTypeCatalog } from '@/ai/nodeTypesForAi'
 import { summarizeProject } from './system'
 
 export interface SpawnNodeContext {
@@ -14,15 +15,20 @@ export interface SpawnNodeContext {
   existingIds: string[]
   projectNodes: Array<{ id: string; type: string; name: string; fields: Record<string, unknown> }>
   projectEdges: Array<{ from: string; to: string; relationType: string; label?: string }>
+  customNodeTypes?: CustomNodeTypeDefinition[]
 }
 
 export function buildSpawnNodePrompt(ctx: SpawnNodeContext): string {
-  const meta = NODE_TYPE_META[ctx.type] ?? NODE_TYPE_META.entity
+  const meta = getNodeMeta(ctx.type)
   const fieldKeys = Object.keys(meta.defaultFields)
   const sourceDesc = String(ctx.sourceNode.fields.description ?? '').slice(0, 200)
   const relLabel = getRelationLabel(ctx.relationType)
+  const typeCatalog = formatAiNodeTypeCatalog(ctx.customNodeTypes)
 
   return `用户从已有节点拖线到空白处，要创建一个新节点并建立连线。
+
+## 可用节点类型（含用户自定义）
+${typeCatalog}
 
 连线方向：源节点「${ctx.sourceNode.name}」--${ctx.relationType}(${relLabel})--> 新节点「${ctx.name}」
 即：新节点是源节点的${relLabel === '依赖' ? '前置' : relLabel === '解锁' ? '被解锁方' : '关联'}对象（关系类型 ${ctx.relationType}）。
@@ -33,7 +39,7 @@ export function buildSpawnNodePrompt(ctx: SpawnNodeContext): string {
 ${sourceDesc ? `- description: ${sourceDesc}` : ''}
 
 要创建的新节点：
-- type: ${ctx.type}（${meta.label}）
+- type: ${ctx.type}（${meta.label}）${ctx.type.startsWith('custom_') ? ' [用户自定义类型]' : ''}
 - name: ${ctx.name}（用户指定，不要修改 name）
 
 请补全该节点的 fields，需包含字段：${fieldKeys.join(', ')}

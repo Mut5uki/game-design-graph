@@ -4,6 +4,7 @@ import { getNodeMeta, getRelationLabel } from '@/domain/templates/nodeTemplates'
 import { NODE_HANDLES } from '@/domain/templates/relationPins'
 import type { ImpactRole } from '@/domain/types'
 import { cn } from '@/lib/utils'
+import { InlineNodeName } from './InlineNodeName'
 
 export interface DesignNodeData {
   label: string
@@ -13,7 +14,42 @@ export interface DesignNodeData {
   [key: string]: unknown
 }
 
-function DesignNodeCard({ data, selected, dragging }: NodeProps & { data: DesignNodeData }) {
+function SideHandles({
+  position,
+  sideClass,
+  inId,
+  outId,
+  inTitle,
+  outTitle,
+}: {
+  position: Position
+  sideClass: string
+  inId: string
+  outId: string
+  inTitle: string
+  outTitle: string
+}) {
+  return (
+    <>
+      <Handle
+        id={inId}
+        type="target"
+        position={position}
+        className={cn('gdg-handle', sideClass)}
+        title={inTitle}
+      />
+      <Handle
+        id={outId}
+        type="source"
+        position={position}
+        className={cn('gdg-handle', sideClass)}
+        title={outTitle}
+      />
+    </>
+  )
+}
+
+function DesignNodeCard({ id, data, selected, dragging }: NodeProps & { data: DesignNodeData }) {
   const meta = getNodeMeta(data.nodeType)
   const impactRole = data.impactRole
 
@@ -31,33 +67,37 @@ function DesignNodeCard({ data, selected, dragging }: NodeProps & { data: Design
         ...(selected ? { ringColor: meta.color } : {}),
       }}
     >
-      <Handle
-        id={NODE_HANDLES.leftIn}
-        type="target"
+      <SideHandles
         position={Position.Left}
-        className="gdg-handle gdg-handle-target"
-        title="输入"
+        sideClass="gdg-handle-left"
+        inId={NODE_HANDLES.leftIn}
+        outId={NODE_HANDLES.leftOut}
+        inTitle="左侧接入"
+        outTitle="左侧连出"
       />
-      <Handle
-        id={NODE_HANDLES.rightOut}
-        type="source"
+      <SideHandles
         position={Position.Right}
-        className="gdg-handle gdg-handle-source"
-        title="输出"
+        sideClass="gdg-handle-right"
+        inId={NODE_HANDLES.rightIn}
+        outId={NODE_HANDLES.rightOut}
+        inTitle="右侧接入"
+        outTitle="右侧连出"
       />
-      <Handle
-        id={NODE_HANDLES.topIn}
-        type="target"
+      <SideHandles
         position={Position.Top}
-        className="gdg-handle gdg-handle-top"
-        title="顶部输入"
+        sideClass="gdg-handle-top"
+        inId={NODE_HANDLES.topIn}
+        outId={NODE_HANDLES.topOut}
+        inTitle="顶部接入"
+        outTitle="顶部连出"
       />
-      <Handle
-        id={NODE_HANDLES.bottomOut}
-        type="source"
+      <SideHandles
         position={Position.Bottom}
-        className="gdg-handle gdg-handle-bottom"
-        title="底部输出"
+        sideClass="gdg-handle-bottom"
+        inId={NODE_HANDLES.bottomIn}
+        outId={NODE_HANDLES.bottomOut}
+        inTitle="底部接入"
+        outTitle="底部连出"
       />
       <div className="px-3 py-2">
         <div className="flex items-center gap-2 min-w-0">
@@ -66,7 +106,12 @@ function DesignNodeCard({ data, selected, dragging }: NodeProps & { data: Design
             style={{ backgroundColor: meta.color }}
           />
           <span className="text-xs text-gray-500 shrink-0">{meta.label}</span>
-          <span className="text-sm font-medium text-gray-900 truncate">{data.label}</span>
+          <InlineNodeName
+            nodeId={id}
+            value={data.label}
+            className="text-sm font-medium text-gray-900 truncate flex-1 min-w-0"
+            inputClassName="text-sm font-medium"
+          />
         </div>
         {data.inboundSummary && (
           <div className="mt-1 text-xs text-gray-400 truncate pl-3">

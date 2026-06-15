@@ -1,13 +1,13 @@
-import { memo } from 'react'
+import { memo, useState } from 'react'
 import { NodeResizer, type NodeProps } from '@xyflow/react'
 import {
   COMMENT_COLOR_PRESETS,
-  COMMENT_HEADER_HEIGHT,
   COMMENT_MIN_HEIGHT,
   COMMENT_MIN_WIDTH,
   getCommentColor,
 } from '@/domain/group/commentBlock'
 import { cn } from '@/lib/utils'
+import { InlineNodeName } from './InlineNodeName'
 
 export interface CommentBlockData {
   label: string
@@ -16,8 +16,10 @@ export interface CommentBlockData {
   [key: string]: unknown
 }
 
-function CommentBlockComponent({ data, selected }: NodeProps & { data: CommentBlockData }) {
+function CommentBlockComponent({ id, data, selected }: NodeProps & { data: CommentBlockData }) {
   const color = getCommentColor(data.colorId)
+  const title = data.label || '区块备注'
+  const [editing, setEditing] = useState(false)
 
   return (
     <>
@@ -25,36 +27,52 @@ function CommentBlockComponent({ data, selected }: NodeProps & { data: CommentBl
         minWidth={COMMENT_MIN_WIDTH}
         minHeight={COMMENT_MIN_HEIGHT}
         isVisible={selected}
-        lineClassName="!border-blue-400"
-        handleClassName="!w-2 !h-2 !bg-blue-500 !border-white !rounded-sm"
+        lineClassName="!border-blue-400/50"
+        handleClassName="!w-2 !h-2 !bg-blue-500/70 !border-white/80 !rounded-sm"
       />
       <div
         className={cn(
-          'w-full h-full rounded-lg border-2 border-dashed flex flex-col overflow-hidden',
-          selected && 'ring-2 ring-blue-400/50 ring-offset-1',
+          'gdg-comment-block w-full h-full relative overflow-hidden rounded-sm',
+          selected && 'ring-1 ring-blue-400/30',
         )}
         style={{
           backgroundColor: color.bg,
-          borderColor: selected ? color.header : color.border,
+          border: `1px solid ${selected ? color.border : color.borderMuted}`,
         }}
+        onDoubleClick={(e) => {
+          e.stopPropagation()
+          setEditing(true)
+        }}
+        title="双击修改名称"
       >
-        <div
-          className="shrink-0 px-3 flex items-center gap-2 text-white text-xs font-medium select-none"
-          style={{
-            height: COMMENT_HEADER_HEIGHT,
-            backgroundColor: color.header,
-          }}
-        >
-          <span className="opacity-80">▤</span>
-          <span className="truncate flex-1">{data.label || '区块备注'}</span>
-        </div>
-        <div className="flex-1 px-3 py-2 overflow-hidden pointer-events-none">
-          {data.description ? (
-            <p className="text-xs text-gray-600 whitespace-pre-wrap line-clamp-6">{data.description}</p>
-          ) : (
-            <p className="text-xs text-gray-400 italic">拖入节点以编组；在右侧编辑备注</p>
-          )}
-        </div>
+        {editing ? (
+          <div
+            className="absolute inset-0 flex items-center justify-center px-6 py-4 z-10 nodrag nopan"
+            onDoubleClick={(e) => e.stopPropagation()}
+          >
+            <InlineNodeName
+              nodeId={id}
+              value={title}
+              autoEdit
+              onDone={() => setEditing(false)}
+              className="hidden"
+              inputClassName="text-lg font-semibold text-center text-gray-700 max-w-full"
+              placeholder="区块名称"
+            />
+          </div>
+        ) : (
+          <div
+            className="absolute inset-0 flex items-center justify-center px-6 py-4 select-none pointer-events-none"
+            aria-hidden
+          >
+            <p
+              className="gdg-comment-watermark text-center font-bold leading-tight tracking-wide"
+              style={{ color: color.title }}
+            >
+              {title}
+            </p>
+          </div>
+        )}
       </div>
     </>
   )

@@ -40,6 +40,18 @@ body {
   z-index: 0 !important;
 }
 
+.react-flow__node-comment .gdg-comment-block {
+  box-shadow: none;
+  container-type: size;
+}
+
+.gdg-comment-watermark {
+  font-size: clamp(24px, 18cqmin, 52px);
+  max-width: 92%;
+  word-break: break-word;
+  user-select: none;
+}
+
 .react-flow__node-design {
   z-index: 1 !important;
 }
@@ -80,23 +92,20 @@ body {
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
-.gdg-handle-target {
+.gdg-handle-left {
   left: -5px !important;
 }
 
-.gdg-handle-source {
+.gdg-handle-right {
   right: -5px !important;
-  background: #3b82f6 !important;
 }
 
 .gdg-handle-top {
   top: -5px !important;
-  background: #64748b !important;
 }
 
 .gdg-handle-bottom {
   bottom: -5px !important;
-  background: #3b82f6 !important;
 }
 
 .gdg-pin {
@@ -115,14 +124,19 @@ body {
 }
 
 /* 拖线时高亮可连接针脚 */
-.react-flow__handle.connectingto,
 .react-flow__handle.gdg-handle.connectingto {
-  transform: translateY(-50%) scale(1.3) !important;
+  transform: translate(-50%, -50%) scale(1.3) !important;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35) !important;
 }
 
-.react-flow__handle.gdg-handle-target.connectingto {
+.react-flow__handle.gdg-handle-left.connectingto,
+.react-flow__handle.gdg-handle-right.connectingto {
   transform: translateY(-50%) scale(1.3) !important;
+}
+
+.react-flow__handle.gdg-handle-top.connectingto,
+.react-flow__handle.gdg-handle-bottom.connectingto {
+  transform: translateX(-50%) scale(1.3) !important;
 }
 
 .react-flow__handle.connectingfrom {
@@ -192,4 +206,15 @@ body {
 
 .react-flow__edge-design.selectable.updating .react-flow__edgeupdater {
   cursor: grabbing;
+}
+
+/* 小地图：区块备注浅色虚线框，避免大块深色 */
+.react-flow__minimap .react-flow__minimap-node.gdg-minimap-comment {
+  stroke-dasharray: 5 3;
+  stroke-width: 1.5px;
+}
+
+.react-flow__minimap .react-flow__minimap-node.gdg-minimap-design,
+.react-flow__minimap .react-flow__minimap-node.gdg-minimap-list {
+  stroke-opacity: 0.85;
 }

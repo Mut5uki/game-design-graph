@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { chatCompletion } from '@/ai/deepseekClient'
 import {
-  buildCompletePrompt,
+  buildEditGraphPrompt,
   buildGeneratePrompt,
   buildQaPrompt,
+  buildSystemPrompt,
   summarizeProject,
 } from '@/ai/prompts/system'
 import { validateAiGraph, formatAiGraphError, type AiGraphOutput } from '@/ai/schemas/graphSchema'
@@ -31,13 +32,44 @@ export function AiPanel({ onOpenSettings }: AiPanelProps) {
   const [preview, setPreview] = useState<AiGraphOutput | null>(null)
 
   const hasKey = Boolean(project?.settings.deepseekApiKeyEncrypted)
+  const existingNodeIds = nodes.map((n) => n.id)
+
+  const canvasNodes = useMemo(
+    () =>
+      nodes.map((n) => ({
+        id: n.id,
+        type: n.type,
+        name: n.name,
+        fields: n.fields,
+      })),
+    [nodes],
+  )
+  const canvasNodesForResolve = useMemo(
+    () => nodes.map((n) => ({ id: n.id, name: n.name })),
+    [nodes],
+  )
+
+  const customNodeTypes = project?.settings.customNodeTypes
+  const customRelationTypes = project?.settings.customRelationTypes
+  const aiOptions = useMemo(
+    () => ({
+      existingNodes: canvasNodesForResolve,
+      customNodeTypes,
+      customRelationTypes,
+    }),
+    [canvasNodesForResolve, customNodeTypes, customRelationTypes],
+  )
+  const systemPrompt = useMemo(
+    () => buildSystemPrompt(customNodeTypes, customRelationTypes),
+    [customNodeTypes, customRelationTypes],
+  )
 
   async function getApiKey(): Promise<string | null> {
     if (!project?.settings.deepseekApiKeyEncrypted) return null
     return decryptApiKey(project.settings.deepseekApiKeyEncrypted)
   }
 
-  async function runGenerate(prompt: string, mode: 'generate' | 'complete' | 'qa') {
+  async function runGenerate(prompt: string, mode: 'generate' | 'edit' | 'qa') {
     setError(null)
     setLoading(true)
     let rawContent = ''
@@ -48,15 +80,39 @@ export function AiPanel({ onOpenSettings }: AiPanelProps) {
         return
       }
 
-      const existingIds = nodes.map((n) => n.id)
       let userContent: string
 
       if (mode === 'generate') {
-        userContent = buildGeneratePrompt(prompt, existingIds)
-      } else if (mode === 'complete') {
-        const selected = nodes.filter((n) => selectedNodeIds.includes(n.id))
-        const summary = selected.map((n) => `[${n.type}] ${n.id}: ${n.name}`).join('\n')
-        userContent = buildCompletePrompt(summary, existingIds)
+        userContent = buildGeneratePrompt(
+          prompt,
+          nodes.map((n) => ({ id: n.id, name: n.name, type: n.type })),
+          customNodeTypes,
+          customRelationTypes,
+        )
+      } else if (mode === 'edit') {
+        const selectedSet = new Set(selectedNodeIds)
+        const selected = canvasNodes.filter((n) => selectedSet.has(n.id))
+        const nameById = new Map(nodes.map((n) => [n.id, n.name]))
+        const relatedEdges = edges
+          .filter((e) => selectedSet.has(e.from) || selectedSet.has(e.to))
+          .map((e) => ({
+            id: e.id,
+            from: e.from,
+            to: e.to,
+            fromName: nameById.get(e.from) ?? e.from,
+            toName: nameById.get(e.to) ?? e.to,
+            relationType: e.relationType,
+            label: e.label,
+            condition: e.condition,
+          }))
+        userContent = buildEditGraphPrompt(
+          prompt,
+          selected,
+          canvasNodes,
+          relatedEdges,
+          customNodeTypes,
+          customRelationTypes,
+        )
       } else {
         userContent = buildQaPrompt(prompt, summarizeProject(nodes, edges))
       }
@@ -64,6 +120,7 @@ export function AiPanel({ onOpenSettings }: AiPanelProps) {
       const content = await chatCompletion({
         apiKey,
         model: project!.settings.deepseekModel,
+        systemPrompt,
         messages: [{ role: 'user', content: userContent }],
         jsonMode: mode !== 'qa',
       })
@@ -73,12 +130,12 @@ export function AiPanel({ onOpenSettings }: AiPanelProps) {
         setMessages((m) => [...m, { role: 'user', content: prompt }, { role: 'assistant', content }])
         setInput('')
       } else {
-        const graph = validateAiGraph(content)
+        const graph = validateAiGraph(content, aiOptions)
         setPreview(graph)
         setMessages((m) => [
           ...m,
           { role: 'user', content: prompt },
-          { role: 'assistant', content: graph.explanation ?? '已生成结构，请预览确认。' },
+          { role: 'assistant', content: graph.explanation ?? '已生成变更，请预览确认。' },
         ])
         setInput('')
       }
@@ -93,7 +150,7 @@ export function AiPanel({ onOpenSettings }: AiPanelProps) {
     if (!input.trim() || loading) return
     const isQuestion = input.includes('?') || input.includes('？') || input.startsWith('问')
     if (selectedNodeIds.length > 0 && !isQuestion) {
-      runGenerate(input, 'complete')
+      runGenerate(input, 'edit')
     } else if (isQuestion) {
       runGenerate(input, 'qa')
     } else {
@@ -104,7 +161,7 @@ export function AiPanel({ onOpenSettings }: AiPanelProps) {
   if (!hasKey) {
     return (
       <div className="text-sm text-gray-500 space-y-3">
-        <p>配置 DeepSeek API Key 后可使用 AI 生成、补全与问答。</p>
+        <p>配置 DeepSeek API Key 后可使用 AI 生成、修改与问答。</p>
         <p className="text-xs text-gray-400">数据将发送至 DeepSeek 进行处理，Key 仅保存在本地浏览器。</p>
         <Link to="/settings">
           <Button variant="primary" size="sm" onClick={onOpenSettings}>前往设置</Button>
@@ -118,7 +175,7 @@ export function AiPanel({ onOpenSettings }: AiPanelProps) {
       <div className="flex-1 overflow-y-auto space-y-3 mb-3 min-h-0">
         {messages.length === 0 && (
           <p className="text-xs text-gray-400">
-            描述你想设计的系统，例如：「火球 5 级解锁烈焰风暴，完成任务 A 后触发事件 B」
+            描述你想设计的系统；选中节点后，用中文名称说明要改什么（如「把火球术描述写详细」）
           </p>
         )}
         {messages.map((m, i) => (
@@ -136,12 +193,18 @@ export function AiPanel({ onOpenSettings }: AiPanelProps) {
 
       <div className="shrink-0 space-y-2 border-t border-gray-100 pt-3">
         {selectedNodeIds.length > 0 && (
-          <p className="text-xs text-gray-400">已选 {selectedNodeIds.length} 个节点 — 输入将尝试补全关联</p>
+          <p className="text-xs text-gray-400">
+            已选 {selectedNodeIds.length} 个节点 — 请用中文名称描述修改意图
+          </p>
         )}
         <Textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="描述设计或提问…"
+          placeholder={
+            selectedNodeIds.length > 0
+              ? '例如：把描述改详细、改成任务类型、增加冷却 3 秒…'
+              : '描述设计或提问…'
+          }
           className="min-h-[72px] text-sm"
           onKeyDown={(e) => {
             if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) handleSubmit()
@@ -159,7 +222,7 @@ export function AiPanel({ onOpenSettings }: AiPanelProps) {
             生成图
           </Button>
         </div>
-        <p className="text-[10px] text-gray-400">Ctrl+Enter 发送 · 改图结果需预览确认</p>
+        <p className="text-[10px] text-gray-400">Ctrl+Enter 发送 · 变更需预览确认后应用</p>
       </div>
 
       {preview && (
@@ -167,6 +230,8 @@ export function AiPanel({ onOpenSettings }: AiPanelProps) {
           open={Boolean(preview)}
           onOpenChange={(o) => !o && setPreview(null)}
           data={preview}
+          existingNodeIds={existingNodeIds}
+          existingEdgeIds={edges.map((e) => e.id)}
           onApply={(patch) => {
             applyAiPatch(patch)
             setPreview(null)

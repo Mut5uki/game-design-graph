@@ -3,13 +3,16 @@ export type BuiltInNodeType = 'ability' | 'event' | 'quest' | 'buff' | 'entity' 
 /** 内置类型 + 用户自定义（custom_ 前缀） */
 export type NodeType = BuiltInNodeType | (string & {})
 
-export type RelationType =
+export type BuiltInRelationType =
   | 'requires'
   | 'triggers'
   | 'unlocks'
   | 'blocks'
   | 'modifies'
   | 'references'
+
+/** 内置关系 + 用户自定义（rel_ 前缀） */
+export type RelationType = BuiltInRelationType | (string & {})
 
 export type DeepseekModel = 'deepseek-chat' | 'deepseek-reasoner'
 
@@ -20,10 +23,21 @@ export interface CustomNodeTypeDefinition {
   defaultFields?: Record<string, unknown>
 }
 
+export interface CustomRelationTypeDefinition {
+  type: string
+  label: string
+  color: string
+}
+
 export interface ProjectSettings {
   deepseekApiKeyEncrypted?: string
   deepseekModel: DeepseekModel
   customNodeTypes?: CustomNodeTypeDefinition[]
+  /** 内置节点类型的颜色覆盖（type → hex） */
+  nodeTypeColorOverrides?: Record<string, string>
+  customRelationTypes?: CustomRelationTypeDefinition[]
+  /** 内置关系类型的颜色覆盖（type → hex） */
+  relationTypeColorOverrides?: Record<string, string>
 }
 
 export interface Project {
@@ -84,8 +98,9 @@ export interface NodeTypeMeta {
 }
 
 export interface RelationTypeMeta {
-  type: RelationType
+  type: string
   label: string
+  color?: string
 }
 
 export type ValidationLevel = 'error' | 'warn' | 'info'

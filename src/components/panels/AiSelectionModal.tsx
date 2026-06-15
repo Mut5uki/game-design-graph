@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { chatCompletion } from '@/ai/deepseekClient'
-import { buildCompletePrompt } from '@/ai/prompts/system'
+import { buildEditGraphPrompt, buildSystemPrompt } from '@/ai/prompts/system'
 import { validateAiGraph, type AiGraphOutput } from '@/ai/schemas/graphSchema'
 import { decryptApiKey } from '@/lib/crypto'
 import type { DesignNode } from '@/domain/types'
@@ -11,9 +11,28 @@ import { AiPreviewModal } from './AiPreviewModal'
 interface AiSelectionModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  project: { settings: { deepseekApiKeyEncrypted?: string; deepseekModel: 'deepseek-chat' | 'deepseek-reasoner' } }
+  project: {
+    settings: {
+      deepseekApiKeyEncrypted?: string
+      deepseekModel: 'deepseek-chat' | 'deepseek-reasoner'
+      customNodeTypes?: import('@/domain/types').CustomNodeTypeDefinition[]
+      customRelationTypes?: import('@/domain/types').CustomRelationTypeDefinition[]
+    }
+  }
   selectedNodes: DesignNode[]
+  allNodes: DesignNode[]
+  relatedEdges: Array<{
+    id: string
+    from: string
+    to: string
+    fromName: string
+    toName: string
+    relationType: string
+    label?: string
+    condition?: string
+  }>
   allNodeIds: string[]
+  allEdgeIds: string[]
   onApply: (patch: AiGraphOutput) => void
 }
 
@@ -22,7 +41,10 @@ export function AiSelectionModal({
   onOpenChange,
   project,
   selectedNodes,
+  allNodes,
+  relatedEdges,
   allNodeIds,
+  allEdgeIds,
   onApply,
 }: AiSelectionModalProps) {
   const [prompt, setPrompt] = useState('')
@@ -40,14 +62,45 @@ export function AiSelectionModal({
         return
       }
       const apiKey = await decryptApiKey(project.settings.deepseekApiKeyEncrypted)
-      const summary = selectedNodes.map((n) => `[${n.type}] ${n.id}: ${n.name}`).join('\n')
+      const customNodeTypes = project.settings.customNodeTypes
+      const customRelationTypes = project.settings.customRelationTypes
+      const canvasNodes = allNodes.map((n) => ({
+        id: n.id,
+        type: n.type,
+        name: n.name,
+        fields: n.fields,
+      }))
       const content = await chatCompletion({
         apiKey,
         model: project.settings.deepseekModel,
-        messages: [{ role: 'user', content: buildCompletePrompt(summary, allNodeIds) + `\n\n用户补充说明：${prompt}` }],
+        systemPrompt: buildSystemPrompt(customNodeTypes, customRelationTypes),
+        messages: [
+          {
+            role: 'user',
+            content: buildEditGraphPrompt(
+              prompt,
+              selectedNodes.map((n) => ({
+                id: n.id,
+                type: n.type,
+                name: n.name,
+                fields: n.fields,
+              })),
+              canvasNodes,
+              relatedEdges,
+              customNodeTypes,
+              customRelationTypes,
+            ),
+          },
+        ],
         jsonMode: true,
       })
-      setPreview(validateAiGraph(content))
+      setPreview(
+        validateAiGraph(content, {
+          existingNodes: allNodes.map((n) => ({ id: n.id, name: n.name })),
+          customNodeTypes,
+          customRelationTypes,
+        }),
+      )
     } catch (e) {
       setError(e instanceof Error ? e.message : 'AI 请求失败')
     } finally {
@@ -72,12 +125,12 @@ export function AiSelectionModal({
         }
       >
         <p className="text-xs text-gray-500 mb-3">
-          已选 {selectedNodes.length} 个节点。描述你想如何补全或修改（例如：「补充下游依赖并加两个事件节点」）。
+          已选 {selectedNodes.length} 个节点。请用中文名称描述要改什么（如「火球术」「濒死冒险者」）。
         </p>
         <Textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="输入修改意图…"
+          placeholder="例如：把火球术描述写详细；让濒死冒险者解锁火符文…"
           className="min-h-[96px]"
           autoFocus
         />
@@ -91,6 +144,8 @@ export function AiSelectionModal({
             if (!o) setPreview(null)
           }}
           data={preview}
+          existingNodeIds={allNodeIds}
+          existingEdgeIds={allEdgeIds}
           onApply={(patch) => {
             onApply(patch)
             setPreview(null)

@@ -9,6 +9,7 @@ import {
 } from '@/domain/list/listBlock'
 import { useEditorStore } from '@/store/editorStore'
 import { cn } from '@/lib/utils'
+import { InlineNodeName } from './InlineNodeName'
 
 export interface ListBlockData {
   label: string
@@ -72,31 +73,61 @@ function ListBlockCard({ data, selected, id }: NodeProps & { data: ListBlockData
         id={LIST_BLOCK_HANDLE.input}
         type="target"
         position={Position.Left}
-        className="gdg-handle gdg-handle-target"
+        className="gdg-handle gdg-handle-left"
         style={{ top: '50%' }}
-        title="列表输入"
+        title="左侧接入"
+      />
+      <Handle
+        id={LIST_BLOCK_HANDLE.leftOut}
+        type="source"
+        position={Position.Left}
+        className="gdg-handle gdg-handle-left"
+        style={{ top: '50%' }}
+        title="左侧连出"
       />
       <Handle
         id={LIST_BLOCK_HANDLE.top}
         type="target"
         position={Position.Top}
         className="gdg-handle gdg-handle-top"
-        title="顶部输入"
+        title="顶部接入"
+      />
+      <Handle
+        id={LIST_BLOCK_HANDLE.topOut}
+        type="source"
+        position={Position.Top}
+        className="gdg-handle gdg-handle-top"
+        title="顶部连出"
+      />
+      <Handle
+        id={LIST_BLOCK_HANDLE.rightIn}
+        type="target"
+        position={Position.Right}
+        className="gdg-handle gdg-handle-right"
+        style={{ top: '50%' }}
+        title="右侧接入"
       />
       <Handle
         id={LIST_BLOCK_HANDLE.output}
         type="source"
         position={Position.Right}
-        className="gdg-handle gdg-handle-source"
+        className="gdg-handle gdg-handle-right"
         style={{ top: '50%' }}
-        title="列表输出"
+        title="右侧连出"
+      />
+      <Handle
+        id={LIST_BLOCK_HANDLE.bottomIn}
+        type="target"
+        position={Position.Bottom}
+        className="gdg-handle gdg-handle-bottom"
+        title="底部接入"
       />
       <Handle
         id={LIST_BLOCK_HANDLE.bottom}
         type="source"
         position={Position.Bottom}
         className="gdg-handle gdg-handle-bottom"
-        title="底部输出"
+        title="底部连出"
       />
 
       <div className="px-3 py-2 border-b border-gray-100 bg-sky-50/60">
@@ -104,7 +135,14 @@ function ListBlockCard({ data, selected, id }: NodeProps & { data: ListBlockData
           <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: meta.color }} />
           <span className="text-xs text-gray-500">{meta.label}列表</span>
         </div>
-        <div className="text-sm font-medium text-gray-900 truncate mt-0.5">{data.label}</div>
+        <div className="text-sm font-medium text-gray-900 mt-0.5 min-w-0">
+          <InlineNodeName
+            nodeId={id}
+            value={data.label}
+            className="truncate block"
+            inputClassName="text-sm font-medium"
+          />
+        </div>
       </div>
 
       <div className="py-1 min-h-[32px]">

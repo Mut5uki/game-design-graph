@@ -1,7 +1,8 @@
-import type { ReactNode } from 'react'
+import { useMemo, type ReactNode } from 'react'
 import type { RelationType } from '@/domain/types'
-import { RELATION_OPTIONS } from '@/domain/templates/relationPins'
+import { getRelationOptions } from '@/domain/templates/relationPins'
 import { getRelationLabel } from '@/domain/templates/nodeTemplates'
+import { useEditorStore } from '@/store/editorStore'
 import { cn } from '@/lib/utils'
 
 interface RelationTypeChipsProps {
@@ -11,16 +12,23 @@ interface RelationTypeChipsProps {
 }
 
 export function RelationTypeChips({ value, onChange, compact }: RelationTypeChipsProps) {
+  const customRelationTypes = useEditorStore((s) => s.project?.settings.customRelationTypes)
+  const colorOverrides = useEditorStore((s) => s.project?.settings.relationTypeColorOverrides)
+  const relationOptions = useMemo(
+    () => getRelationOptions(),
+    [customRelationTypes, colorOverrides],
+  )
+
   return (
     <div className={cn('flex flex-wrap gap-1', compact && 'gap-0.5')}>
-      {RELATION_OPTIONS.map((pin) => {
+      {relationOptions.map((pin) => {
         const active = value === pin.type
         return (
           <button
             key={pin.type}
             type="button"
             title={getRelationLabel(pin.type)}
-            onClick={() => onChange(pin.type)}
+            onClick={() => onChange(pin.type as RelationType)}
             className={cn(
               'rounded-full border transition-colors',
               compact ? 'px-1.5 py-0.5 text-[10px]' : 'px-2 py-0.5 text-[11px]',
@@ -57,15 +65,22 @@ export function RelationPickerPopup({
   onPick: (type: RelationType) => void
   onClose: () => void
 }) {
+  const customRelationTypes = useEditorStore((s) => s.project?.settings.customRelationTypes)
+  const colorOverrides = useEditorStore((s) => s.project?.settings.relationTypeColorOverrides)
+  const relationOptions = useMemo(
+    () => getRelationOptions(),
+    [customRelationTypes, colorOverrides],
+  )
+
   return (
     <RelationPickerShell x={x} y={y} onClose={onClose} title="选择关系类型">
-      <div className="grid grid-cols-3 gap-1">
-        {RELATION_OPTIONS.map((pin) => (
+      <div className="grid grid-cols-2 gap-1 max-h-48 overflow-y-auto">
+        {relationOptions.map((pin) => (
           <button
             key={pin.type}
             type="button"
             className="rounded-md border border-gray-200 px-2 py-1.5 text-xs hover:bg-gray-50 text-left"
-            onClick={() => onPick(pin.type)}
+            onClick={() => onPick(pin.type as RelationType)}
           >
             <span
               className="inline-block w-1.5 h-1.5 rounded-full mr-1"
@@ -94,10 +109,10 @@ function RelationPickerShell({
 }) {
   return (
     <div
-      className="fixed z-[110] w-[200px] rounded-lg border border-gray-200 bg-white p-2.5 shadow-xl"
+      className="fixed z-[110] w-[220px] rounded-lg border border-gray-200 bg-white p-2.5 shadow-xl"
       style={{
-        left: Math.min(x, window.innerWidth - 216),
-        top: Math.min(y, window.innerHeight - 160),
+        left: Math.min(x, window.innerWidth - 236),
+        top: Math.min(y, window.innerHeight - 200),
       }}
       onContextMenu={(e) => e.preventDefault()}
     >

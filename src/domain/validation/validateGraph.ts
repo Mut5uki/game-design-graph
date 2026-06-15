@@ -1,5 +1,5 @@
 import type { DesignEdge, DesignNode, RelationType, ValidationIssue } from '../types'
-import { RELATION_TYPE_META } from '../templates/nodeTemplates'
+import { getRelationLabel as resolveRelationLabel } from '../templates/relationTypeRegistry'
 
 const CYCLE_RELATIONS: RelationType[] = ['requires', 'unlocks']
 
@@ -190,5 +190,5 @@ export function computeImpact(
 }
 
 export function getRelationLabel(type: RelationType): string {
-  return RELATION_TYPE_META[type]?.label ?? type
+  return resolveRelationLabel(type)
 }

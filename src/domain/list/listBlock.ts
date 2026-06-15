@@ -44,6 +44,10 @@ export function parseListItemHandleId(handleId: string | null | undefined): stri
 export const LIST_BLOCK_HANDLE = {
   input: 'in',
   output: 'out',
+  leftOut: 'left-out',
+  rightIn: 'right-in',
   top: 'top-in',
+  topOut: 'top-out',
   bottom: 'bottom-out',
+  bottomIn: 'bottom-in',
 } as const

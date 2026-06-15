@@ -1,11 +1,11 @@
-import { memo, useCallback, useState } from 'react'
+import { useMemo, memo, useCallback, useState } from 'react'
 import {
   BaseEdge,
   EdgeLabelRenderer,
   getBezierPath,
   type EdgeProps,
 } from '@xyflow/react'
-import { getRelationLabel, RELATION_TYPES } from '@/domain/templates/nodeTemplates'
+import { getRelationLabel, getRelationTypes } from '@/domain/templates/nodeTemplates'
 import { useEditorStore } from '@/store/editorStore'
 import type { RelationType } from '@/domain/types'
 import { cn } from '@/lib/utils'
@@ -35,6 +35,12 @@ function DesignEdgeComponent(props: EdgeProps) {
   const edgeId = edgeData?.edgeId ?? id
   const selectEdge = useEditorStore((s) => s.selectEdge)
   const updateEdge = useEditorStore((s) => s.updateEdge)
+  const customRelationTypes = useEditorStore((s) => s.project?.settings.customRelationTypes)
+  const relationColorOverrides = useEditorStore((s) => s.project?.settings.relationTypeColorOverrides)
+  const relationTypes = useMemo(
+    () => getRelationTypes(),
+    [customRelationTypes, relationColorOverrides],
+  )
   const [editing, setEditing] = useState(false)
 
   const [edgePath, labelX, labelY] = getBezierPath({
@@ -94,7 +100,7 @@ function DesignEdgeComponent(props: EdgeProps) {
               }}
               onBlur={() => setEditing(false)}
             >
-              {RELATION_TYPES.map((r) => (
+              {relationTypes.map((r) => (
                 <option key={r.type} value={r.type}>{r.label}</option>
               ))}
             </select>

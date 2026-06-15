@@ -11,6 +11,7 @@ export interface DeepseekOptions {
   messages: ChatMessage[]
   jsonMode?: boolean
   temperature?: number
+  systemPrompt?: string
 }
 
 interface DeepseekMessage {
@@ -19,14 +20,14 @@ interface DeepseekMessage {
 }
 
 export async function chatCompletion(options: DeepseekOptions): Promise<string> {
-  const { apiKey, model, messages, jsonMode = false, temperature = 0.3 } = options
+  const { apiKey, model, messages, jsonMode = false, temperature = 0.3, systemPrompt } = options
 
   // deepseek-reasoner 对 JSON 模式不稳定，结构化输出统一走 chat
   const requestModel = jsonMode && model === 'deepseek-reasoner' ? 'deepseek-chat' : model
 
   const body: Record<string, unknown> = {
     model: requestModel,
-    messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...messages],
+    messages: [{ role: 'system', content: systemPrompt ?? SYSTEM_PROMPT }, ...messages],
     temperature,
   }
 

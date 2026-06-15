@@ -73,7 +73,11 @@ export const NODE_TYPE_META: Record<string, NodeTypeMeta> = {
   },
 }
 
-import { getCustomNodeMeta, getCustomNodeTypesList } from './nodeTypeRegistry'
+import { getCustomNodeMeta, getCustomNodeTypesList, applyColorOverrideToMeta } from './nodeTypeRegistry'
+import {
+  getRelationLabel as resolveRelationLabel,
+  getRelationTypeMetas,
+} from './relationTypeRegistry'
 
 export const NODE_TYPES = Object.values(NODE_TYPE_META)
 
@@ -86,27 +90,32 @@ export const RELATION_TYPE_META: Record<string, RelationTypeMeta> = {
   references: { type: 'references', label: '引用' },
 }
 
+/** @deprecated 请使用 getRelationTypeMetas() */
 export const RELATION_TYPES = Object.values(RELATION_TYPE_META)
 
+export function getRelationTypes(): RelationTypeMeta[] {
+  return getRelationTypeMetas()
+}
+
 export function getNodeMeta(type: string): NodeTypeMeta {
-  if (NODE_TYPE_META[type]) return NODE_TYPE_META[type]
+  if (NODE_TYPE_META[type]) return applyColorOverrideToMeta(NODE_TYPE_META[type])
   const custom = getCustomNodeMeta(type)
   if (custom) return custom
   if (type.startsWith('custom_')) {
-    return {
+    return applyColorOverrideToMeta({
       type,
       label: type.replace(/^custom_/, '').replace(/_/g, ' '),
       color: '#6B7280',
       defaultFields: { description: '' },
-    }
+    })
   }
-  return NODE_TYPE_META.entity
+  return applyColorOverrideToMeta(NODE_TYPE_META.entity)
 }
 
 const PALETTE_BUILTIN_ORDER = ['ability', 'event', 'quest', 'buff', 'entity', 'list', 'group'] as const
 
 export function getPaletteNodeTypes(): NodeTypeMeta[] {
-  const builtIn = PALETTE_BUILTIN_ORDER.map((t) => NODE_TYPE_META[t]).filter(Boolean)
+  const builtIn = PALETTE_BUILTIN_ORDER.map((t) => applyColorOverrideToMeta(NODE_TYPE_META[t])).filter(Boolean)
   const customs = getCustomNodeTypesList()
   const listIdx = builtIn.findIndex((m) => m.type === 'list')
   if (listIdx === -1) return [...builtIn, ...customs]
@@ -122,5 +131,9 @@ export function getListContentNodeTypes(): NodeTypeMeta[] {
 }
 
 export function getRelationLabel(type: string): string {
-  return RELATION_TYPE_META[type]?.label ?? type
+  return resolveRelationLabel(type)
+}
+
+export function getBuiltinNodeTypeColor(type: string): string | undefined {
+  return NODE_TYPE_META[type]?.color
 }

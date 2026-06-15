@@ -6,6 +6,7 @@ import { useEditorStore } from '@/store/editorStore'
 import { undoGraph, redoGraph } from '@/store/editorStore'
 import { CanvasEditor } from '@/components/canvas/CanvasEditor'
 import { NodePalette } from '@/components/canvas/NodePalette'
+import { RelationTypePalette } from '@/components/canvas/RelationTypePalette'
 import { PropertyPanel } from '@/components/panels/PropertyPanel'
 import { AiPanel } from '@/components/panels/AiPanel'
 import { ValidationPanel } from '@/components/panels/ValidationPanel'
@@ -184,11 +185,14 @@ export function EditorPage() {
       </header>
 
       <div className="flex-1 flex min-h-0 relative">
-        <NodePalette
-          collapsed={paletteCollapsed}
-          onToggle={() => setPaletteCollapsed(!paletteCollapsed)}
-          onAddNode={handleAddNode}
-        />
+        <div className="flex flex-col min-h-0 shrink-0 h-full">
+          <NodePalette
+            collapsed={paletteCollapsed}
+            onToggle={() => setPaletteCollapsed(!paletteCollapsed)}
+            onAddNode={handleAddNode}
+          />
+          <RelationTypePalette collapsed={paletteCollapsed} />
+        </div>
 
         <div className="flex-1 min-w-0 relative">
           {editorView === 'canvas' ? (

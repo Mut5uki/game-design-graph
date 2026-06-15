@@ -2,16 +2,58 @@ import type { DesignNode } from '../types'
 
 export const COMMENT_DEFAULT_WIDTH = 420
 export const COMMENT_DEFAULT_HEIGHT = 300
-export const COMMENT_HEADER_HEIGHT = 32
 export const COMMENT_MIN_WIDTH = 200
 export const COMMENT_MIN_HEIGHT = 120
 
+/** @deprecated 旧版顶栏高度，新样式不再使用 */
+export const COMMENT_HEADER_HEIGHT = 0
+
 export const COMMENT_COLOR_PRESETS = [
-  { id: 'blue', label: '蓝', bg: 'rgba(59, 130, 246, 0.07)', border: '#93C5FD', header: '#2563EB' },
-  { id: 'green', label: '绿', bg: 'rgba(16, 185, 129, 0.07)', border: '#6EE7B7', header: '#059669' },
-  { id: 'purple', label: '紫', bg: 'rgba(139, 92, 246, 0.07)', border: '#C4B5FD', header: '#7C3AED' },
-  { id: 'amber', label: '琥珀', bg: 'rgba(245, 158, 11, 0.08)', border: '#FCD34D', header: '#D97706' },
-  { id: 'gray', label: '灰', bg: 'rgba(107, 114, 128, 0.06)', border: '#D1D5DB', header: '#6B7280' },
+  {
+    id: 'blue',
+    label: '蓝',
+    bg: 'rgba(59, 130, 246, 0.06)',
+    border: 'rgba(59, 130, 246, 0.32)',
+    borderMuted: 'rgba(59, 130, 246, 0.16)',
+    title: 'rgba(37, 99, 235, 0.14)',
+    header: '#2563EB',
+  },
+  {
+    id: 'green',
+    label: '绿',
+    bg: 'rgba(16, 185, 129, 0.06)',
+    border: 'rgba(16, 185, 129, 0.32)',
+    borderMuted: 'rgba(16, 185, 129, 0.16)',
+    title: 'rgba(5, 150, 105, 0.14)',
+    header: '#059669',
+  },
+  {
+    id: 'purple',
+    label: '紫',
+    bg: 'rgba(139, 92, 246, 0.06)',
+    border: 'rgba(139, 92, 246, 0.32)',
+    borderMuted: 'rgba(139, 92, 246, 0.16)',
+    title: 'rgba(124, 58, 237, 0.14)',
+    header: '#7C3AED',
+  },
+  {
+    id: 'amber',
+    label: '琥珀',
+    bg: 'rgba(245, 158, 11, 0.07)',
+    border: 'rgba(245, 158, 11, 0.32)',
+    borderMuted: 'rgba(245, 158, 11, 0.16)',
+    title: 'rgba(217, 119, 6, 0.15)',
+    header: '#D97706',
+  },
+  {
+    id: 'gray',
+    label: '灰',
+    bg: 'rgba(100, 116, 139, 0.05)',
+    border: 'rgba(100, 116, 139, 0.28)',
+    borderMuted: 'rgba(100, 116, 139, 0.14)',
+    title: 'rgba(71, 85, 105, 0.12)',
+    header: '#64748B',
+  },
 ] as const
 
 export type CommentColorId = (typeof COMMENT_COLOR_PRESETS)[number]['id']
@@ -72,7 +114,7 @@ export function isNodeInsideGroup(
   return (
     cx >= group.position.x + 8 &&
     cx <= group.position.x + width - 8 &&
-    cy >= group.position.y + COMMENT_HEADER_HEIGHT + 8 &&
+    cy >= group.position.y + 8 &&
     cy <= group.position.y + height - 8
   )
 }

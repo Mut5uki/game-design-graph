@@ -1,4 +1,7 @@
 import { z } from 'zod'
+import { resolveAiNodeType } from '@/ai/nodeTypesForAi'
+import { resolveAiRelationType } from '@/ai/relationsForAi'
+import type { CustomNodeTypeDefinition, CustomRelationTypeDefinition } from '@/domain/types'
 
 export const aiNodeSchema = z.object({
   id: z.string(),
@@ -19,7 +22,7 @@ export const aiEdgeSchema = z.object({
   id: z.string().optional(),
   from: z.string(),
   to: z.string(),
-  relationType: z.enum(['requires', 'triggers', 'unlocks', 'blocks', 'modifies', 'references']),
+  relationType: z.string().min(1),
   condition: z.string().optional(),
   label: z.string().optional(),
 })
@@ -160,19 +163,35 @@ export function parseAiJson(text: string): unknown {
   throw new Error('无法解析 AI 返回的 JSON，请重试或换用 deepseek-chat 模型')
 }
 
-function normalizeRelationType(value: unknown): string | undefined {
+function normalizeRelationType(
+  value: unknown,
+  customRelationTypes?: CustomRelationTypeDefinition[],
+): string | undefined {
+  const resolved = resolveAiRelationType(value, customRelationTypes)
+  if (resolved) return resolved
   if (typeof value !== 'string') return undefined
   const key = value.trim().toLowerCase()
   return RELATION_ALIASES[key] ?? RELATION_ALIASES[value.trim()]
 }
 
-function normalizeNodeType(value: unknown): string | undefined {
+function normalizeNodeType(
+  value: unknown,
+  customNodeTypes?: CustomNodeTypeDefinition[],
+): string | undefined {
+  const custom = resolveAiNodeType(value, customNodeTypes)
+  if (custom) return custom
   if (typeof value !== 'string') return undefined
   const key = value.trim().toLowerCase()
   return NODE_TYPE_ALIASES[key] ?? NODE_TYPE_ALIASES[value.trim()]
 }
 
-export function normalizeAiGraphRaw(raw: unknown): unknown {
+export function normalizeAiGraphRaw(
+  raw: unknown,
+  options?: {
+    customNodeTypes?: CustomNodeTypeDefinition[]
+    customRelationTypes?: CustomRelationTypeDefinition[]
+  },
+): unknown {
   if (!raw || typeof raw !== 'object') return raw
 
   const obj = raw as Record<string, unknown>
@@ -183,7 +202,7 @@ export function normalizeAiGraphRaw(raw: unknown): unknown {
     .filter((n) => n && typeof n === 'object')
     .map((n) => {
       const node = n as Record<string, unknown>
-      const type = normalizeNodeType(node.type) ?? node.type
+      const type = normalizeNodeType(node.type, options?.customNodeTypes) ?? node.type
       const id = node.id ?? node.nodeId ?? node.key
       const name = node.name ?? node.title ?? node.label ?? id
       return {
@@ -201,9 +220,9 @@ export function normalizeAiGraphRaw(raw: unknown): unknown {
     .map((e) => {
       const edge = e as Record<string, unknown>
       const relationType =
-        normalizeRelationType(edge.relationType) ??
-        normalizeRelationType(edge.type) ??
-        normalizeRelationType(edge.relation) ??
+        normalizeRelationType(edge.relationType, options?.customRelationTypes) ??
+        normalizeRelationType(edge.type, options?.customRelationTypes) ??
+        normalizeRelationType(edge.relation, options?.customRelationTypes) ??
         edge.relationType
       return {
         ...edge,
@@ -230,9 +249,77 @@ export function normalizeAiGraphRaw(raw: unknown): unknown {
   }
 }
 
-export function validateAiGraph(text: string): AiGraphOutput {
+export function resolveAiGraphAgainstCanvas(
+  graph: AiGraphOutput,
+  existingNodes: Array<{ id: string; name: string }>,
+): AiGraphOutput {
+  if (!existingNodes.length) return graph
+
+  const idSet = new Set(existingNodes.map((n) => n.id))
+  const nameToId = new Map<string, string>()
+  for (const n of existingNodes) {
+    const name = n.name.trim()
+    if (name) nameToId.set(name, n.id)
+  }
+
+  const hasChinese = (s: string) => /[\u4e00-\u9fff]/.test(s)
+
+  const resolveRef = (ref: string): string => {
+    const trimmed = ref.trim()
+    if (!trimmed) return ref
+    if (idSet.has(trimmed)) return trimmed
+    const byName = nameToId.get(trimmed)
+    if (byName) return byName
+    if (hasChinese(trimmed)) {
+      for (const [name, id] of nameToId) {
+        if (name.includes(trimmed) || trimmed.includes(name)) return id
+      }
+    }
+    return ref
+  }
+
+  const nodes = graph.nodes.map((n) => {
+    let id = n.id.trim()
+    const name = n.name.trim()
+
+    if (!idSet.has(id)) {
+      if (name && nameToId.has(name)) {
+        id = nameToId.get(name)!
+      } else if (hasChinese(id) && nameToId.has(id)) {
+        id = nameToId.get(id)!
+      } else if (name && id === name && nameToId.has(name)) {
+        id = nameToId.get(name)!
+      } else if (hasChinese(id)) {
+        const resolved = resolveRef(id)
+        if (idSet.has(resolved)) id = resolved
+      }
+    }
+
+    return id === n.id ? n : { ...n, id }
+  })
+
+  const edges = graph.edges.map((e) => ({
+    ...e,
+    from: resolveRef(e.from),
+    to: resolveRef(e.to),
+  }))
+
+  return { ...graph, nodes, edges }
+}
+
+export function validateAiGraph(
+  text: string,
+  options?: {
+    existingNodes?: Array<{ id: string; name: string }>
+    customNodeTypes?: CustomNodeTypeDefinition[]
+    customRelationTypes?: CustomRelationTypeDefinition[]
+  },
+): AiGraphOutput {
   const raw = parseAiJson(text)
-  const normalized = normalizeAiGraphRaw(raw)
+  const normalized = normalizeAiGraphRaw(raw, {
+    customNodeTypes: options?.customNodeTypes,
+    customRelationTypes: options?.customRelationTypes,
+  })
   const result = aiGraphSchema.safeParse(normalized)
 
   if (!result.success) {
@@ -244,10 +331,12 @@ export function validateAiGraph(text: string): AiGraphOutput {
   }
 
   if (result.data.nodes.length === 0 && result.data.edges.length === 0) {
-    throw new Error('AI 未生成任何节点或连线，请换一种描述重试')
+    throw new Error('AI 未返回任何节点或连线变更，请换一种描述重试')
   }
 
-  return result.data
+  return options?.existingNodes?.length
+    ? resolveAiGraphAgainstCanvas(result.data, options.existingNodes)
+    : result.data
 }
 
 export const aiSpawnNodeSchema = z.object({

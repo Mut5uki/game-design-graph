@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import ReactMarkdown from 'react-markdown'
-import { getNodeMeta, getListContentNodeTypes, RELATION_TYPES } from '@/domain/templates/nodeTemplates'
-import type { DesignEdge, DesignNode } from '@/domain/types'
+import { getListContentNodeTypes, getRelationTypes } from '@/domain/templates/nodeTemplates'
+import type { DesignEdge, DesignNode, NodeType } from '@/domain/types'
 import { COMMENT_COLOR_PRESETS, getCommentSize } from '@/domain/group/commentBlock'
 import {
   createListItem,
@@ -10,7 +10,7 @@ import {
 } from '@/domain/list/listBlock'
 import { useEditorStore } from '@/store/editorStore'
 import { Button, Input, Label, Select, Textarea } from '@/components/ui/primitives'
-import { parseTagsInput, tagsToString } from '@/lib/utils'
+import { createDefaultNodeFields, parseTagsInput, tagsToString } from '@/lib/utils'
 
 function CommentBlockProperties({ node }: { node: DesignNode }) {
   const updateNode = useEditorStore((s) => s.updateNode)
@@ -177,8 +177,20 @@ function ListBlockProperties({ node }: { node: DesignNode }) {
 function NodeProperties({ node }: { node: DesignNode }) {
   const updateNode = useEditorStore((s) => s.updateNode)
   const updateNodeFields = useEditorStore((s) => s.updateNodeFields)
-  const meta = getNodeMeta(node.type)
+  const customNodeTypes = useEditorStore((s) => s.project?.settings.customNodeTypes)
+  const typeOptions = useMemo(() => getListContentNodeTypes(), [customNodeTypes])
   const desc = String(node.fields.description ?? '')
+
+  const changeNodeType = (nextType: string) => {
+    if (nextType === node.type) return
+    updateNode(node.id, {
+      type: nextType as NodeType,
+      fields: {
+        ...createDefaultNodeFields(nextType as NodeType),
+        description: node.fields.description ?? '',
+      },
+    })
+  }
 
   return (
     <div className="space-y-3">
@@ -195,7 +207,11 @@ function NodeProperties({ node }: { node: DesignNode }) {
       </div>
       <div>
         <Label>类型</Label>
-        <Input value={meta.label} readOnly className="bg-gray-50" />
+        <Select value={node.type} onChange={(e) => changeNodeType(e.target.value)}>
+          {typeOptions.map((t) => (
+            <option key={t.type} value={t.type}>{t.label}</option>
+          ))}
+        </Select>
       </div>
       <div>
         <Label>描述</Label>
@@ -304,6 +320,12 @@ function NodeProperties({ node }: { node: DesignNode }) {
 function EdgeProperties({ edge, nodes }: { edge: DesignEdge; nodes: DesignNode[] }) {
   const updateEdge = useEditorStore((s) => s.updateEdge)
   const deleteEdge = useEditorStore((s) => s.deleteEdge)
+  const customRelationTypes = useEditorStore((s) => s.project?.settings.customRelationTypes)
+  const relationColorOverrides = useEditorStore((s) => s.project?.settings.relationTypeColorOverrides)
+  const relationTypes = useMemo(
+    () => getRelationTypes(),
+    [customRelationTypes, relationColorOverrides],
+  )
   const fromName = nodes.find((n) => n.id === edge.from)?.name ?? edge.from
   const toName = nodes.find((n) => n.id === edge.to)?.name ?? edge.to
 
@@ -323,7 +345,7 @@ function EdgeProperties({ edge, nodes }: { edge: DesignEdge; nodes: DesignNode[]
           value={edge.relationType}
           onChange={(e) => updateEdge(edge.id, { relationType: e.target.value as DesignEdge['relationType'] })}
         >
-          {RELATION_TYPES.map((r) => (
+          {relationTypes.map((r) => (
             <option key={r.type} value={r.type}>{r.label}</option>
           ))}
         </Select>
