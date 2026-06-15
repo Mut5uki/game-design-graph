@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   ReactFlow,
   Background,
@@ -21,6 +21,9 @@ import { useEditorStore } from '@/store/editorStore'
 import { Button } from '@/components/ui/primitives'
 import { getNodeMeta } from '@/domain/templates/nodeTemplates'
 import { buildFlowEdges, buildFlowNodes } from '@/lib/flowNodes'
+import { ContextMenu } from '@/components/ui/ContextMenu'
+import { AiSelectionModal } from '@/components/panels/AiSelectionModal'
+import { useCanvasContextMenu } from './useCanvasContextMenu'
 import type { DesignNodeData } from './DesignNode'
 import type { CommentBlockData } from './CommentBlockNode'
 
@@ -30,6 +33,7 @@ const edgeTypes = { design: DesignFlowEdge }
 function CanvasInner() {
   const reactFlow = useReactFlow()
   const {
+    project,
     nodes,
     edges,
     canvas,
@@ -48,7 +52,18 @@ function CanvasInner() {
     autoLayout,
     addNode,
     wrapNodesInComment,
+    applyAiPatch,
   } = useEditorStore()
+
+  const [aiModalOpen, setAiModalOpen] = useState(false)
+
+  const {
+    menu,
+    menuItems,
+    closeMenu,
+    onNodeContextMenu,
+    onPaneContextMenu,
+  } = useCanvasContextMenu(() => setAiModalOpen(true))
 
   const nodeNames = useMemo(() => new Map(nodes.map((n) => [n.id, n.name])), [nodes])
 
@@ -158,6 +173,9 @@ function CanvasInner() {
         onConnect={onConnect}
         onSelectionChange={onSelectionChange}
         onMoveEnd={onMoveEnd}
+        onNodeContextMenu={onNodeContextMenu}
+        onPaneContextMenu={onPaneContextMenu}
+        nodeClickDistance={12}
         selectionOnDrag
         selectionMode={SelectionMode.Partial}
         panOnDrag={[1, 2]}
@@ -243,10 +261,25 @@ function CanvasInner() {
             )}
           </div>
           <p className="text-[10px] text-gray-400 bg-white/80 px-2 py-0.5 rounded border border-gray-100">
-            拖节点进区块自动编组 · 拖出区块外解除 · 选中区块可缩放
+            右键菜单 · Ctrl+C/V 复制粘贴 · 拖节点进区块自动编组
           </p>
         </Panel>
       </ReactFlow>
+
+      {menu && <ContextMenu x={menu.x} y={menu.y} items={menuItems} onClose={closeMenu} />}
+
+      {project && (
+        <AiSelectionModal
+          open={aiModalOpen}
+          onOpenChange={setAiModalOpen}
+          project={project}
+          selectedNodes={nodes.filter(
+            (n) => selectedNodeIds.includes(n.id) && !isCommentBlock(n),
+          )}
+          allNodeIds={nodes.map((n) => n.id)}
+          onApply={applyAiPatch}
+        />
+      )}
     </div>
   )
 }

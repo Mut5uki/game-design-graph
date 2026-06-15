@@ -43,6 +43,8 @@ export function EditorPage() {
     setImpactAnalysis,
     duplicateNodes,
     deleteNodes,
+    copySelection,
+    pasteSelection,
     nodes,
     selectNodes,
   } = useEditorStore()
@@ -88,11 +90,19 @@ export function EditorPage() {
             selectNodes(nodes.map((n) => n.id))
           }
         }
+        if (e.key === 'c' || e.key === 'C') {
+          e.preventDefault()
+          if (editorView === 'canvas' && selectedNodeIds.length) copySelection()
+        }
+        if (e.key === 'v' || e.key === 'V') {
+          e.preventDefault()
+          if (editorView === 'canvas') pasteSelection()
+        }
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [selectedNodeIds, deleteNodes, duplicateNodes, editorView, nodes, selectNodes])
+  }, [selectedNodeIds, deleteNodes, duplicateNodes, copySelection, pasteSelection, editorView, nodes, selectNodes])
 
   const handleAddNode = (type: NodeType) => {
     const node = addNode(type, { x: 150 + Math.random() * 200, y: 150 + Math.random() * 200 })
@@ -238,7 +248,7 @@ export function EditorPage() {
             {issueCount} 个问题
           </button>
         )}
-        <span className="ml-auto text-gray-400">Ctrl+A 全选 · 框选 · Shift 追加 · Delete 删除 · Ctrl+D 复制</span>
+        <span className="ml-auto text-gray-400">Ctrl+C/V 复制粘贴 · 右键菜单 · Ctrl+A 全选 · Delete 删除</span>
       </footer>
 
       <Modal

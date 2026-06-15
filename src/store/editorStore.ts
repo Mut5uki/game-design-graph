@@ -23,6 +23,11 @@ import {
 } from '@/db/repositories'
 import { createDefaultNodeFields, createNodeId, debounce, generateId } from '@/lib/utils'
 import {
+  buildClipboardFromSelection,
+  getGraphClipboard,
+  setGraphClipboard,
+} from '@/lib/graphClipboard'
+import {
   COMMENT_DEFAULT_HEIGHT,
   COMMENT_DEFAULT_WIDTH,
   COMMENT_HEADER_HEIGHT,
@@ -76,6 +81,9 @@ interface EditorState {
   updateNodeFields: (id: string, fields: Record<string, unknown>) => void
   deleteNodes: (ids: string[]) => void
   duplicateNodes: (ids: string[]) => void
+  copySelection: () => void
+  pasteSelection: () => void
+  canPaste: () => boolean
 
   addEdge: (from: string, to: string, relationType: RelationType) => DesignEdge | null
   updateEdge: (id: string, patch: Partial<DesignEdge>) => void
@@ -375,6 +383,72 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       nodes: nextNodes,
       selectedNodeIds: copies.map((n) => n.id),
       validationIssues: validateGraph(nextNodes, edges),
+      saveStatus: 'unsaved',
+    })
+    get().persist()
+  },
+
+  copySelection: () => {
+    const { nodes, edges, selectedNodeIds } = get()
+    const data = buildClipboardFromSelection(nodes, edges, selectedNodeIds)
+    if (data) setGraphClipboard(data)
+  },
+
+  canPaste: () => Boolean(getGraphClipboard()?.nodes.length),
+
+  pasteSelection: () => {
+    const clip = getGraphClipboard()
+    const { project, canvas, nodes, edges } = get()
+    if (!clip?.nodes.length || !project || !canvas) return
+
+    pushHistory(nodes, edges)
+    const offset = 40
+    const idMap = new Map<string, string>()
+    const existingIds = new Set(nodes.map((n) => n.id))
+    const now = Date.now()
+
+    for (const n of clip.nodes) {
+      const newId = createNodeId(n.type, n.name.replace(/ \(副本\)$/, ''), existingIds)
+      existingIds.add(newId)
+      idMap.set(n.id, newId)
+    }
+
+    const newNodes: DesignNode[] = clip.nodes.map((n) => {
+      const newParentId =
+        n.parentGroupId && idMap.has(n.parentGroupId) ? idMap.get(n.parentGroupId) : undefined
+      const pos = newParentId
+        ? { x: n.position.x, y: n.position.y }
+        : { x: n.position.x + offset, y: n.position.y + offset }
+      return {
+        ...structuredClone(n),
+        id: idMap.get(n.id)!,
+        projectId: project.id,
+        canvasId: canvas.id,
+        position: pos,
+        parentGroupId: newParentId,
+        createdAt: now,
+        updatedAt: now,
+      }
+    })
+
+    const newEdges: DesignEdge[] = clip.edges.map((e) => ({
+      ...structuredClone(e),
+      id: generateId('edge'),
+      from: idMap.get(e.from)!,
+      to: idMap.get(e.to)!,
+      projectId: project.id,
+      canvasId: canvas.id,
+      createdAt: now,
+      updatedAt: now,
+    }))
+
+    const nextNodes = [...nodes, ...newNodes]
+    const nextEdges = [...edges, ...newEdges]
+    set({
+      nodes: nextNodes,
+      edges: nextEdges,
+      selectedNodeIds: newNodes.map((n) => n.id),
+      validationIssues: validateGraph(nextNodes, nextEdges),
       saveStatus: 'unsaved',
     })
     get().persist()
