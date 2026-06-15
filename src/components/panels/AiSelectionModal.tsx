@@ -146,6 +146,7 @@ export function AiSelectionModal({
           data={preview}
           existingNodeIds={allNodeIds}
           existingEdgeIds={allEdgeIds}
+          nodeNameById={new Map(allNodes.map((n) => [n.id, n.name]))}
           onApply={(patch) => {
             onApply(patch)
             setPreview(null)

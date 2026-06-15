@@ -10,6 +10,8 @@ interface AiPreviewModalProps {
   data: AiGraphOutput
   existingNodeIds?: string[]
   existingEdgeIds?: string[]
+  /** 用于在预览连线时显示中文名称 */
+  nodeNameById?: Map<string, string>
   onApply: (patch: AiGraphOutput) => void
 }
 
@@ -19,10 +21,22 @@ export function AiPreviewModal({
   data,
   existingNodeIds = [],
   existingEdgeIds = [],
+  nodeNameById,
   onApply,
 }: AiPreviewModalProps) {
   const existingNodeSet = useMemo(() => new Set(existingNodeIds), [existingNodeIds])
   const existingEdgeSet = useMemo(() => new Set(existingEdgeIds), [existingEdgeIds])
+
+  const previewNameById = useMemo(() => {
+    const map = new Map(nodeNameById)
+    for (const n of data.nodes) map.set(n.id, n.name)
+    return map
+  }, [nodeNameById, data.nodes])
+
+  const formatNodeRef = (id: string) => {
+    const name = previewNameById.get(id)
+    return name ? `「${name}」(${id})` : id
+  }
 
   const [selectedNodes, setSelectedNodes] = useState(() => new Set(data.nodes.map((n) => n.id)))
   const [selectedEdges, setSelectedEdges] = useState(() =>
@@ -112,8 +126,8 @@ export function AiPreviewModal({
                   className="flex items-center gap-2 text-sm py-1 px-2 rounded hover:bg-gray-50 cursor-pointer"
                 >
                   <input type="checkbox" checked={selectedEdges.has(key)} onChange={() => toggleEdge(key)} />
-                  <span className="font-mono text-xs text-gray-600 flex-1">
-                    {e.from} → {e.to} ({getRelationLabel(e.relationType)})
+                  <span className="text-xs text-gray-600 flex-1">
+                    {formatNodeRef(e.from)} → {formatNodeRef(e.to)} ({getRelationLabel(e.relationType)})
                     {e.label ? ` · ${e.label}` : ''}
                   </span>
                   <span

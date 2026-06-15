@@ -253,46 +253,42 @@ export function resolveAiGraphAgainstCanvas(
   graph: AiGraphOutput,
   existingNodes: Array<{ id: string; name: string }>,
 ): AiGraphOutput {
-  if (!existingNodes.length) return graph
-
-  const idSet = new Set(existingNodes.map((n) => n.id))
-  const nameToId = new Map<string, string>()
+  const existingIds = new Set(existingNodes.map((n) => n.id))
+  const existingNameToId = new Map<string, string>()
   for (const n of existingNodes) {
     const name = n.name.trim()
-    if (name) nameToId.set(name, n.id)
+    if (name) existingNameToId.set(name, n.id)
   }
 
-  const hasChinese = (s: string) => /[\u4e00-\u9fff]/.test(s)
+  const patchIds = new Set<string>()
+  const patchNameToId = new Map<string, string>()
+  for (const n of graph.nodes) {
+    const id = n.id.trim()
+    const name = n.name.trim()
+    patchIds.add(id)
+    if (name) patchNameToId.set(name, id)
+  }
 
   const resolveRef = (ref: string): string => {
     const trimmed = ref.trim()
     if (!trimmed) return ref
-    if (idSet.has(trimmed)) return trimmed
-    const byName = nameToId.get(trimmed)
-    if (byName) return byName
-    if (hasChinese(trimmed)) {
-      for (const [name, id] of nameToId) {
-        if (name.includes(trimmed) || trimmed.includes(name)) return id
-      }
-    }
+    if (existingIds.has(trimmed) || patchIds.has(trimmed)) return trimmed
+
+    const patchId = patchNameToId.get(trimmed)
+    if (patchId) return patchId
+
+    const existingId = existingNameToId.get(trimmed)
+    if (existingId) return existingId
+
     return ref
   }
 
   const nodes = graph.nodes.map((n) => {
-    let id = n.id.trim()
     const name = n.name.trim()
+    let id = n.id.trim()
 
-    if (!idSet.has(id)) {
-      if (name && nameToId.has(name)) {
-        id = nameToId.get(name)!
-      } else if (hasChinese(id) && nameToId.has(id)) {
-        id = nameToId.get(id)!
-      } else if (name && id === name && nameToId.has(name)) {
-        id = nameToId.get(name)!
-      } else if (hasChinese(id)) {
-        const resolved = resolveRef(id)
-        if (idSet.has(resolved)) id = resolved
-      }
+    if (!existingIds.has(id) && name && existingNameToId.has(name)) {
+      id = existingNameToId.get(name)!
     }
 
     return id === n.id ? n : { ...n, id }

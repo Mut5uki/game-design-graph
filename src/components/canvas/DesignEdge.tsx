@@ -14,6 +14,11 @@ export interface DesignEdgeData {
   relationType: string
   label?: string
   edgeId?: string
+  sourceDx?: number
+  sourceDy?: number
+  targetDx?: number
+  targetDy?: number
+  curvature?: number
   [key: string]: unknown
 }
 
@@ -44,12 +49,13 @@ function DesignEdgeComponent(props: EdgeProps) {
   const [editing, setEditing] = useState(false)
 
   const [edgePath, labelX, labelY] = getBezierPath({
-    sourceX,
-    sourceY,
+    sourceX: sourceX + (edgeData?.sourceDx ?? 0),
+    sourceY: sourceY + (edgeData?.sourceDy ?? 0),
     sourcePosition,
-    targetX,
-    targetY,
+    targetX: targetX + (edgeData?.targetDx ?? 0),
+    targetY: targetY + (edgeData?.targetDy ?? 0),
     targetPosition,
+    curvature: edgeData?.curvature ?? 0.25,
   })
 
   const relationType = edgeData?.relationType ?? 'requires'
@@ -70,7 +76,7 @@ function DesignEdgeComponent(props: EdgeProps) {
         id={id}
         path={edgePath}
         markerEnd={markerEnd}
-        interactionWidth={48}
+        interactionWidth={36}
         style={{
           strokeLinejoin: 'round',
           strokeLinecap: 'round',

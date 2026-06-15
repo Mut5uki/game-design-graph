@@ -48,6 +48,10 @@ export function AiPanel({ onOpenSettings }: AiPanelProps) {
     () => nodes.map((n) => ({ id: n.id, name: n.name })),
     [nodes],
   )
+  const nodeNameById = useMemo(
+    () => new Map(nodes.map((n) => [n.id, n.name])),
+    [nodes],
+  )
 
   const customNodeTypes = project?.settings.customNodeTypes
   const customRelationTypes = project?.settings.customRelationTypes
@@ -232,8 +236,9 @@ export function AiPanel({ onOpenSettings }: AiPanelProps) {
           data={preview}
           existingNodeIds={existingNodeIds}
           existingEdgeIds={edges.map((e) => e.id)}
+          nodeNameById={nodeNameById}
           onApply={(patch) => {
-            applyAiPatch(patch)
+            applyAiPatch(patch, { anchorNodeIds: selectedNodeIds })
             setPreview(null)
           }}
         />

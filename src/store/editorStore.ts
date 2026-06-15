@@ -27,6 +27,11 @@ import {
 import { createDefaultNodeFields, createNodeId, debounce, generateId } from '@/lib/utils'
 import { resolveDefaultEdgeHandles } from '@/lib/edgeHandles'
 import {
+  computeSpawnNearAnchor,
+  getNodeAbsolutePosition,
+  isUnsetNodePosition,
+} from '@/lib/spawnPosition'
+import {
   buildClipboardFromSelection,
   getGraphClipboard,
   setGraphClipboard,
@@ -62,6 +67,11 @@ export interface GraphSnapshot {
 export interface AiGraphPatchInput {
   nodes: AiGraphOutput['nodes']
   edges: AiGraphOutput['edges']
+}
+
+export interface ApplyAiPatchOptions {
+  /** 新节点默认生成在这些节点旁边（如画布选中项） */
+  anchorNodeIds?: string[]
 }
 
 interface EditorState {
@@ -128,7 +138,7 @@ interface EditorState {
   setViewport: (viewport: Canvas['viewport']) => void
   autoLayout: () => void
 
-  applyAiPatch: (patch: AiGraphPatchInput) => void
+  applyAiPatch: (patch: AiGraphPatchInput, opts?: ApplyAiPatchOptions) => void
   runValidation: () => ValidationIssue[]
   computeImpactForSelection: () => void
   focusNode: (id: string) => void
@@ -881,7 +891,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     get().persist()
   },
 
-  applyAiPatch: (patch) => {
+  applyAiPatch: (patch, opts) => {
     const { project, canvas, nodes, edges } = get()
     if (!project || !canvas) return
     pushHistory(nodes, edges)
@@ -896,16 +906,18 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       const existing = existingById.get(n.id)
       if (existing) {
         const idx = mergedNodes.findIndex((x) => x.id === n.id)
+        const nextPosition =
+          existing && isUnsetNodePosition(n.position) ? existing.position : (n.position ?? existing.position)
         mergedNodes[idx] = {
           ...existing,
           type: (n.type as NodeType) || existing.type,
           name: n.name ?? existing.name,
           fields: { ...existing.fields, ...n.fields },
-          position: n.position ?? existing.position,
+          position: nextPosition,
           updatedAt: now,
         }
       } else {
-        if (!n.position) needsPosition.add(n.id)
+        if (isUnsetNodePosition(n.position)) needsPosition.add(n.id)
         const created: DesignNode = {
           id: n.id,
           projectId: project.id,
@@ -913,7 +925,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
           type: n.type as NodeType,
           name: n.name,
           fields: { ...createDefaultNodeFields(n.type as NodeType), ...n.fields },
-          position: n.position ?? { x: 0, y: 0 },
+          position: isUnsetNodePosition(n.position) ? { x: 0, y: 0 } : n.position!,
           createdAt: now,
           updatedAt: now,
         }
@@ -924,9 +936,19 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
     if (needsPosition.size > 0) {
       const nodeMap = new Map(mergedNodes.map((n) => [n.id, n]))
-      let fallback = { x: 120, y: 120 }
-      const firstExisting = mergedNodes.find((n) => !needsPosition.has(n.id))
-      if (firstExisting) fallback = { ...firstExisting.position }
+      const anchorCandidates = (opts?.anchorNodeIds ?? []).filter((id) => {
+        const n = nodeMap.get(id)
+        return n && !needsPosition.has(id)
+      })
+      let defaultAnchor = { x: 120, y: 120 }
+      if (anchorCandidates.length > 0) {
+        defaultAnchor = getNodeAbsolutePosition(nodeMap.get(anchorCandidates[0])!, mergedNodes)
+      } else {
+        const firstExisting = mergedNodes.find((n) => !needsPosition.has(n.id))
+        if (firstExisting) {
+          defaultAnchor = getNodeAbsolutePosition(firstExisting, mergedNodes)
+        }
+      }
 
       let offset = 0
       for (const id of needsPosition) {
@@ -934,17 +956,19 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         if (!node) continue
 
         const link = patch.edges.find((e) => e.from === id || e.to === id)
-        let anchor = fallback
+        let anchor = defaultAnchor
         if (link) {
           const otherId = link.from === id ? link.to : link.from
           const other = nodeMap.get(otherId)
-          if (other && !needsPosition.has(otherId)) anchor = other.position
+          if (other && !needsPosition.has(otherId)) {
+            anchor = getNodeAbsolutePosition(other, mergedNodes)
+          }
+        } else if (anchorCandidates.length > 0) {
+          const anchorNode = nodeMap.get(anchorCandidates[0]!)
+          if (anchorNode) anchor = getNodeAbsolutePosition(anchorNode, mergedNodes)
         }
 
-        node.position = {
-          x: anchor.x + 280 + (offset % 2) * 48,
-          y: anchor.y + Math.floor(offset / 2) * 96,
-        }
+        node.position = computeSpawnNearAnchor(anchor, offset)
         offset++
       }
     }

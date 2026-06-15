@@ -56,6 +56,22 @@ export function ConnectionSpawnMenu({
     })
   }, [nodes, trimmedName, sourceNodeId])
 
+  const hasExactNameMatch = useMemo(() => {
+    if (!trimmedName) return false
+    const q = trimmedName.toLowerCase()
+    return nodes.some((n) => n.id !== sourceNodeId && n.type !== 'group' && n.name.toLowerCase() === q)
+  }, [nodes, trimmedName, sourceNodeId])
+
+  const { exactCandidates, similarCandidates } = useMemo(() => {
+    if (!trimmedName) {
+      return { exactCandidates: candidates, similarCandidates: [] as DesignNode[] }
+    }
+    const q = trimmedName.toLowerCase()
+    const exact = candidates.filter((n) => n.name.toLowerCase() === q)
+    const similar = candidates.filter((n) => n.name.toLowerCase() !== q)
+    return { exactCandidates: exact, similarCandidates: similar }
+  }, [candidates, trimmedName])
+
   useEffect(() => {
     inputRef.current?.focus()
   }, [])
@@ -185,31 +201,67 @@ export function ConnectionSpawnMenu({
         </div>
       )}
 
+      {trimmedName && !hasExactNameMatch && (
+        <p className="px-3 pt-1 text-[10px] text-sky-600">
+          画布上没有名为「{trimmedName}」的节点，请用下方 AI 补全或空白创建
+        </p>
+      )}
+
       <div className="max-h-[160px] overflow-y-auto py-1">
-        {candidates.length === 0 ? (
+        {exactCandidates.length === 0 && similarCandidates.length === 0 ? (
           <p className="px-3 py-2 text-xs text-gray-400">
-            {trimmedName ? '没有匹配的现有节点' : '没有可连接的节点'}
+            {trimmedName ? '没有名称完全匹配的现有节点' : '没有可连接的节点'}
           </p>
         ) : (
-          candidates.map((n) => {
-            const meta = getNodeMeta(n.type)
-            return (
-              <button
-                key={n.id}
-                type="button"
-                disabled={aiLoading}
-                className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-left hover:bg-gray-50 disabled:opacity-50"
-                onClick={() => onConnectExisting(n.id, relationType)}
-              >
-                <span
-                  className="w-2 h-2 rounded-full shrink-0"
-                  style={{ backgroundColor: meta.color }}
-                />
-                <span className="text-xs text-gray-400 shrink-0">{meta.label}</span>
-                <span className="truncate text-gray-800">{n.name}</span>
-              </button>
-            )
-          })
+          <>
+            {exactCandidates.map((n) => {
+              const meta = getNodeMeta(n.type)
+              return (
+                <button
+                  key={n.id}
+                  type="button"
+                  disabled={aiLoading}
+                  className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-left hover:bg-gray-50 disabled:opacity-50"
+                  onClick={() => onConnectExisting(n.id, relationType)}
+                >
+                  <span
+                    className="w-2 h-2 rounded-full shrink-0"
+                    style={{ backgroundColor: meta.color }}
+                  />
+                  <span className="text-xs text-gray-400 shrink-0">{meta.label}</span>
+                  <span className="truncate text-gray-800">{n.name}</span>
+                </button>
+              )
+            })}
+            {similarCandidates.length > 0 && (
+              <>
+                <p className="px-3 pt-2 pb-0.5 text-[10px] text-amber-600">
+                  {trimmedName
+                    ? '以下为名称相似的已有节点（不会自动创建新块）'
+                    : '其它可连接节点'}
+                </p>
+                {similarCandidates.map((n) => {
+                  const meta = getNodeMeta(n.type)
+                  return (
+                    <button
+                      key={n.id}
+                      type="button"
+                      disabled={aiLoading}
+                      className="w-full flex items-center gap-2 px-3 py-1.5 text-sm text-left hover:bg-amber-50/60 disabled:opacity-50"
+                      onClick={() => onConnectExisting(n.id, relationType)}
+                    >
+                      <span
+                        className="w-2 h-2 rounded-full shrink-0"
+                        style={{ backgroundColor: meta.color }}
+                      />
+                      <span className="text-xs text-gray-400 shrink-0">{meta.label}</span>
+                      <span className="truncate text-gray-800">{n.name}</span>
+                    </button>
+                  )
+                })}
+              </>
+            )}
+          </>
         )}
       </div>
 

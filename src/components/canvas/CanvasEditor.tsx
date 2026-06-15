@@ -19,6 +19,7 @@ import {
 import '@xyflow/react/dist/style.css'
 import type { NodeType, RelationType } from '@/domain/types'
 import { isCommentBlock, nodeAbsolutePosition, getCommentColor } from '@/domain/group/commentBlock'
+import { computeSpawnBesideNode } from '@/lib/spawnPosition'
 import { DesignFlowNode } from './DesignNode'
 import { CommentBlockNode } from './CommentBlockNode'
 import { DesignFlowEdge } from './DesignEdge'
@@ -188,8 +189,8 @@ function CanvasInner() {
   }, [storeFlowNodes, setFlowNodes])
 
   const flowEdges = useMemo(
-    () => buildFlowEdges(edges, nodes, selectedEdgeId),
-    [edges, nodes, selectedEdgeId],
+    () => buildFlowEdges(edges, nodes, selectedEdgeId, hoveredEdgeId),
+    [edges, nodes, selectedEdgeId, hoveredEdgeId],
   )
 
   const onConnectStart = useCallback(() => {
@@ -262,10 +263,13 @@ function CanvasInner() {
   const handleCreateAndConnect = useCallback(
     (type: NodeType, relationType: RelationType, name?: string) => {
       if (!connectionMenu || type === 'group') return
-      const pos = {
-        x: connectionMenu.flowPosition.x - 100,
-        y: connectionMenu.flowPosition.y - 36,
-      }
+      const source = nodes.find((n) => n.id === connectionMenu.sourceNodeId)
+      const pos = source
+        ? computeSpawnBesideNode(source, nodes)
+        : {
+            x: connectionMenu.flowPosition.x - 100,
+            y: connectionMenu.flowPosition.y - 36,
+          }
       const created = addNode(type, pos, name ? { name } : undefined)
       if (created) {
         addEdge(connectionMenu.sourceNodeId, created.id, relationType)
@@ -274,7 +278,7 @@ function CanvasInner() {
       }
       setConnectionMenu(null)
     },
-    [connectionMenu, addNode, addEdge, autoAssignGroupsAfterMove, selectNode],
+    [connectionMenu, nodes, addNode, addEdge, autoAssignGroupsAfterMove, selectNode],
   )
 
   const handleCreateWithAi = useCallback(
@@ -318,10 +322,12 @@ function CanvasInner() {
         },
       })
 
-      const pos = {
-        x: connectionMenu.flowPosition.x - 100,
-        y: connectionMenu.flowPosition.y - 36,
-      }
+      const pos = source
+        ? computeSpawnBesideNode(source, nodes)
+        : {
+            x: connectionMenu.flowPosition.x - 100,
+            y: connectionMenu.flowPosition.y - 36,
+          }
       const created = addNode(type, pos, { name: aiResult.name, fields: aiResult.fields })
       if (created) {
         addEdge(connectionMenu.sourceNodeId, created.id, relationType)
@@ -549,9 +555,10 @@ function CanvasInner() {
       const nodeId = (e as CustomEvent<{ nodeId: string }>).detail.nodeId
       const node = nodes.find((n) => n.id === nodeId)
       if (node) {
+        const abs = nodeAbsolutePosition(node, nodes)
         const offsetX = isCommentBlock(node) ? 210 : 110
         const offsetY = isCommentBlock(node) ? 150 : 36
-        reactFlow.setCenter(node.position.x + offsetX, node.position.y + offsetY, {
+        reactFlow.setCenter(abs.x + offsetX, abs.y + offsetY, {
           zoom: 1.2,
           duration: 300,
         })
@@ -758,7 +765,7 @@ function CanvasInner() {
             })}
           allNodeIds={nodes.map((n) => n.id)}
           allEdgeIds={edges.map((e) => e.id)}
-          onApply={applyAiPatch}
+          onApply={(patch) => applyAiPatch(patch, { anchorNodeIds: selectedNodeIds })}
         />
       )}
     </div>
