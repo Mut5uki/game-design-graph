@@ -47,3 +47,33 @@ body {
 .react-flow__node-design.selected {
   z-index: 2 !important;
 }
+
+.react-flow__node-design.dragging {
+  z-index: 3 !important;
+}
+
+/* 连线端口：略大于视觉，但不撑大选中框 */
+.gdg-handle {
+  width: 10px !important;
+  height: 10px !important;
+  background: #d1d5db !important;
+  border: 2px solid #fff !important;
+}
+
+.gdg-handle-target {
+  left: -5px !important;
+}
+
+.gdg-handle-source {
+  right: -5px !important;
+}
+
+/* 选中框贴合节点实际尺寸 */
+.react-flow__node-design .react-flow__node-default,
+.react-flow__node-design {
+  outline: none;
+}
+
+.react-flow__nodesselection-rect {
+  border-radius: 8px;
+}

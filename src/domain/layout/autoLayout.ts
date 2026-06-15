@@ -1,8 +1,10 @@
 import dagre from 'dagre'
 import type { DesignEdge, DesignNode } from '../types'
 
-const NODE_WIDTH = 220
-const NODE_HEIGHT = 72
+import { DESIGN_NODE_LAYOUT_HEIGHT, DESIGN_NODE_LAYOUT_WIDTH } from '@/components/canvas/DesignNode'
+
+const NODE_WIDTH = DESIGN_NODE_LAYOUT_WIDTH
+const NODE_HEIGHT = DESIGN_NODE_LAYOUT_HEIGHT
 
 export function autoLayout(
   nodes: DesignNode[],

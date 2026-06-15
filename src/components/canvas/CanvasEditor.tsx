@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ReactFlow,
   Background,
@@ -6,8 +6,11 @@ import {
   MiniMap,
   Panel,
   SelectionMode,
+  applyNodeChanges,
+  useNodesState,
   useReactFlow,
   type Connection,
+  type Node,
   type NodeChange,
   type OnSelectionChangeParams,
 } from '@xyflow/react'
@@ -67,10 +70,18 @@ function CanvasInner() {
 
   const nodeNames = useMemo(() => new Map(nodes.map((n) => [n.id, n.name])), [nodes])
 
-  const flowNodes = useMemo(
+  const storeFlowNodes = useMemo(
     () => buildFlowNodes(nodes, edges, nodeNames, impactMap, selectedNodeIds),
     [nodes, edges, nodeNames, impactMap, selectedNodeIds],
   )
+
+  const [flowNodes, setFlowNodes] = useNodesState(storeFlowNodes)
+  const isDraggingRef = useRef(false)
+
+  useEffect(() => {
+    if (isDraggingRef.current) return
+    setFlowNodes(storeFlowNodes)
+  }, [storeFlowNodes, setFlowNodes])
 
   const flowEdges = useMemo(
     () => buildFlowEdges(edges, nodes, selectedEdgeId),
@@ -87,12 +98,19 @@ function CanvasInner() {
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
+      setFlowNodes((current) =>
+        applyNodeChanges(changes, current) as Node<DesignNodeData | CommentBlockData>[],
+      )
+
       const updates: Array<{ id: string; position: { x: number; y: number } }> = []
       const movedIds: string[] = []
 
       for (const change of changes) {
-        if (change.type === 'position' && change.position != null) {
-          if (change.dragging === false) {
+        if (change.type === 'position') {
+          if (change.dragging === true) {
+            isDraggingRef.current = true
+          }
+          if (change.dragging === false && change.position != null) {
             updates.push({ id: change.id, position: change.position })
             movedIds.push(change.id)
           }
@@ -106,14 +124,18 @@ function CanvasInner() {
       }
 
       if (updates.length) {
+        isDraggingRef.current = false
         moveNodes(updates)
-        autoAssignGroupsAfterMove(movedIds.filter((id) => {
+        const assignIds = movedIds.filter((id) => {
           const n = useEditorStore.getState().nodes.find((x) => x.id === id)
           return n && !isCommentBlock(n)
-        }))
+        })
+        if (assignIds.length) {
+          requestAnimationFrame(() => autoAssignGroupsAfterMove(assignIds))
+        }
       }
     },
-    [moveNodes, resizeCommentBlock, autoAssignGroupsAfterMove],
+    [setFlowNodes, moveNodes, resizeCommentBlock, autoAssignGroupsAfterMove],
   )
 
   const onSelectionChange = useCallback(
@@ -175,7 +197,8 @@ function CanvasInner() {
         onMoveEnd={onMoveEnd}
         onNodeContextMenu={onNodeContextMenu}
         onPaneContextMenu={onPaneContextMenu}
-        nodeClickDistance={12}
+        nodeClickDistance={6}
+        autoPanOnNodeDrag
         selectionOnDrag
         selectionMode={SelectionMode.Partial}
         panOnDrag={[1, 2]}

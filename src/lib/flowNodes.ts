@@ -8,7 +8,6 @@ import {
 import type { CommentBlockData } from '@/components/canvas/CommentBlockNode'
 import type { DesignNodeData } from '@/components/canvas/DesignNode'
 import { buildInboundSummary } from '@/components/canvas/DesignNode'
-import { DESIGN_NODE_HEIGHT, DESIGN_NODE_WIDTH } from '@/components/canvas/DesignNode'
 
 export function buildFlowNodes(
   nodes: DesignNode[],
@@ -54,15 +53,12 @@ export function buildFlowNodes(
         nodeType: n.type,
         inboundSummary: buildInboundSummary(n.id, edges, nodeNames),
         impactRole: impactMap.get(n.id),
-        selected,
       },
       draggable: true,
       selectable: true,
       connectable: true,
       selected,
       zIndex: n.parentGroupId ? 1 : 0,
-      width: DESIGN_NODE_WIDTH,
-      height: DESIGN_NODE_HEIGHT,
     }
   })
 }
