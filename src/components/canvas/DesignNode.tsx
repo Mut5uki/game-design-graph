@@ -11,6 +11,7 @@ export interface DesignNodeData {
   nodeType: string
   inboundSummary?: string
   impactRole?: ImpactRole
+  remoteSelectColor?: string
   [key: string]: unknown
 }
 
@@ -52,6 +53,7 @@ function SideHandles({
 function DesignNodeCard({ id, data, selected, dragging }: NodeProps & { data: DesignNodeData }) {
   const meta = getNodeMeta(data.nodeType)
   const impactRole = data.impactRole
+  const remoteColor = data.remoteSelectColor
 
   return (
     <div
@@ -59,12 +61,14 @@ function DesignNodeCard({ id, data, selected, dragging }: NodeProps & { data: De
         'relative rounded-lg border bg-white shadow-sm w-[200px]',
         !dragging && 'transition-[box-shadow,border-color] duration-100',
         selected && 'ring-2 shadow-md',
+        !selected && remoteColor && 'ring-2 ring-offset-1',
         impactRole === 'upstream' && 'bg-blue-50/80',
         impactRole === 'downstream' && 'bg-orange-50/80',
       )}
       style={{
         borderColor: selected ? meta.color : '#E5E7EB',
         ...(selected ? { ringColor: meta.color } : {}),
+        ...(!selected && remoteColor ? { ringColor: remoteColor } : {}),
       }}
     >
       <SideHandles

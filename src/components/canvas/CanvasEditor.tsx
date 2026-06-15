@@ -32,6 +32,7 @@ import { useEditorStore } from '@/store/editorStore'
 import { Button } from '@/components/ui/primitives'
 import { getNodeMeta, getRelationLabel } from '@/domain/templates/nodeTemplates'
 import { buildFlowEdges, buildFlowNodes } from '@/lib/flowNodes'
+import { collectRemoteSelectedNodeIds } from '@/collab/useCollab'
 import { ContextMenu } from '@/components/ui/ContextMenu'
 import { AiSelectionModal } from '@/components/panels/AiSelectionModal'
 import { useCanvasContextMenu } from './useCanvasContextMenu'
@@ -81,6 +82,7 @@ function CanvasInner() {
     selectedNodeIds,
     selectedEdgeId,
     impactMap,
+    collabPeers,
     moveNodes,
     resizeCommentBlock,
     autoAssignGroupsAfterMove,
@@ -175,9 +177,22 @@ function CanvasInner() {
 
   const nodeNames = useMemo(() => new Map(nodes.map((n) => [n.id, n.name])), [nodes])
 
+  const remoteSelectedColors = useMemo(
+    () => collectRemoteSelectedNodeIds(collabPeers),
+    [collabPeers],
+  )
+
   const storeFlowNodes = useMemo(
-    () => buildFlowNodes(nodes, edges, nodeNames, impactMap, selectedNodeIds),
-    [nodes, edges, nodeNames, impactMap, selectedNodeIds],
+    () =>
+      buildFlowNodes(
+        nodes,
+        edges,
+        nodeNames,
+        impactMap,
+        selectedNodeIds,
+        remoteSelectedColors,
+      ),
+    [nodes, edges, nodeNames, impactMap, selectedNodeIds, remoteSelectedColors],
   )
 
   const [flowNodes, setFlowNodes] = useNodesState(storeFlowNodes)

@@ -58,6 +58,19 @@ import {
   syncCustomRelationTypes,
   syncRelationTypeColorOverrides,
 } from '@/domain/templates/relationTypeRegistry'
+import { canvasCollabSession } from '@/collab/CanvasCollabSession'
+import {
+  defaultDisplayName,
+  loadCollabSettings,
+  type CollabPeer,
+  type CollabStatus,
+} from '@/collab/types'
+
+let applyingRemoteCollab = false
+
+export function isApplyingRemoteCollab(): boolean {
+  return applyingRemoteCollab
+}
 
 export interface GraphSnapshot {
   nodes: DesignNode[]
@@ -146,6 +159,14 @@ interface EditorState {
   markUnsaved: () => void
   setSaveStatus: (status: SaveStatus) => void
   persist: () => Promise<void>
+
+  collabEnabled: boolean
+  collabStatus: CollabStatus
+  collabRoomId: string | null
+  collabPeers: CollabPeer[]
+  collabError: string | null
+  startCollab: (roomId: string) => void
+  stopCollab: () => void
 
   addCanvasTab: (name: string) => Promise<Canvas | null>
   renameCanvas: (id: string, name: string) => Promise<void>
@@ -247,6 +268,11 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   impactMap: new Map(),
   searchQuery: '',
   isLoading: false,
+  collabEnabled: false,
+  collabStatus: 'offline',
+  collabRoomId: null,
+  collabPeers: [],
+  collabError: null,
 
   setProject: (project, canvases) => {
     syncCustomNodeTypes(project.settings.customNodeTypes)
@@ -257,6 +283,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   },
 
   loadCanvas: async (canvasId) => {
+    get().stopCollab()
     const { project, canvases } = get()
     if (!project) return
     set({ isLoading: true })
@@ -1052,6 +1079,82 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     } catch {
       set({ saveStatus: 'error' })
     }
+  },
+
+  startCollab: (roomId) => {
+    const { nodes, edges, canvas } = get()
+    if (!canvas) return
+
+    const settings = loadCollabSettings()
+    const displayName = settings.displayName.trim() || defaultDisplayName()
+
+    set({
+      collabEnabled: true,
+      collabRoomId: roomId,
+      collabStatus: 'connecting',
+      collabError: null,
+      collabPeers: [],
+    })
+
+    canvasCollabSession.connect({
+      serverUrl: settings.serverUrl,
+      roomId,
+      displayName,
+      seed: { nodes, edges },
+      callbacks: {
+        onGraphChange: (snapshot) => {
+          applyingRemoteCollab = true
+          const issues = validateGraph(snapshot.nodes, snapshot.edges)
+          set({
+            nodes: snapshot.nodes,
+            edges: snapshot.edges,
+            validationIssues: issues,
+            saveStatus: 'unsaved',
+            selectedNodeIds: [],
+            selectedEdgeId: null,
+            impactMap: new Map(),
+          })
+          applyingRemoteCollab = false
+          void get().persist()
+        },
+        onStatusChange: (status, detail) => {
+          if (status === 'connected') {
+            set({ collabStatus: 'connected', collabError: null })
+            return
+          }
+          if (status === 'connecting') {
+            set({ collabStatus: 'connecting' })
+            return
+          }
+          if (status === 'error') {
+            set({
+              collabStatus: 'error',
+              collabError: detail ?? '协作连接失败',
+              collabEnabled: false,
+            })
+            return
+          }
+          set({
+            collabStatus: 'offline',
+            collabEnabled: false,
+            collabRoomId: null,
+            collabPeers: [],
+          })
+        },
+        onPeersChange: (peers) => set({ collabPeers: peers }),
+      },
+    })
+  },
+
+  stopCollab: () => {
+    canvasCollabSession.disconnect()
+    set({
+      collabEnabled: false,
+      collabRoomId: null,
+      collabStatus: 'offline',
+      collabPeers: [],
+      collabError: null,
+    })
   },
 
   addCanvasTab: async (name) => {

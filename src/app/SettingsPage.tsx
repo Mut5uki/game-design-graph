@@ -3,6 +3,11 @@ import { Link } from 'react-router-dom'
 import { listProjects, updateProject } from '@/db/repositories'
 import { encryptApiKey, maskApiKey } from '@/lib/crypto'
 import type { DeepseekModel, Project } from '@/domain/types'
+import {
+  DEFAULT_COLLAB_SERVER_URL,
+  loadCollabSettings,
+  saveCollabSettings,
+} from '@/collab/types'
 import { Button, Input, Label, Select } from '@/components/ui/primitives'
 
 export function SettingsPage() {
@@ -12,12 +17,18 @@ export function SettingsPage() {
   const [masked, setMasked] = useState('')
   const [model, setModel] = useState<DeepseekModel>('deepseek-chat')
   const [saved, setSaved] = useState(false)
+  const [collabServerUrl, setCollabServerUrl] = useState(DEFAULT_COLLAB_SERVER_URL)
+  const [collabDisplayName, setCollabDisplayName] = useState('')
+  const [collabSaved, setCollabSaved] = useState(false)
 
   useEffect(() => {
     listProjects().then((ps) => {
       setProjects(ps)
       if (ps.length) setSelectedId(ps[0].id)
     })
+    const collab = loadCollabSettings()
+    setCollabServerUrl(collab.serverUrl)
+    setCollabDisplayName(collab.displayName)
   }, [])
 
   useEffect(() => {
@@ -42,6 +53,15 @@ export function SettingsPage() {
     setApiKey('')
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
+  }
+
+  const handleSaveCollab = () => {
+    saveCollabSettings({
+      serverUrl: collabServerUrl.trim() || DEFAULT_COLLAB_SERVER_URL,
+      displayName: collabDisplayName.trim(),
+    })
+    setCollabSaved(true)
+    setTimeout(() => setCollabSaved(false), 2000)
   }
 
   return (
@@ -94,6 +114,35 @@ export function SettingsPage() {
               </Button>
             </>
           )}
+        </section>
+
+        <section id="collab" className="bg-white border border-gray-200 rounded-lg p-6 space-y-4">
+          <h2 className="font-medium text-gray-900">多人协作</h2>
+          <p className="text-xs text-gray-400">
+            协作数据经 WebSocket 同步；DeepSeek API Key 仍仅存本地。需先在本机或服务器运行协作服务（见项目 server/ 目录）。
+          </p>
+          <div>
+            <Label>协作服务器 WebSocket 地址</Label>
+            <Input
+              value={collabServerUrl}
+              onChange={(e) => setCollabServerUrl(e.target.value)}
+              placeholder={DEFAULT_COLLAB_SERVER_URL}
+            />
+          </div>
+          <div>
+            <Label>你的显示名称</Label>
+            <Input
+              value={collabDisplayName}
+              onChange={(e) => setCollabDisplayName(e.target.value)}
+              placeholder="例如：主策划"
+            />
+          </div>
+          <Button variant="primary" onClick={handleSaveCollab}>
+            {collabSaved ? '已保存' : '保存协作设置'}
+          </Button>
+          <p className="text-xs text-gray-500">
+            启动服务：在项目根目录运行 <code className="text-[11px] bg-gray-100 px-1 rounded">npm run collab:server</code>
+          </p>
         </section>
 
         <section className="bg-white border border-gray-200 rounded-lg p-6 space-y-3">

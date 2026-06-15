@@ -20,6 +20,7 @@ export function buildFlowNodes(
   nodeNames: Map<string, string>,
   impactMap: Map<string, ImpactRole>,
   selectedNodeIds: string[],
+  remoteSelectedColors?: Map<string, string>,
 ): Node<DesignNodeData | CommentBlockData | ListBlockData>[] {
   const sorted = sortNodesForFlow(nodes)
 
@@ -80,6 +81,7 @@ export function buildFlowNodes(
         nodeType: n.type,
         inboundSummary: buildInboundSummary(n.id, edges, nodeNames),
         impactRole: impactMap.get(n.id),
+        remoteSelectColor: remoteSelectedColors?.get(n.id),
       },
       draggable: true,
       selectable: true,

@@ -16,6 +16,9 @@ import { Button, Input } from '@/components/ui/primitives'
 import { Modal } from '@/components/ui/Modal'
 import type { NodeType } from '@/domain/types'
 import { cn } from '@/lib/utils'
+import { CollabBar } from '@/components/collab/CollabBar'
+import { useCollabLifecycle, useCollabSync } from '@/collab/useCollab'
+import { buildCollabRoomId } from '@/collab/types'
 
 export function EditorPage() {
   const { projectId, canvasId } = useParams()
@@ -49,6 +52,18 @@ export function EditorPage() {
     nodes,
     selectNodes,
   } = useEditorStore()
+
+  useCollabSync()
+  useCollabLifecycle()
+
+  useEffect(() => {
+    if (!projectId || !canvasId || isLoading) return
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('collab') !== '1') return
+    const { collabEnabled, startCollab } = useEditorStore.getState()
+    if (collabEnabled) return
+    startCollab(buildCollabRoomId(projectId, canvasId))
+  }, [projectId, canvasId, isLoading])
 
   useEffect(() => {
     if (!projectId) return
@@ -158,6 +173,7 @@ export function EditorPage() {
           </button>
         </div>
         <SearchBar />
+        {projectId && canvasId && <CollabBar projectId={projectId} canvasId={canvasId} />}
         {selectedNodeIds.length > 1 && (
           <Button
             size="sm"

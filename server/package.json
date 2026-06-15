@@ -1,0 +1,17 @@
+{
+  "name": "gdg-collab-server",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts"
+  },
+  "dependencies": {
+    "@hocuspocus/server": "^2.15.2"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.3",
+    "typescript": "~5.8.3"
+  }
+}
