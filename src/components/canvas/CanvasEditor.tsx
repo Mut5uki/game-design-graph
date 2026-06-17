@@ -36,6 +36,7 @@ import { collectRemoteSelectedNodeIds } from '@/collab/useCollab'
 import { ContextMenu } from '@/components/ui/ContextMenu'
 import { AiSelectionModal } from '@/components/panels/AiSelectionModal'
 import { useCanvasContextMenu } from './useCanvasContextMenu'
+import { ExportCanvasPngButton, CanvasPngExportRegistrar } from './ExportCanvasPngButton'
 import type { DesignEdgeData } from './DesignEdge'
 import type { DesignNodeData } from './DesignNode'
 import type { CommentBlockData } from './CommentBlockNode'
@@ -592,6 +593,7 @@ function CanvasInner() {
 
   return (
     <div className="w-full h-full bg-[#F7F8FA]">
+      <CanvasPngExportRegistrar />
       <ReactFlow
         nodes={flowNodes}
         edges={flowEdges}
@@ -683,6 +685,7 @@ function CanvasInner() {
         <Panel position="top-left" className="flex flex-col gap-1 m-2 max-w-md">
           <div className="flex flex-wrap gap-2">
             <Button size="sm" onClick={autoLayout}>自动布局</Button>
+            <ExportCanvasPngButton />
             <Button size="sm" onClick={() => addNode('group', { x: 120, y: 120 })}>
               + 区块备注
             </Button>

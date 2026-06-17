@@ -64,6 +64,7 @@ import {
   loadCollabSettings,
   type CollabPeer,
   type CollabStatus,
+  type CollabMode,
 } from '@/collab/types'
 
 let applyingRemoteCollab = false
@@ -162,10 +163,11 @@ interface EditorState {
 
   collabEnabled: boolean
   collabStatus: CollabStatus
+  collabMode: CollabMode | null
   collabRoomId: string | null
   collabPeers: CollabPeer[]
   collabError: string | null
-  startCollab: (roomId: string) => void
+  startCollab: (roomId: string, opts?: { mode?: CollabMode }) => void
   stopCollab: () => void
 
   addCanvasTab: (name: string) => Promise<Canvas | null>
@@ -270,6 +272,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   isLoading: false,
   collabEnabled: false,
   collabStatus: 'offline',
+  collabMode: null,
   collabRoomId: null,
   collabPeers: [],
   collabError: null,
@@ -1081,15 +1084,17 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     }
   },
 
-  startCollab: (roomId) => {
+  startCollab: (roomId, opts) => {
     const { nodes, edges, canvas } = get()
     if (!canvas) return
 
     const settings = loadCollabSettings()
+    const mode = opts?.mode ?? settings.mode
     const displayName = settings.displayName.trim() || defaultDisplayName()
 
     set({
       collabEnabled: true,
+      collabMode: mode,
       collabRoomId: roomId,
       collabStatus: 'connecting',
       collabError: null,
@@ -1097,9 +1102,12 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     })
 
     canvasCollabSession.connect({
-      serverUrl: settings.serverUrl,
+      mode,
       roomId,
       displayName,
+      serverUrl: settings.serverUrl,
+      signalingUrls: settings.signalingUrls,
+      roomPassword: settings.roomPassword || null,
       seed: { nodes, edges },
       callbacks: {
         onGraphChange: (snapshot) => {
@@ -1137,6 +1145,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
           set({
             collabStatus: 'offline',
             collabEnabled: false,
+            collabMode: null,
             collabRoomId: null,
             collabPeers: [],
           })
@@ -1150,6 +1159,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     canvasCollabSession.disconnect()
     set({
       collabEnabled: false,
+      collabMode: null,
       collabRoomId: null,
       collabStatus: 'offline',
       collabPeers: [],

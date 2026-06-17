@@ -1,0 +1,67 @@
+# GitHub Pages 自动部署（静态站 + P2P）
+#
+# 首次使用：
+# 1. 仓库 Settings → Pages → Build and deployment → Source 选 GitHub Actions
+# 2. （可选）Settings → Secrets and variables → Actions → Variables：
+#    VITE_PUBLIC_APP_URL = 你的公网地址（自定义域名或 Pages 默认地址）
+#    不填则自动用 https://<用户名>.github.io/<仓库名>
+
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Resolve public app URL
+        id: pages_url
+        shell: bash
+        run: |
+          if [ -n "${{ vars.VITE_PUBLIC_APP_URL }}" ]; then
+            echo "url=${{ vars.VITE_PUBLIC_APP_URL }}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.repository.name }}" = "${{ github.repository_owner }}.github.io" ]; then
+            echo "url=https://${{ github.repository_owner }}.github.io" >> "$GITHUB_OUTPUT"
+          else
+            echo "url=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build
+        run: npm run build:pages
+        env:
+          VITE_PUBLIC_APP_URL: ${{ steps.pages_url.outputs.url }}
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment

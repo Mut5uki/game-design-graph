@@ -263,51 +263,31 @@ export function useCanvasContextMenu(options: CanvasContextMenuOptions) {
 
 
     if (singleDesignNode && !isListBlock(singleDesignNode)) {
-
-      items.push({ id: 'add-header', label: '— 添加并连接 —', disabled: true, onClick: () => {} })
-
-      for (const t of getCreatableNodeTypes()) {
-
-        if (t.type === 'group') continue
-
-        items.push({
-
-          id: `conn-${t.type}`,
-
-          label: `+ ${t.label}`,
-
-          onClick: () => addConnectedNode(singleDesignNode.id, t.type as NodeType),
-
-        })
-
-      }
-
+      items.push({
+        id: 'add-connect',
+        label: '添加并连接',
+        children: getCreatableNodeTypes()
+          .filter((t) => t.type !== 'group')
+          .map((t) => ({
+            id: `conn-${t.type}`,
+            label: t.label,
+            onClick: () => addConnectedNode(singleDesignNode.id, t.type as NodeType),
+          })),
+      })
       items.push({ id: 'sep-add', label: '', separator: true, onClick: () => {} })
-
     }
 
-
-
     if (flowPos) {
-
-      items.push({ id: 'create-header', label: '— 在此处创建 —', disabled: true, onClick: () => {} })
-
-      for (const t of getPaletteNodeTypes()) {
-
-        items.push({
-
+      items.push({
+        id: 'create-here',
+        label: '在此处创建',
+        children: getPaletteNodeTypes().map((t) => ({
           id: `create-${t.type}`,
-
           label: t.label,
-
           onClick: () => addNodeAt(t.type as NodeType, flowPos),
-
-        })
-
-      }
-
+        })),
+      })
       items.push({ id: 'sep-create', label: '', separator: true, onClick: () => {} })
-
     }
 
 

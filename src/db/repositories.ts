@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { db } from './index'
+import { deleteProjectFromDisk, queueProjectDiskSync } from './diskSync'
 import type { Canvas, DesignEdge, DesignNode, Project } from '@/domain/types'
 
 export async function listProjects(): Promise<Project[]> {
@@ -38,11 +39,13 @@ export async function createProject(name: string, description?: string): Promise
     await db.canvases.add(canvas)
   })
 
+  queueProjectDiskSync(project.id)
   return project
 }
 
 export async function updateProject(project: Project): Promise<void> {
   await db.projects.put({ ...project, updatedAt: Date.now() })
+  queueProjectDiskSync(project.id)
 }
 
 export async function deleteProject(id: string): Promise<void> {
@@ -51,6 +54,9 @@ export async function deleteProject(id: string): Promise<void> {
     await db.edges.where('projectId').equals(id).delete()
     await db.canvases.where('projectId').equals(id).delete()
     await db.projects.delete(id)
+  })
+  void deleteProjectFromDisk(id).catch((err) => {
+    console.warn('[diskSync] 删除硬盘备份失败:', err)
   })
 }
 
@@ -76,11 +82,13 @@ export async function createCanvas(projectId: string, name: string): Promise<Can
   }
   await db.canvases.add(canvas)
   await db.projects.update(projectId, { updatedAt: now })
+  queueProjectDiskSync(projectId)
   return canvas
 }
 
 export async function updateCanvas(canvas: Canvas): Promise<void> {
   await db.canvases.put({ ...canvas, updatedAt: Date.now() })
+  queueProjectDiskSync(canvas.projectId)
 }
 
 export async function deleteCanvas(canvasId: string, projectId: string): Promise<void> {
@@ -90,6 +98,45 @@ export async function deleteCanvas(canvasId: string, projectId: string): Promise
     await db.canvases.delete(canvasId)
     await db.projects.update(projectId, { updatedAt: Date.now() })
   })
+  queueProjectDiskSync(projectId)
+}
+
+/** 协作者通过邀请链接加入时，本地可能没有对应项目/画布，创建占位记录以便进入编辑器 */
+export async function ensureCollabStubAccess(
+  projectId: string,
+  canvasId: string,
+): Promise<{ project: Project; canvas: Canvas }> {
+  const now = Date.now()
+  let project = await getProject(projectId)
+  if (!project) {
+    project = {
+      id: projectId,
+      name: '协作项目',
+      description: '通过协作邀请链接加入；画布内容由实时协作同步。',
+      schemaVersion: 1,
+      createdAt: now,
+      updatedAt: now,
+      settings: { deepseekModel: 'deepseek-chat' },
+    }
+    await db.projects.add(project)
+  }
+
+  let canvas = await getCanvas(canvasId)
+  if (!canvas) {
+    canvas = {
+      id: canvasId,
+      projectId,
+      name: '协作画布',
+      viewport: { x: 0, y: 0, zoom: 1 },
+      nodeIds: [],
+      edgeIds: [],
+      createdAt: now,
+      updatedAt: now,
+    }
+    await db.canvases.add(canvas)
+  }
+
+  return { project, canvas }
 }
 
 export async function loadCanvasData(canvasId: string): Promise<{
@@ -124,6 +171,7 @@ export async function saveCanvasData(
     await db.canvases.put(updatedCanvas)
     await db.projects.update(canvas.projectId, { updatedAt: now })
   })
+  queueProjectDiskSync(canvas.projectId)
 }
 
 export async function listProjectNodeIds(projectId: string): Promise<string[]> {

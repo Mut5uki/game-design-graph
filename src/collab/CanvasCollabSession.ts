@@ -1,5 +1,7 @@
 import * as Y from 'yjs'
 import { HocuspocusProvider } from '@hocuspocus/provider'
+import { WebrtcProvider } from 'y-webrtc'
+import type { Awareness } from 'y-protocols/awareness'
 import type { DesignEdge, DesignNode } from '@/domain/types'
 import {
   COLLAB_ORIGIN_LOCAL,
@@ -13,6 +15,7 @@ import {
 import {
   defaultDisplayName,
   pickPeerColor,
+  type CollabMode,
   type CollabPeer,
   type CollabUser,
 } from '@/collab/types'
@@ -27,11 +30,14 @@ export interface CanvasCollabCallbacks {
 }
 
 export interface CanvasCollabConnectOptions {
-  serverUrl: string
+  mode: CollabMode
   roomId: string
   displayName: string
   seed: { nodes: DesignNode[]; edges: DesignEdge[] }
   callbacks: CanvasCollabCallbacks
+  serverUrl?: string
+  signalingUrls?: string[]
+  roomPassword?: string | null
 }
 
 interface AwarenessSelection {
@@ -39,42 +45,52 @@ interface AwarenessSelection {
   edgeId?: string | null
 }
 
+type CollabProvider = HocuspocusProvider | WebrtcProvider
+
 export class CanvasCollabSession {
   private ydoc: CanvasYDoc | null = null
-  private provider: HocuspocusProvider | null = null
+  private provider: CollabProvider | null = null
   private callbacks: CanvasCollabCallbacks | null = null
   private seeded = false
   private graphObserver: (() => void) | null = null
   private synced = false
+  private mode: CollabMode | null = null
 
   get connected(): boolean {
     return this.synced
   }
 
+  get activeMode(): CollabMode | null {
+    return this.mode
+  }
+
   connect(options: CanvasCollabConnectOptions): void {
     this.disconnect()
-
+    this.mode = options.mode
     this.callbacks = options.callbacks
     this.callbacks.onStatusChange('connecting')
 
     const ydoc = createCanvasYDoc()
     this.ydoc = ydoc
+    this.attachGraphObserver(ydoc)
 
+    if (options.mode === 'p2p') {
+      this.connectP2p(options, ydoc)
+    } else {
+      this.connectServer(options, ydoc)
+    }
+  }
+
+  private connectServer(options: CanvasCollabConnectOptions, ydoc: CanvasYDoc): void {
     const provider = new HocuspocusProvider({
-      url: options.serverUrl,
+      url: options.serverUrl!,
       name: options.roomId,
       document: ydoc.doc,
       token: options.displayName || defaultDisplayName(),
       onSynced: () => {
         if (!this.ydoc || !this.callbacks) return
         this.synced = true
-        const { nodes: yNodes, edges: yEdges } = this.ydoc
-        if (yNodes.size === 0 && yEdges.size === 0 && !this.seeded) {
-          seedCanvasGraph(this.ydoc, options.seed)
-          this.seeded = true
-        } else {
-          this.callbacks.onGraphChange(readCanvasGraph(yNodes, yEdges))
-        }
+        this.applyInitialGraphState(options.seed)
         this.callbacks.onStatusChange('connected')
         this.publishAwareness(options.displayName)
         this.emitPeers()
@@ -93,7 +109,77 @@ export class CanvasCollabSession {
     })
 
     this.provider = provider
+    provider.awareness?.on('change', () => this.emitPeers())
+    provider.on('status', ({ status }: { status: string }) => {
+      if (status === 'connected') {
+        this.synced = true
+        this.callbacks?.onStatusChange('connected')
+      }
+      if (status === 'connecting') this.callbacks?.onStatusChange('connecting')
+      if (status === 'disconnected') {
+        this.synced = false
+        this.callbacks?.onStatusChange('disconnected')
+      }
+    })
+  }
 
+  private connectP2p(options: CanvasCollabConnectOptions, ydoc: CanvasYDoc): void {
+    const signaling = options.signalingUrls?.length ? options.signalingUrls : undefined
+    const password = options.roomPassword?.trim() || undefined
+
+    const provider = new WebrtcProvider(options.roomId, ydoc.doc, {
+      signaling,
+      password,
+    })
+
+    this.provider = provider
+
+    const onReady = () => {
+      if (!this.ydoc || !this.callbacks) return
+      this.synced = true
+      this.applyInitialGraphState(options.seed)
+      this.callbacks.onStatusChange('connected')
+      this.publishAwareness(options.displayName)
+      this.emitPeers()
+    }
+
+    provider.awareness.on('change', () => this.emitPeers())
+
+    provider.on('synced', ({ synced }: { synced: boolean }) => {
+      if (synced) onReady()
+    })
+
+    provider.on('status', ({ connected }: { connected: boolean }) => {
+      if (connected) {
+        onReady()
+      } else {
+        this.synced = false
+        this.callbacks?.onStatusChange('disconnected')
+      }
+    })
+
+    provider.on('peers', () => this.emitPeers())
+
+    // 首个进入房间的人：若文档仍为空则写入本地种子
+    window.setTimeout(() => {
+      if (this.provider === provider && this.ydoc) {
+        this.applyInitialGraphState(options.seed)
+      }
+    }, 400)
+  }
+
+  private applyInitialGraphState(seed: { nodes: DesignNode[]; edges: DesignEdge[] }): void {
+    if (!this.ydoc || !this.callbacks) return
+    const { nodes: yNodes, edges: yEdges } = this.ydoc
+    if (yNodes.size === 0 && yEdges.size === 0 && !this.seeded) {
+      seedCanvasGraph(this.ydoc, seed)
+      this.seeded = true
+    } else if (yNodes.size > 0 || yEdges.size > 0) {
+      this.callbacks.onGraphChange(readCanvasGraph(yNodes, yEdges))
+    }
+  }
+
+  private attachGraphObserver(ydoc: CanvasYDoc): void {
     const onGraphUpdate = (
       _events: Y.YEvent<Y.AbstractType<unknown>>[],
       transaction: Y.Transaction,
@@ -109,22 +195,6 @@ export class CanvasCollabSession {
       ydoc.nodes.unobserveDeep(onGraphUpdate)
       ydoc.edges.unobserveDeep(onGraphUpdate)
     }
-
-    provider.awareness?.on('change', () => {
-      this.emitPeers()
-    })
-
-    provider.on('status', ({ status }: { status: string }) => {
-      if (status === 'connected') {
-        this.synced = true
-        this.callbacks?.onStatusChange('connected')
-      }
-      if (status === 'connecting') this.callbacks?.onStatusChange('connecting')
-      if (status === 'disconnected') {
-        this.synced = false
-        this.callbacks?.onStatusChange('disconnected')
-      }
-    })
   }
 
   pushLocalGraph(nodes: DesignNode[], edges: DesignEdge[]): void {
@@ -133,7 +203,7 @@ export class CanvasCollabSession {
   }
 
   publishSelection(selectedNodeIds: string[], selectedEdgeId: string | null): void {
-    const awareness = this.provider?.awareness
+    const awareness = this.getAwareness()
     if (!awareness) return
     awareness.setLocalStateField('selection', {
       nodeIds: selectedNodeIds,
@@ -152,10 +222,16 @@ export class CanvasCollabSession {
     this.callbacks = null
     this.seeded = false
     this.synced = false
+    this.mode = null
+  }
+
+  private getAwareness(): Awareness | null {
+    if (!this.provider) return null
+    return this.provider.awareness ?? null
   }
 
   private publishAwareness(displayName: string): void {
-    const awareness = this.provider?.awareness
+    const awareness = this.getAwareness()
     if (!awareness) return
     awareness.setLocalStateField('user', {
       name: displayName || defaultDisplayName(),
@@ -164,7 +240,7 @@ export class CanvasCollabSession {
   }
 
   private emitPeers(): void {
-    const awareness = this.provider?.awareness
+    const awareness = this.getAwareness()
     if (!awareness || !this.callbacks) return
 
     const peers: CollabPeer[] = []

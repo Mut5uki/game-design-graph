@@ -1,5 +1,7 @@
 import { useEffect } from 'react'
 import { canvasCollabSession } from '@/collab/CanvasCollabSession'
+import type { CollabMode } from '@/collab/types'
+import { buildPublicShareUrl } from '@/collab/publicUrls'
 import { loadCollabSettings, type CollabPeer, type CollabStatus } from '@/collab/types'
 import { isApplyingRemoteCollab, useEditorStore } from '@/store/editorStore'
 
@@ -45,11 +47,8 @@ export function useCollabSync() {
 
 export type { CollabPeer, CollabStatus }
 
-export function getCollabShareUrl(projectId: string, canvasId: string): string {
-  const url = new URL(window.location.href)
-  url.pathname = `/project/${projectId}/canvas/${canvasId}`
-  url.searchParams.set('collab', '1')
-  return url.toString()
+export function getCollabShareUrl(projectId: string, canvasId: string, mode?: CollabMode): string {
+  return buildPublicShareUrl(projectId, canvasId, mode)
 }
 
 export function readCollabSettingsForUi() {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ReactFlowProvider } from '@xyflow/react'
-import { getProject, listCanvases } from '@/db/repositories'
+import { getProject, listCanvases, ensureCollabStubAccess } from '@/db/repositories'
 import { useEditorStore } from '@/store/editorStore'
 import { undoGraph, redoGraph } from '@/store/editorStore'
 import { CanvasEditor } from '@/components/canvas/CanvasEditor'
@@ -16,9 +16,12 @@ import { Button, Input } from '@/components/ui/primitives'
 import { Modal } from '@/components/ui/Modal'
 import type { NodeType } from '@/domain/types'
 import { cn } from '@/lib/utils'
+import { ExportCanvasPngHeaderButton } from '@/components/canvas/ExportCanvasPngButton'
 import { CollabBar } from '@/components/collab/CollabBar'
 import { useCollabLifecycle, useCollabSync } from '@/collab/useCollab'
 import { buildCollabRoomId } from '@/collab/types'
+import { resolveCollabModeFromUrl } from '@/collab/collabMode'
+import { isCollabJoinUrl } from '@/collab/publicUrls'
 
 export function EditorPage() {
   const { projectId, canvasId } = useParams()
@@ -62,18 +65,34 @@ export function EditorPage() {
     if (params.get('collab') !== '1') return
     const { collabEnabled, startCollab } = useEditorStore.getState()
     if (collabEnabled) return
-    startCollab(buildCollabRoomId(projectId, canvasId))
+    const mode = resolveCollabModeFromUrl() ?? undefined
+    startCollab(buildCollabRoomId(projectId, canvasId), { mode })
   }, [projectId, canvasId, isLoading])
 
   useEffect(() => {
     if (!projectId) return
     ;(async () => {
-      const p = await getProject(projectId)
+      let p = await getProject(projectId)
+      const collabJoin = isCollabJoinUrl()
+
+      if (!p && collabJoin && canvasId) {
+        const stub = await ensureCollabStubAccess(projectId, canvasId)
+        setProject(stub.project, [stub.canvas])
+        await loadCanvas(canvasId)
+        return
+      }
+
       if (!p) {
         navigate('/')
         return
       }
-      const cs = await listCanvases(projectId)
+
+      let cs = await listCanvases(projectId)
+      if (collabJoin && canvasId && !cs.some((c) => c.id === canvasId)) {
+        const stub = await ensureCollabStubAccess(projectId, canvasId)
+        cs = [...cs, stub.canvas]
+      }
+
       setProject(p, cs)
       const targetCanvas = canvasId ?? cs[cs.length - 1]?.id
       if (targetCanvas) {
@@ -195,6 +214,7 @@ export function EditorPage() {
           影响分析
         </Button>
         <Button size="sm" onClick={() => runValidation()}>校验</Button>
+        {editorView === 'canvas' && <ExportCanvasPngHeaderButton />}
         <Link to="/settings">
           <Button size="sm" variant="ghost">设置</Button>
         </Link>

@@ -4,7 +4,8 @@ import {
   getCollabShareUrl,
   readCollabSettingsForUi,
 } from '@/collab/useCollab'
-import { saveCollabSettings } from '@/collab/types'
+import { isInviteUrlLocalhostOnly } from '@/collab/publicUrls'
+import { collabModeLabel, saveCollabSettings } from '@/collab/types'
 import { useEditorStore } from '@/store/editorStore'
 import { Button } from '@/components/ui/primitives'
 import { cn } from '@/lib/utils'
@@ -17,92 +18,118 @@ interface CollabBarProps {
 export function CollabBar({ projectId, canvasId }: CollabBarProps) {
   const collabEnabled = useEditorStore((s) => s.collabEnabled)
   const collabStatus = useEditorStore((s) => s.collabStatus)
+  const collabMode = useEditorStore((s) => s.collabMode)
   const collabPeers = useEditorStore((s) => s.collabPeers)
   const collabError = useEditorStore((s) => s.collabError)
   const startCollab = useEditorStore((s) => s.startCollab)
   const stopCollab = useEditorStore((s) => s.stopCollab)
 
   const [copied, setCopied] = useState(false)
+  const [copyWarn, setCopyWarn] = useState<string | null>(null)
+  const settings = readCollabSettingsForUi()
+  const activeMode = collabMode ?? settings.mode
+  const inviteLocalhost = isInviteUrlLocalhostOnly()
 
   const statusLabel = useMemo(() => {
+    const modeTag = collabModeLabel(activeMode)
     switch (collabStatus) {
       case 'connecting':
-        return '连接中…'
+        return `${modeTag} · 连接中…`
       case 'connected':
-        return `已协作 · ${collabPeers.length + 1} 人在线`
+        return `${modeTag} · ${collabPeers.length + 1} 人在线`
       case 'error':
         return collabError ?? '连接失败'
       default:
-        return '离线'
+        return modeTag
     }
-  }, [collabStatus, collabPeers.length, collabError])
+  }, [collabStatus, collabPeers.length, collabError, activeMode])
 
   const handleToggle = () => {
     if (collabEnabled) {
       stopCollab()
       return
     }
-    const settings = readCollabSettingsForUi()
-    if (!settings.displayName.trim()) {
+    const s = readCollabSettingsForUi()
+    if (!s.displayName.trim()) {
       const name = `策划-${Math.floor(Math.random() * 900 + 100)}`
-      saveCollabSettings({ ...settings, displayName: name })
+      saveCollabSettings({ ...s, displayName: name })
     }
-    startCollab(`${projectId}:${canvasId}`)
+    startCollab(`${projectId}:${canvasId}`, { mode: s.mode })
   }
 
   const handleCopyLink = async () => {
-    const url = getCollabShareUrl(projectId, canvasId)
+    const url = getCollabShareUrl(projectId, canvasId, activeMode)
     await navigator.clipboard.writeText(url)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+    if (inviteLocalhost) {
+      setCopyWarn('链接仍是 localhost，同事无法打开。请到设置填写「邀请链接地址」。')
+    } else {
+      setCopyWarn(null)
+    }
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <Button
-        size="sm"
-        variant={collabEnabled ? 'primary' : 'ghost'}
-        className={cn('text-xs', collabEnabled && collabStatus === 'connected' && 'bg-emerald-600 hover:bg-emerald-700')}
-        onClick={handleToggle}
-      >
-        {collabEnabled ? '退出协作' : '开始协作'}
-      </Button>
+    <div className="flex flex-col items-end gap-0.5">
+      <div className="flex items-center gap-2">
+        <Button
+          size="sm"
+          variant={collabEnabled ? 'primary' : 'ghost'}
+          className={cn(
+            'text-xs',
+            collabEnabled && collabStatus === 'connected' && 'bg-emerald-600 hover:bg-emerald-700',
+          )}
+          onClick={handleToggle}
+        >
+          {collabEnabled ? '退出协作' : '开始协作'}
+        </Button>
 
-      {collabEnabled && (
-        <>
-          <span
-            className={cn(
-              'text-[11px]',
-              collabStatus === 'connected' ? 'text-emerald-600' : 'text-gray-400',
-            )}
-          >
-            {statusLabel}
-          </span>
-          <Button size="sm" variant="ghost" className="text-xs" onClick={handleCopyLink}>
-            {copied ? '已复制' : '复制邀请链接'}
-          </Button>
-        </>
-      )}
-
-      {collabPeers.length > 0 && (
-        <div className="flex items-center gap-1 ml-1">
-          {collabPeers.map((p) => (
+        {collabEnabled && (
+          <>
             <span
-              key={p.clientId}
-              className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] text-gray-600"
-              title={`${p.name}${p.selectedNodeIds.length ? ` · 选中 ${p.selectedNodeIds.length} 个节点` : ''}`}
+              className={cn(
+                'text-[11px]',
+                collabStatus === 'connected' ? 'text-emerald-600' : 'text-gray-400',
+              )}
             >
-              <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: p.color }} />
-              {p.name}
+              {statusLabel}
             </span>
-          ))}
-        </div>
-      )}
+            <Button size="sm" variant="ghost" className="text-xs" onClick={handleCopyLink}>
+              {copied ? '已复制' : '复制邀请链接'}
+            </Button>
+          </>
+        )}
 
-      {!collabEnabled && (
-        <Link to="/settings#collab" className="text-[10px] text-gray-400 hover:text-gray-600">
-          协作设置
-        </Link>
+        {collabPeers.length > 0 && (
+          <div className="flex items-center gap-1 ml-1">
+            {collabPeers.map((p) => (
+              <span
+                key={p.clientId}
+                className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] text-gray-600"
+                title={`${p.name}${p.selectedNodeIds.length ? ` · 选中 ${p.selectedNodeIds.length} 个节点` : ''}`}
+              >
+                <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: p.color }} />
+                {p.name}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {!collabEnabled && (
+          <Link to="/settings#collab" className="text-[10px] text-gray-400 hover:text-gray-600">
+            协作设置 · {collabModeLabel(settings.mode)}
+          </Link>
+        )}
+      </div>
+
+      {copyWarn && (
+        <p className="text-[10px] text-amber-600 max-w-md text-right">{copyWarn}</p>
+      )}
+      {!collabEnabled && inviteLocalhost && (
+        <p className="text-[10px] text-amber-600 max-w-md text-right">
+          邀请链接需公网/局域网地址，
+          <Link to="/settings#collab" className="underline ml-0.5">去设置</Link>
+        </p>
       )}
     </div>
   )

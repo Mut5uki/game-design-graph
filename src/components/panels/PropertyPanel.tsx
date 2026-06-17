@@ -11,6 +11,7 @@ import {
 import { useEditorStore } from '@/store/editorStore'
 import { Button, Input, Label, Select, Textarea } from '@/components/ui/primitives'
 import { createDefaultNodeFields, parseTagsInput, tagsToString } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 
 function CommentBlockProperties({ node }: { node: DesignNode }) {
   const updateNode = useEditorStore((s) => s.updateNode)
@@ -43,14 +44,25 @@ function CommentBlockProperties({ node }: { node: DesignNode }) {
       </div>
       <div>
         <Label>颜色</Label>
-        <Select
-          value={color}
-          onChange={(e) => updateNodeFields(node.id, { color: e.target.value })}
-        >
+        <div className="flex flex-wrap gap-2 mt-1.5">
           {COMMENT_COLOR_PRESETS.map((c) => (
-            <option key={c.id} value={c.id}>{c.label}</option>
+            <button
+              key={c.id}
+              type="button"
+              title={c.label}
+              aria-label={c.label}
+              aria-pressed={color === c.id}
+              className={cn(
+                'w-7 h-7 rounded-full border-2 transition-transform hover:scale-110',
+                color === c.id
+                  ? 'border-gray-800 ring-2 ring-offset-1 ring-gray-400 scale-110'
+                  : 'border-white/80 shadow-sm',
+              )}
+              style={{ backgroundColor: c.header }}
+              onClick={() => updateNodeFields(node.id, { color: c.id })}
+            />
           ))}
-        </Select>
+        </div>
       </div>
       <div className="grid grid-cols-2 gap-2">
         <div>

@@ -218,3 +218,17 @@ body {
 .react-flow__minimap .react-flow__minimap-node.gdg-minimap-list {
   stroke-opacity: 0.85;
 }
+
+/* PNG 导出：避免连线在视口边缘被裁切 */
+.react-flow__viewport svg {
+  overflow: visible;
+}
+
+.gdg-exporting .react-flow__selection,
+.gdg-exporting .react-flow__nodesselection-rect,
+.gdg-exporting .react-flow__edgeupdater,
+.gdg-exporting .react-flow__controls,
+.gdg-exporting .react-flow__minimap,
+.gdg-exporting .react-flow__panel {
+  visibility: hidden !important;
+}

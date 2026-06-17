@@ -22,7 +22,7 @@ if not exist "node_modules\" (
 
 echo.
 echo 启动 Game Design Graph ...
-echo 浏览器将自动打开 http://localhost:3888
+echo 浏览器将自动打开；同事可用 http://你的局域网IP:3888 访问
 echo 按 Ctrl+C 可停止服务器
 echo.
 
