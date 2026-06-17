@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "exportedAt": 1781736895762,
+  "exportedAt": 1781739079479,
   "project": {
     "id": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
     "name": "织法者",
     "schemaVersion": 1,
     "createdAt": 1781486647077,
-    "updatedAt": 1781635955618,
+    "updatedAt": 1781738673740,
     "settings": {
       "deepseekModel": "deepseek-chat",
       "customNodeTypes": [
@@ -360,21 +360,7 @@
         "edge_ad9d9477"
       ],
       "createdAt": 1781486647077,
-      "updatedAt": 1781736895756
-    },
-    {
-      "id": "74d4c07e-4930-40d8-a4eb-3a39bb517cf2",
-      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
-      "name": "事件/npc",
-      "viewport": {
-        "x": -31.42897917678863,
-        "y": 124.44190611755135,
-        "zoom": 1.1486983549970358
-      },
-      "nodeIds": [],
-      "edgeIds": [],
-      "createdAt": 1781602479534,
-      "updatedAt": 1781602678025
+      "updatedAt": 1781739079476
     }
   ],
   "nodes": [

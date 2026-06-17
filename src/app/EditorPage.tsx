@@ -46,6 +46,7 @@ export function EditorPage() {
     setEditorView,
     addNode,
     addCanvasTab,
+    removeCanvas,
     runValidation,
     setImpactAnalysis,
     duplicateNodes,
@@ -156,6 +157,23 @@ export function EditorPage() {
     if (c) switchCanvas(c.id)
   }
 
+  const handleDeleteCanvas = async (targetId: string, name: string) => {
+    if (canvases.length <= 1) return
+    if (
+      !confirm(
+        `确定删除画布「${name}」？\n其中的所有节点与连线将被删除，此操作不可恢复。`,
+      )
+    ) {
+      return
+    }
+    const wasActive = canvas?.id === targetId
+    const fallback = canvases.find((c) => c.id !== targetId)
+    await removeCanvas(targetId)
+    if (wasActive && fallback && projectId) {
+      navigate(`/project/${projectId}/canvas/${fallback.id}`)
+    }
+  }
+
   const issueCount = validationIssues.filter((i) => i.level === 'error' || i.level === 'warn').length
 
   if (!project || isLoading) {
@@ -173,16 +191,43 @@ export function EditorPage() {
         <span className="font-medium text-gray-900 shrink-0">{project.name}</span>
         <div className="flex items-center gap-1 overflow-x-auto flex-1 min-w-0">
           {canvases.map((c) => (
-            <button
+            <div
               key={c.id}
-              onClick={() => switchCanvas(c.id)}
               className={cn(
-                'px-3 py-1 rounded-md text-sm shrink-0',
-                canvas?.id === c.id ? 'bg-gray-100 text-gray-900 font-medium' : 'text-gray-500 hover:bg-gray-50',
+                'group flex items-center rounded-md shrink-0',
+                canvas?.id === c.id ? 'bg-gray-100' : 'hover:bg-gray-50',
               )}
             >
-              {c.name}
-            </button>
+              <button
+                onClick={() => switchCanvas(c.id)}
+                className={cn(
+                  'pl-3 py-1 text-sm',
+                  canvases.length > 1 ? 'pr-1' : 'pr-3',
+                  canvas?.id === c.id ? 'text-gray-900 font-medium' : 'text-gray-500',
+                )}
+              >
+                {c.name}
+              </button>
+              {canvases.length > 1 && (
+                <button
+                  type="button"
+                  title="删除画布"
+                  aria-label={`删除画布 ${c.name}`}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    void handleDeleteCanvas(c.id, c.name)
+                  }}
+                  className={cn(
+                    'mr-1.5 w-5 h-5 rounded flex items-center justify-center text-xs',
+                    'text-gray-400 hover:text-red-600 hover:bg-red-50',
+                    'opacity-0 group-hover:opacity-100',
+                    canvas?.id === c.id && 'opacity-100',
+                  )}
+                >
+                  ×
+                </button>
+              )}
+            </div>
           ))}
           <button
             onClick={() => setShowNewCanvas(true)}
