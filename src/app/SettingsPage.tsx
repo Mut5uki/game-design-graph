@@ -222,7 +222,7 @@ export function SettingsPage() {
                 <textarea
                   value={collabSignaling}
                   onChange={(e) => setCollabSignaling(e.target.value)}
-                  placeholder="wss://signaling.yjs.dev"
+                  placeholder="wss://y-webrtc-eu.fly.dev"
                   className="w-full min-h-[72px] rounded-md border border-gray-200 px-2.5 py-1.5 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200 font-mono"
                 />
                 <p className="text-[10px] text-gray-400 mt-1">

@@ -30,18 +30,34 @@ export interface CollabSettings {
 
 export const DEFAULT_COLLAB_SERVER_URL = 'ws://localhost:1234'
 
-/** y-webrtc 公共信令（仅用于握手，画布数据走 P2P） */
-export const DEFAULT_SIGNALING_URLS = ['wss://signaling.yjs.dev'] as const
+/** y-webrtc 公共信令（仅握手，不含画布内容） */
+export const DEFAULT_SIGNALING_URLS = [
+  'wss://y-webrtc-eu.fly.dev',
+] as const
 
 export const COLLAB_SETTINGS_KEY = 'gdg-collab-settings'
+
+/** 已失效的旧信令，加载设置时自动替换 */
+const DEPRECATED_SIGNALING_URLS = new Set([
+  'wss://signaling.yjs.dev',
+  'wss://y-webrtc-signaling-eu.herokuapp.com',
+  'wss://y-webrtc-signaling-us.herokuapp.com',
+])
+
+function sanitizeSignalingUrls(urls: string[]): string[] {
+  const cleaned = urls.map((u) => u.trim()).filter(Boolean)
+  const filtered = cleaned.filter((u) => !DEPRECATED_SIGNALING_URLS.has(u))
+  if (filtered.length) return filtered
+  return [...DEFAULT_SIGNALING_URLS]
+}
 
 function normalizeSignalingUrls(value: unknown): string[] {
   if (Array.isArray(value)) {
     const urls = value.map((u) => String(u).trim()).filter(Boolean)
-    if (urls.length) return urls
+    if (urls.length) return sanitizeSignalingUrls(urls)
   }
   if (typeof value === 'string' && value.trim()) {
-    return parseSignalingUrls(value)
+    return sanitizeSignalingUrls(parseSignalingUrls(value))
   }
   return [...DEFAULT_SIGNALING_URLS]
 }
@@ -92,7 +108,11 @@ export function loadCollabSettings(): CollabSettings {
 }
 
 export function saveCollabSettings(settings: CollabSettings): void {
-  localStorage.setItem(COLLAB_SETTINGS_KEY, JSON.stringify(settings))
+  const normalized = {
+    ...settings,
+    signalingUrls: sanitizeSignalingUrls(settings.signalingUrls),
+  }
+  localStorage.setItem(COLLAB_SETTINGS_KEY, JSON.stringify(normalized))
 }
 
 export function buildCollabRoomId(projectId: string, canvasId: string): string {

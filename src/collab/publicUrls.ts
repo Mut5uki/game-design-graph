@@ -82,12 +82,21 @@ export function resolveCollabServerUrl(savedUrl?: string | null): string {
   return getSuggestedCollabWsUrl()
 }
 
+function getAppOriginAndPathPrefix(): { origin: string; pathPrefix: string } {
+  const appBase = getPublicAppBaseUrl().replace(/\/$/, '') || 'http://localhost'
+  try {
+    const parsed = new URL(appBase)
+    const pathPrefix = parsed.pathname.replace(/\/$/, '')
+    return { origin: parsed.origin, pathPrefix }
+  } catch {
+    return { origin: appBase, pathPrefix: import.meta.env.BASE_URL.replace(/\/$/, '') || '' }
+  }
+}
+
 export function buildPublicShareUrl(projectId: string, canvasId: string, mode?: CollabMode): string {
-  const base = getPublicAppBaseUrl()
-  const url = new URL(
-    `/project/${projectId}/canvas/${canvasId}`,
-    base || 'http://localhost',
-  )
+  const { origin, pathPrefix } = getAppOriginAndPathPrefix()
+  const path = `${pathPrefix}/project/${projectId}/canvas/${canvasId}`.replace(/\/+/g, '/')
+  const url = new URL(path, origin)
   url.searchParams.set('collab', '1')
   const collabMode = mode ?? loadCollabSettings().mode
   if (collabMode === 'p2p') {

@@ -5,7 +5,7 @@ import {
   readCollabSettingsForUi,
 } from '@/collab/useCollab'
 import { isInviteUrlLocalhostOnly } from '@/collab/publicUrls'
-import { collabModeLabel, saveCollabSettings } from '@/collab/types'
+import { collabModeLabel, saveCollabSettings, buildCollabRoomId } from '@/collab/types'
 import { useEditorStore } from '@/store/editorStore'
 import { Button } from '@/components/ui/primitives'
 import { cn } from '@/lib/utils'
@@ -54,7 +54,8 @@ export function CollabBar({ projectId, canvasId }: CollabBarProps) {
       const name = `策划-${Math.floor(Math.random() * 900 + 100)}`
       saveCollabSettings({ ...s, displayName: name })
     }
-    startCollab(`${projectId}:${canvasId}`, { mode: s.mode })
+    useEditorStore.setState({ collabError: null, collabStatus: 'offline' })
+    startCollab(buildCollabRoomId(projectId, canvasId), { mode: s.mode })
   }
 
   const handleCopyLink = async () => {
@@ -89,15 +90,25 @@ export function CollabBar({ projectId, canvasId }: CollabBarProps) {
             <span
               className={cn(
                 'text-[11px]',
-                collabStatus === 'connected' ? 'text-emerald-600' : 'text-gray-400',
+                collabStatus === 'connected'
+                  ? 'text-emerald-600'
+                  : collabStatus === 'error'
+                    ? 'text-red-600'
+                    : 'text-gray-400',
               )}
             >
               {statusLabel}
             </span>
-            <Button size="sm" variant="ghost" className="text-xs" onClick={handleCopyLink}>
-              {copied ? '已复制' : '复制邀请链接'}
-            </Button>
+            {collabStatus === 'connected' && (
+              <Button size="sm" variant="ghost" className="text-xs" onClick={handleCopyLink}>
+                {copied ? '已复制' : '复制邀请链接'}
+              </Button>
+            )}
           </>
+        )}
+
+        {!collabEnabled && collabStatus === 'error' && collabError && (
+          <span className="text-[11px] text-red-600 max-w-xs text-right">{collabError}</span>
         )}
 
         {collabPeers.length > 0 && (

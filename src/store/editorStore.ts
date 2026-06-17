@@ -1086,7 +1086,13 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
   startCollab: (roomId, opts) => {
     const { nodes, edges, canvas } = get()
-    if (!canvas) return
+    if (!canvas) {
+      set({
+        collabError: '画布尚未加载，请稍后再试',
+        collabStatus: 'error',
+      })
+      return
+    }
 
     const settings = loadCollabSettings()
     const mode = opts?.mode ?? settings.mode
@@ -1138,7 +1144,17 @@ export const useEditorStore = create<EditorState>((set, get) => ({
             set({
               collabStatus: 'error',
               collabError: detail ?? '协作连接失败',
+            })
+            return
+          }
+          if (status === 'disconnected') {
+            set({
+              collabStatus: 'error',
+              collabError: detail ?? '协作已断开',
               collabEnabled: false,
+              collabMode: null,
+              collabRoomId: null,
+              collabPeers: [],
             })
             return
           }

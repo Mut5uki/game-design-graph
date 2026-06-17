@@ -64,8 +64,14 @@ export class CanvasCollabSession {
     return this.mode
   }
 
+  private connectTimeoutId: number | null = null
+
   connect(options: CanvasCollabConnectOptions): void {
     this.disconnect()
+    window.setTimeout(() => this.connectImpl(options), 50)
+  }
+
+  private connectImpl(options: CanvasCollabConnectOptions): void {
     this.mode = options.mode
     this.callbacks = options.callbacks
     this.callbacks.onStatusChange('connecting')
@@ -74,10 +80,36 @@ export class CanvasCollabSession {
     this.ydoc = ydoc
     this.attachGraphObserver(ydoc)
 
-    if (options.mode === 'p2p') {
-      this.connectP2p(options, ydoc)
-    } else {
-      this.connectServer(options, ydoc)
+    this.connectTimeoutId = window.setTimeout(() => {
+      if (!this.synced && this.callbacks) {
+        this.callbacks.onStatusChange(
+          'error',
+          options.mode === 'p2p'
+            ? 'P2P 连接超时，请检查信令服务器或网络（设置 → 多人协作）'
+            : '协作服务器连接超时，请确认 server 已启动且地址正确',
+        )
+      }
+    }, 12000)
+
+    try {
+      if (options.mode === 'p2p') {
+        this.connectP2p(options, ydoc)
+      } else {
+        this.connectServer(options, ydoc)
+      }
+    } catch (e) {
+      this.clearConnectTimeout()
+      this.callbacks?.onStatusChange(
+        'error',
+        e instanceof Error ? e.message : '协作初始化失败',
+      )
+    }
+  }
+
+  private clearConnectTimeout(): void {
+    if (this.connectTimeoutId != null) {
+      window.clearTimeout(this.connectTimeoutId)
+      this.connectTimeoutId = null
     }
   }
 
@@ -89,6 +121,7 @@ export class CanvasCollabSession {
       token: options.displayName || defaultDisplayName(),
       onSynced: () => {
         if (!this.ydoc || !this.callbacks) return
+        this.clearConnectTimeout()
         this.synced = true
         this.applyInitialGraphState(options.seed)
         this.callbacks.onStatusChange('connected')
@@ -126,6 +159,7 @@ export class CanvasCollabSession {
   private connectP2p(options: CanvasCollabConnectOptions, ydoc: CanvasYDoc): void {
     const signaling = options.signalingUrls?.length ? options.signalingUrls : undefined
     const password = options.roomPassword?.trim() || undefined
+    let hasConnected = false
 
     const provider = new WebrtcProvider(options.roomId, ydoc.doc, {
       signaling,
@@ -135,7 +169,9 @@ export class CanvasCollabSession {
     this.provider = provider
 
     const onReady = () => {
-      if (!this.ydoc || !this.callbacks) return
+      if (!this.ydoc || !this.callbacks || hasConnected) return
+      hasConnected = true
+      this.clearConnectTimeout()
       this.synced = true
       this.applyInitialGraphState(options.seed)
       this.callbacks.onStatusChange('connected')
@@ -152,15 +188,14 @@ export class CanvasCollabSession {
     provider.on('status', ({ connected }: { connected: boolean }) => {
       if (connected) {
         onReady()
-      } else {
+      } else if (hasConnected) {
         this.synced = false
-        this.callbacks?.onStatusChange('disconnected')
+        this.callbacks?.onStatusChange('disconnected', 'P2P 连接已断开')
       }
     })
 
     provider.on('peers', () => this.emitPeers())
 
-    // 首个进入房间的人：若文档仍为空则写入本地种子
     window.setTimeout(() => {
       if (this.provider === provider && this.ydoc) {
         this.applyInitialGraphState(options.seed)
@@ -213,6 +248,7 @@ export class CanvasCollabSession {
   }
 
   disconnect(): void {
+    this.clearConnectTimeout()
     this.graphObserver?.()
     this.graphObserver = null
     this.provider?.destroy()
