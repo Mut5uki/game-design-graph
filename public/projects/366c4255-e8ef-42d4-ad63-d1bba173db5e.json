@@ -1,0 +1,4565 @@
+{
+  "schemaVersion": 1,
+  "exportedAt": 1781736895762,
+  "project": {
+    "id": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+    "name": "织法者",
+    "schemaVersion": 1,
+    "createdAt": 1781486647077,
+    "updatedAt": 1781635955618,
+    "settings": {
+      "deepseekModel": "deepseek-chat",
+      "customNodeTypes": [
+        {
+          "type": "custom_item",
+          "label": "魔法",
+          "color": "#6366F1",
+          "defaultFields": {
+            "description": ""
+          }
+        },
+        {
+          "type": "custom_item_2",
+          "label": "符文",
+          "color": "#EC4899",
+          "defaultFields": {
+            "description": ""
+          }
+        },
+        {
+          "type": "custom_item_3",
+          "label": "能力锁",
+          "color": "#92400E",
+          "defaultFields": {
+            "description": ""
+          }
+        },
+        {
+          "type": "custom_npc",
+          "label": "NPC",
+          "color": "#3B82F6",
+          "defaultFields": {
+            "description": ""
+          }
+        },
+        {
+          "type": "custom_item_4",
+          "label": "怪物",
+          "color": "#F59E0B",
+          "defaultFields": {
+            "description": ""
+          }
+        },
+        {
+          "type": "custom_boss",
+          "label": "Boss",
+          "color": "#EF4444",
+          "defaultFields": {
+            "description": ""
+          }
+        }
+      ],
+      "customRelationTypes": [
+        {
+          "type": "rel_item",
+          "label": "破坏",
+          "color": "#A855F7"
+        },
+        {
+          "type": "rel_item_2",
+          "label": "生成",
+          "color": "#A855F7"
+        }
+      ]
+    }
+  },
+  "canvases": [
+    {
+      "id": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "name": "主画布",
+      "viewport": {
+        "x": -465.079327694674,
+        "y": -2.1094440583468668,
+        "zoom": 0.5
+      },
+      "nodeIds": [
+        "group_item_16",
+        "group_item_15",
+        "group_item_14",
+        "ability_electrify",
+        "ability_item",
+        "ability_item_2",
+        "ability_item_3",
+        "ability_item_4",
+        "buff_item",
+        "buff_item_2",
+        "buff_item_3",
+        "buff_item_4",
+        "buff_item_5",
+        "buff_item_6",
+        "buff_item_7",
+        "conductive_effect",
+        "custom_boss_boss",
+        "custom_boss_boss_2",
+        "custom_boss_boss_3",
+        "custom_boss_boss_4",
+        "custom_boss_boss_5",
+        "custom_boss_item",
+        "custom_item_2_item",
+        "custom_item_2_item_2",
+        "custom_item_2_new_sand",
+        "custom_item_3_item",
+        "custom_item_3_item_10",
+        "custom_item_3_item_11",
+        "custom_item_3_item_12",
+        "custom_item_3_item_13",
+        "custom_item_3_item_2",
+        "custom_item_3_item_3",
+        "custom_item_3_item_4",
+        "custom_item_3_item_5",
+        "custom_item_3_item_6",
+        "custom_item_3_item_7",
+        "custom_item_3_item_8",
+        "custom_item_3_item_9",
+        "custom_item_4_item",
+        "custom_item_4_item_10",
+        "custom_item_4_item_11",
+        "custom_item_4_item_12",
+        "custom_item_4_item_13",
+        "custom_item_4_item_14",
+        "custom_item_4_item_15",
+        "custom_item_4_item_2",
+        "custom_item_4_item_3",
+        "custom_item_4_item_4",
+        "custom_item_4_item_5",
+        "custom_item_4_item_6",
+        "custom_item_4_item_7",
+        "custom_item_4_item_8",
+        "custom_item_4_item_9",
+        "custom_item_item",
+        "custom_item_item_10",
+        "custom_item_item_11",
+        "custom_item_item_12",
+        "custom_item_item_13",
+        "custom_item_item_14",
+        "custom_item_item_15",
+        "custom_item_item_16",
+        "custom_item_item_17",
+        "custom_item_item_18",
+        "custom_item_item_19",
+        "custom_item_item_2",
+        "custom_item_item_20",
+        "custom_item_item_21",
+        "custom_item_item_22",
+        "custom_item_item_23",
+        "custom_item_item_24",
+        "custom_item_item_25",
+        "custom_item_item_26",
+        "custom_item_item_27",
+        "custom_item_item_28",
+        "custom_item_item_29",
+        "custom_item_item_3",
+        "custom_item_item_30",
+        "custom_item_item_31",
+        "custom_item_item_32",
+        "custom_item_item_33",
+        "custom_item_item_34",
+        "custom_item_item_35",
+        "custom_item_item_36",
+        "custom_item_item_37",
+        "custom_item_item_4",
+        "custom_item_item_5",
+        "custom_item_item_6",
+        "custom_item_item_7",
+        "custom_item_item_8",
+        "custom_item_item_9",
+        "custom_npc_item",
+        "custom_npc_npc",
+        "custom_npc_npc_10",
+        "custom_npc_npc_11",
+        "custom_npc_npc_12",
+        "custom_npc_npc_13",
+        "custom_npc_npc_2",
+        "custom_npc_npc_3",
+        "custom_npc_npc_4",
+        "custom_npc_npc_5",
+        "custom_npc_npc_6",
+        "custom_npc_npc_7",
+        "custom_npc_npc_8",
+        "custom_npc_npc_9",
+        "custom_npc_priest",
+        "entity_item",
+        "entity_item_2",
+        "event_first_encounter",
+        "event_item",
+        "event_item_2",
+        "event_item_3",
+        "event_item_4",
+        "group_item",
+        "group_item_10",
+        "group_item_11",
+        "group_item_12",
+        "group_item_13",
+        "group_item_2",
+        "group_item_3",
+        "group_item_4",
+        "group_item_5",
+        "group_item_6",
+        "group_item_7",
+        "group_item_8",
+        "group_item_9",
+        "lightning_ball",
+        "lock_electric",
+        "lock_fragile_wall",
+        "lock_optical",
+        "module_spell",
+        "quest_ed_2",
+        "quest_elf_1",
+        "quest_elf_2",
+        "quest_item",
+        "quest_item_2",
+        "quest_item_3",
+        "quest_item_4",
+        "quest_item_5",
+        "quest_item_6",
+        "quest_item_7",
+        "quest_item_8",
+        "quest_item_9",
+        "quest_kuxi_1",
+        "quest_kuxi_2",
+        "quest_milak_1",
+        "quest_milak_2",
+        "quest_selian_1",
+        "quest_seren_1",
+        "quest_twin_priest",
+        "rune_earth",
+        "rune_electric",
+        "rune_fire",
+        "rune_grass",
+        "rune_ice",
+        "rune_water",
+        "skill_fireball",
+        "skill_vine_bind",
+        "spell_ice_mirror",
+        "tutorial_weave_magic",
+        "custom_item_4_item_16",
+        "custom_boss_boss_6",
+        "custom_item_4_item_17",
+        "custom_item_4_item_18",
+        "custom_item_4_item_19",
+        "custom_boss_boss_7",
+        "custom_item_4_item_20",
+        "custom_item_4_item_21",
+        "custom_item_4_item_22",
+        "custom_boss_boss_8",
+        "custom_item_4_item_23",
+        "custom_boss_boss_9",
+        "custom_item_4_item_24",
+        "custom_item_item_38"
+      ],
+      "edgeIds": [
+        "edge_019200c7",
+        "edge_075b70bf",
+        "edge_08c8c765",
+        "edge_09c5db91",
+        "edge_0d6f450b",
+        "edge_10c4de47",
+        "edge_126746e4",
+        "edge_1552e4c0",
+        "edge_1973d699",
+        "edge_198a2d38",
+        "edge_1a2b3c4d",
+        "edge_1cf4f793",
+        "edge_1d5fe442",
+        "edge_1ec6980e",
+        "edge_2096b542",
+        "edge_26ced848",
+        "edge_272b985f",
+        "edge_296bbe22",
+        "edge_2a4682fb",
+        "edge_2b27d9d9",
+        "edge_313a547e",
+        "edge_37597666",
+        "edge_3c734221",
+        "edge_3ecafcbf",
+        "edge_3edae28a",
+        "edge_400c383d",
+        "edge_460761d7",
+        "edge_4a9936b5",
+        "edge_50325d7c",
+        "edge_51870108",
+        "edge_52908f56",
+        "edge_5a4afec4",
+        "edge_5e27d77b",
+        "edge_5eb07226",
+        "edge_611e0eab",
+        "edge_61415d53",
+        "edge_6232853d",
+        "edge_66e25c6a",
+        "edge_6baa6463",
+        "edge_712f5ffc",
+        "edge_76b13258",
+        "edge_7df92a0a",
+        "edge_80acfd2b",
+        "edge_81dbc5dd",
+        "edge_85f9b5ca",
+        "edge_86ad2689",
+        "edge_87c20bc9",
+        "edge_8847fdfc",
+        "edge_8d8f6442",
+        "edge_8e912167",
+        "edge_8f4c2ace",
+        "edge_934e806a",
+        "edge_9802c4a9",
+        "edge_a1cc7d3a",
+        "edge_a5c1e220",
+        "edge_a62b4fc9",
+        "edge_a75d559e",
+        "edge_a7c9548a",
+        "edge_a973a161",
+        "edge_b3861428",
+        "edge_b709e9d7",
+        "edge_bb25fe9e",
+        "edge_c13fc127",
+        "edge_c2a91848",
+        "edge_c6d0e5c9",
+        "edge_c7282151",
+        "edge_cf138d45",
+        "edge_cf50a994",
+        "edge_d150cc8b",
+        "edge_d5886b3f",
+        "edge_d6d9d1cf",
+        "edge_d8a649ce",
+        "edge_dc55a027",
+        "edge_e321e094",
+        "edge_e7abf689",
+        "edge_ebd6d984",
+        "edge_f20b5150",
+        "edge_f21a7b13",
+        "edge_f3359127",
+        "edge_f6d3db91",
+        "edge_f8eb7582",
+        "edge_faf1e25b",
+        "edge_fb53f7a7",
+        "edge_fb7ad430",
+        "edge_fb844f16",
+        "edge_fc88cc8e",
+        "edge_ffe38a62",
+        "edge_kuxi_quest",
+        "edge_kuxi_quest2",
+        "edge_lightning_ball_unlock",
+        "edge_milak_quest",
+        "edge_milak_quest2",
+        "edge_new_1",
+        "edge_new_2",
+        "edge_selian_quest",
+        "edge_unlock_fragile_wall",
+        "edge_cd0a8630",
+        "edge_48310f78",
+        "edge_ad9d9477"
+      ],
+      "createdAt": 1781486647077,
+      "updatedAt": 1781736895756
+    },
+    {
+      "id": "74d4c07e-4930-40d8-a4eb-3a39bb517cf2",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "name": "事件/npc",
+      "viewport": {
+        "x": -31.42897917678863,
+        "y": 124.44190611755135,
+        "zoom": 1.1486983549970358
+      },
+      "nodeIds": [],
+      "edgeIds": [],
+      "createdAt": 1781602479534,
+      "updatedAt": 1781602678025
+    }
+  ],
+  "nodes": [
+    {
+      "id": "ability_electrify",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "ability",
+      "name": "通电",
+      "fields": {
+        "description": "使目标带电，对周围敌人造成电击伤害",
+        "level": 1,
+        "cooldown": 5,
+        "tags": [
+          "电系",
+          "攻击"
+        ]
+      },
+      "position": {
+        "x": 303.01288248762467,
+        "y": 48
+      },
+      "createdAt": 1781562976450,
+      "updatedAt": 1781563301150,
+      "parentGroupId": "group_item_10"
+    },
+    {
+      "id": "ability_item",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "ability",
+      "name": "位移",
+      "fields": {
+        "description": "角色移动时使用风弹可以让自己位移一段距离，对敌人使用则可以击退敌人",
+        "level": 1,
+        "cooldown": 0,
+        "tags": [
+          "移动",
+          "风系",
+          "被动"
+        ]
+      },
+      "position": {
+        "x": 376.091072302136,
+        "y": 159.45504850713667
+      },
+      "createdAt": 1781544099175,
+      "updatedAt": 1781549970585,
+      "parentGroupId": "group_item_4"
+    },
+    {
+      "id": "ability_item_2",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "ability",
+      "name": "灭火",
+      "fields": {
+        "description": "主动能力，消耗沙子或水元素扑灭火焰，可用于解除燃烧状态或熄灭障碍火。冷却时间较短，适合频繁使用。",
+        "level": 1,
+        "cooldown": 3,
+        "tags": [
+          "火系",
+          "辅助"
+        ]
+      },
+      "position": {
+        "x": 1074.8640946421397,
+        "y": 210.8614046794254
+      },
+      "createdAt": 1781558883585,
+      "updatedAt": 1781560977585,
+      "parentGroupId": "group_item_5"
+    },
+    {
+      "id": "ability_item_3",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "ability",
+      "name": "缓冲",
+      "fields": {
+        "description": "",
+        "level": 1,
+        "cooldown": 8,
+        "tags": []
+      },
+      "position": {
+        "x": 695.1062254278831,
+        "y": 241.1416168552371
+      },
+      "createdAt": 1781562330764,
+      "updatedAt": 1781626181655,
+      "parentGroupId": "group_item_6"
+    },
+    {
+      "id": "ability_item_4",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "ability",
+      "name": "水下呼吸",
+      "fields": {
+        "description": "",
+        "level": 1,
+        "cooldown": "",
+        "tags": []
+      },
+      "position": {
+        "x": 541.5550480845918,
+        "y": 380.4821782584995
+      },
+      "createdAt": 1781626439970,
+      "updatedAt": 1781626579507,
+      "parentGroupId": "group_item_6"
+    },
+    {
+      "id": "buff_item",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "buff",
+      "name": "绽放",
+      "fields": {
+        "description": "草元素与水元素反应，使草木绽放",
+        "duration": "3秒",
+        "stack_rule": "replace"
+      },
+      "position": {
+        "x": 50.69354639921403,
+        "y": 186.11640369479528
+      },
+      "createdAt": 1781562439324,
+      "updatedAt": 1781562885278,
+      "parentGroupId": "group_item_9"
+    },
+    {
+      "id": "buff_item_2",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "buff",
+      "name": "风化反应",
+      "fields": {
+        "description": "",
+        "duration": "",
+        "stack_rule": "replace"
+      },
+      "position": {
+        "x": 650.9497872459651,
+        "y": 375.3304406364828
+      },
+      "createdAt": 1781561412170,
+      "updatedAt": 1781561436671,
+      "parentGroupId": "group_item_5"
+    },
+    {
+      "id": "buff_item_3",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "buff",
+      "name": "碎冰反应",
+      "fields": {
+        "description": "被冰冻的敌人会有脆化属性，此时遭受高速物理攻击将会产生碎冰反应，造成巨额伤害",
+        "duration": "3秒",
+        "stack_rule": "replace"
+      },
+      "position": {
+        "x": 1008.3576013359193,
+        "y": 430.4646748476574
+      },
+      "createdAt": 1781561602519,
+      "updatedAt": 1781561855969,
+      "parentGroupId": "group_item_7"
+    },
+    {
+      "id": "buff_item_4",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "buff",
+      "name": "蒸发反应",
+      "fields": {
+        "description": "当水元素与火元素接触时触发蒸发反应，造成额外水/火元素伤害并产生蒸汽云。蒸汽云可遮挡视线，持续5秒。",
+        "duration": "5秒",
+        "stack_rule": "replace"
+      },
+      "position": {
+        "x": 700.6787135839231,
+        "y": 27.91525457957016
+      },
+      "createdAt": 1781561611012,
+      "updatedAt": 1781561765489,
+      "parentGroupId": "group_item_6"
+    },
+    {
+      "id": "buff_item_5",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "buff",
+      "name": "融化反应",
+      "fields": {
+        "description": "当冰霜修正作用于已被火焰修正影响的敌人时，触发融化反应，移除冰冻状态并造成额外火焰伤害。该效果持续期间，目标受到的火系伤害提升20%。",
+        "duration": "5秒",
+        "stack_rule": "不可叠加，每次触发刷新持续时间"
+      },
+      "position": {
+        "x": 1012.4697200901983,
+        "y": 341.5895078932541
+      },
+      "createdAt": 1781561708174,
+      "updatedAt": 1781562754897,
+      "parentGroupId": "group_item_7"
+    },
+    {
+      "id": "buff_item_6",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "buff",
+      "name": "扩散反应",
+      "fields": {
+        "description": "当风元素接触到其他元素时，会将该元素扩散到周围区域，扩大影响范围。",
+        "duration": "3秒",
+        "stack_rule": "replace"
+      },
+      "position": {
+        "x": 732.6307317105628,
+        "y": 64.03803397058084
+      },
+      "createdAt": 1781562124085,
+      "updatedAt": 1781618319615,
+      "parentGroupId": "group_item_4"
+    },
+    {
+      "id": "buff_item_7",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "buff",
+      "name": "过载反应",
+      "fields": {
+        "description": "电系法术过载，造成额外伤害",
+        "duration": 5,
+        "stack_rule": "叠加"
+      },
+      "position": {
+        "x": 314.54080566803077,
+        "y": 369.2428211992095
+      },
+      "createdAt": 1781563117586,
+      "updatedAt": 1781628252868,
+      "parentGroupId": "group_item_10"
+    },
+    {
+      "id": "conductive_effect",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "buff",
+      "name": "导电反应",
+      "fields": {
+        "description": "当电符文与水符文配合时触发导电效果，对周围敌人造成电击伤害并传导至附近水体",
+        "duration": "3秒",
+        "stack_rule": "replace"
+      },
+      "position": {
+        "x": 76.31845028783118,
+        "y": 368.8242113424275
+      },
+      "createdAt": 1781563044640,
+      "updatedAt": 1781628247216,
+      "parentGroupId": "group_item_10"
+    },
+    {
+      "id": "custom_boss_boss",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_boss",
+      "name": "阿尔博斯",
+      "fields": {
+        "description": "每秒在地上生成藤蔓，藤蔓可被火破坏。当藤蔓四个成团时，阿尔博斯无敌；两个团时，阿尔博斯回血。"
+      },
+      "position": {
+        "x": 52.63853097379763,
+        "y": 325.2119268652842
+      },
+      "createdAt": 1781628915222,
+      "updatedAt": 1781629421563,
+      "parentGroupId": "group_item_11"
+    },
+    {
+      "id": "custom_boss_boss_2",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_boss",
+      "name": "哥布林巨人",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 50.646300456807694,
+        "y": 196.86254870750935
+      },
+      "createdAt": 1781628931109,
+      "updatedAt": 1781629512921,
+      "parentGroupId": "group_item_11"
+    },
+    {
+      "id": "custom_boss_boss_3",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_boss",
+      "name": "风暴兽",
+      "fields": {
+        "description": "一阶段：改场地风向，玩家法术偏移；二阶段：多个风涡吸走投射物。风向是Boss的状态机输出。"
+      },
+      "position": {
+        "x": 110,
+        "y": 249.4698713350856
+      },
+      "createdAt": 1781630082941,
+      "updatedAt": 1781630279024,
+      "parentGroupId": "group_item_12"
+    },
+    {
+      "id": "custom_boss_boss_4",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_boss",
+      "name": "晶脊巨兽",
+      "fields": {
+        "description": "一阶段，冲刺撞击 召唤落石\n二阶段，召唤熔流\n特性是背部的晶脊，但是只能通过偏转它召唤的巨石。\n熔流通过石柱与风弹配合对策。"
+      },
+      "position": {
+        "x": 49.77669662022254,
+        "y": 213.0148267248942
+      },
+      "createdAt": 1781630944310,
+      "updatedAt": 1781631493269,
+      "parentGroupId": "group_item_13"
+    },
+    {
+      "id": "custom_boss_boss_5",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_boss",
+      "name": "巨型岩浆史莱姆",
+      "fields": {
+        "description": "巨型岩浆史莱姆是一种由熔岩构成的巨型史莱姆，会不断喷溅岩浆，对周围造成火焰伤害。它免疫火系攻击，但遇到水或冰系攻击时会硬化，降低移动速度并增加受到的物理伤害。"
+      },
+      "position": {
+        "x": 48,
+        "y": 271.6330067129438
+      },
+      "createdAt": 1781630949877,
+      "updatedAt": 1781631338477,
+      "parentGroupId": "group_item_13"
+    },
+    {
+      "id": "custom_boss_boss_6",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_boss",
+      "name": "镜湖巨兽.伊莱姆",
+      "fields": {
+        "description": "镜湖巨兽是镜流群岛的最终Boss，拥有操控镜面反射和复制魔法的能力。一阶段会召唤镜湖水怪协助战斗，二阶段会制造镜面领域反射玩家的法术。"
+      },
+      "position": {
+        "x": 49.98696700554319,
+        "y": 424.4506383103769
+      },
+      "createdAt": 1781632737639,
+      "updatedAt": 1781635118685,
+      "parentGroupId": "group_item_14"
+    },
+    {
+      "id": "custom_boss_boss_7",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_boss",
+      "name": "白寂棺者",
+      "fields": {
+        "description": "白寂棺者是霜语冰川的守护者，拥有操控冰雪和召唤亡灵的能力。一阶段会召唤冰墙限制玩家走位和雪盲幽影，二阶段会制造暴风雪领域，降低玩家视野并持续造成冰霜伤害。弱点为火系魔法，但火系攻击会触发冰雾反应，需要配合风系魔法。"
+      },
+      "position": {
+        "x": 48.98846997569308,
+        "y": 257.92569078938016
+      },
+      "createdAt": 1781633417447,
+      "updatedAt": 1781633565131,
+      "parentGroupId": "group_item_15"
+    },
+    {
+      "id": "custom_boss_boss_8",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_boss",
+      "name": "演算主机Ω",
+      "fields": {
+        "description": "锈演废都的最终Boss，拥有操控机械和电系魔法的能力。\n需要先去修复它的四个电路，随后进入战斗。\n一阶段会召唤巡逻机与电容傀儡。\n二阶段会间隔释放电磁脉冲波，并召唤反冲机和脉冲傀儡。\n三阶段会暴露自身核心，玩家可以一边对敌一边进行电路修复，也可以直接击毁核心。"
+      },
+      "position": {
+        "x": 60.470295200066175,
+        "y": 288.6843078378836
+      },
+      "createdAt": 1781633811339,
+      "updatedAt": 1781635739831,
+      "parentGroupId": "group_item_16"
+    },
+    {
+      "id": "custom_boss_boss_9",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_boss",
+      "name": "锈蚀核心",
+      "fields": {
+        "description": "锈蚀核心是锈演废都的隐藏Boss，由废弃机械变异而成。\n一阶段，会投掷废料，或者伸出管道横扫前方，管道扫到废料会回血。\n二阶段，每隔一段时间，其会转变形态，齿轮形态：物理防御提升，释放旋转极快的齿轮攻击，并在场地中造成攻击。管道形态：不断喷射废液，造成腐蚀伤害。液体形态：融化为一滩液体，具有极高免伤，同时无法被投射物实体攻击，金属液具有灼伤持续伤害。"
+      },
+      "position": {
+        "x": 62.299016651213606,
+        "y": 352.35837396445686
+      },
+      "createdAt": 1781633955553,
+      "updatedAt": 1781635739831,
+      "parentGroupId": "group_item_16"
+    },
+    {
+      "id": "custom_boss_item",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_boss",
+      "name": "巨型史莱姆",
+      "fields": {
+        "description": "首次遭遇会被剧情杀"
+      },
+      "position": {
+        "x": -659.9955657401035,
+        "y": 1677.7043869938032
+      },
+      "createdAt": 1781603535336,
+      "updatedAt": 1781620587096
+    },
+    {
+      "id": "custom_item_2_item",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_2",
+      "name": "魔力符文",
+      "fields": {
+        "description": "魔力符文是一种基础符文，可镶嵌在装备上提升法术强度。它能为法术提供额外的魔力增幅，是许多高级符文合成的基础材料。"
+      },
+      "position": {
+        "x": 345.7026032900059,
+        "y": 309.66558987965004
+      },
+      "createdAt": 1781533008733,
+      "updatedAt": 1781543819724,
+      "parentGroupId": "group_item"
+    },
+    {
+      "id": "custom_item_2_item_2",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_2",
+      "name": "风符文",
+      "fields": {
+        "description": "风元素符文，可与其他符文产生反应"
+      },
+      "position": {
+        "x": 371.59069606584853,
+        "y": 280.2049459289369
+      },
+      "createdAt": 1781549236073,
+      "updatedAt": 1781552503255,
+      "parentGroupId": "group_item_4"
+    },
+    {
+      "id": "custom_item_2_new_sand",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "entity",
+      "name": "沙子",
+      "fields": {
+        "description": "风化反应生成的沙子，具有灭火作用",
+        "category": ""
+      },
+      "position": {
+        "x": 781.0564103448855,
+        "y": 200.09095160011748
+      },
+      "createdAt": 1781552503255,
+      "updatedAt": 1781560997931,
+      "parentGroupId": "group_item_5"
+    },
+    {
+      "id": "custom_item_3_item",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_3",
+      "name": "藤蔓",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 52.51805874040022,
+        "y": 48
+      },
+      "createdAt": 1781541537004,
+      "updatedAt": 1781543819724,
+      "parentGroupId": "group_item"
+    },
+    {
+      "id": "custom_item_3_item_10",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_3",
+      "name": "熔岩相关机关",
+      "fields": {
+        "description": "熔岩相关机关是一种能力锁，玩家需要先拥有岩墙/岩盾作为前置防御能力，才能解锁此机关。该机关可以触发熔岩环境的变化，例如升起熔岩柱或激活熔岩喷射，用于解谜或战斗。"
+      },
+      "position": {
+        "x": 1070.6399655865011,
+        "y": 48
+      },
+      "createdAt": 1781558859670,
+      "updatedAt": 1781558904478,
+      "parentGroupId": "group_item_5"
+    },
+    {
+      "id": "custom_item_3_item_11",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_3",
+      "name": "力度相关机关",
+      "fields": {
+        "description": "一种需要足够力度才能触发的机关，通常与水炮或风弹等具有冲击力的技能配合使用。当玩家使用水炮配合加速修正产生足够冲击力时，会解锁后续通路或激活特定效果。"
+      },
+      "position": {
+        "x": 1010.1946631210658,
+        "y": 147.08902144803733
+      },
+      "createdAt": 1781559442543,
+      "updatedAt": 1781622936460,
+      "parentGroupId": "group_item_6"
+    },
+    {
+      "id": "custom_item_3_item_12",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_3",
+      "name": "下到低处",
+      "fields": {
+        "description": "一种能力锁，要求玩家具备从高处安全下落或降低高度的能力。通常与藤蔓、风弹或浮岩平台等技能配合，解锁后玩家可以快速到达低处区域。适用于需要垂直移动的关卡设计，增加探索路径的多样性。"
+      },
+      "position": {
+        "x": 1013.6245763449101,
+        "y": 245.53661577683283
+      },
+      "createdAt": 1781562406388,
+      "updatedAt": 1781626791294,
+      "parentGroupId": "group_item_6"
+    },
+    {
+      "id": "custom_item_3_item_13",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_3",
+      "name": "潜水",
+      "fields": {
+        "description": "一种能力锁，要求玩家具备水下呼吸能力才能解锁。解锁后，玩家可以在水下自由移动和探索，进入隐藏的水下区域。该能力锁通常出现在深水区或需要潜水通过的水下通道。"
+      },
+      "position": {
+        "x": 845.1033643620312,
+        "y": 377.0360831935084
+      },
+      "createdAt": 1781626599020,
+      "updatedAt": 1781626606709,
+      "parentGroupId": "group_item_6"
+    },
+    {
+      "id": "custom_item_3_item_2",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_3",
+      "name": "再生藤蔓",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 984.4571426639943,
+        "y": 241.0116921050439
+      },
+      "createdAt": 1781541545985,
+      "updatedAt": 1781629461987,
+      "parentGroupId": "group_item"
+    },
+    {
+      "id": "custom_item_3_item_3",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_3",
+      "name": "藤蔓桥",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 345.8362020606899,
+        "y": 413.819398361271
+      },
+      "createdAt": 1781542556550,
+      "updatedAt": 1781603709401,
+      "parentGroupId": "group_item"
+    },
+    {
+      "id": "custom_item_3_item_4",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_3",
+      "name": "登上高处",
+      "fields": {
+        "description": "生成藤蔓在延时修正下，角色可以通过攀爬藤蔓到达高处；同时也能通过风弹击飞自己到达高处。"
+      },
+      "position": {
+        "x": 368.71883885716403,
+        "y": 48
+      },
+      "createdAt": 1781544811259,
+      "updatedAt": 1781549970585,
+      "parentGroupId": "group_item_4"
+    },
+    {
+      "id": "custom_item_3_item_5",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_3",
+      "name": "带有陷阱的独木桥",
+      "fields": {
+        "description": "一座狭窄的独木桥，桥旁有陷阱会射出弹射物击退玩家"
+      },
+      "position": {
+        "x": 1032.700596807385,
+        "y": 177.90480668159535
+      },
+      "createdAt": 1781549763509,
+      "updatedAt": 1781549970585,
+      "parentGroupId": "group_item_4"
+    },
+    {
+      "id": "custom_item_3_item_6",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_3",
+      "name": "毒沼",
+      "fields": {
+        "description": "吹散毒雾"
+      },
+      "position": {
+        "x": 1029.237149383793,
+        "y": 288.79973934892496
+      },
+      "createdAt": 1781549928608,
+      "updatedAt": 1781549970585,
+      "parentGroupId": "group_item_4"
+    },
+    {
+      "id": "custom_item_3_item_7",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_3",
+      "name": "熔岩裂隙",
+      "fields": {
+        "description": "通过生成石头和强化修正解锁的能力锁"
+      },
+      "position": {
+        "x": 350.587841613803,
+        "y": 320.53949705491044
+      },
+      "createdAt": 1781552384847,
+      "updatedAt": 1781561435657,
+      "parentGroupId": "group_item_5"
+    },
+    {
+      "id": "custom_item_3_item_8",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "ability",
+      "name": "浮岩平台",
+      "fields": {
+        "description": "浮岩平台是一种由石头魔法生成的悬浮平台，可作为临时落脚点或桥梁。玩家需要先拥有生成石头的能力，才能解锁此能力锁。浮岩平台可以跨越裂隙或毒沼，为探索提供新的路径。",
+        "level": 1,
+        "cooldown": "",
+        "tags": []
+      },
+      "position": {
+        "x": 350.15023343868415,
+        "y": 231.79469855653727
+      },
+      "createdAt": 1781554682086,
+      "updatedAt": 1781558904478,
+      "parentGroupId": "group_item_5"
+    },
+    {
+      "id": "custom_item_3_item_9",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_3",
+      "name": "重量相关机关",
+      "fields": {
+        "description": "一种需要足够重量才能触发的机关，通常与巨石或重物配合使用。当玩家将巨石或其他重物放置在机关上时，会解锁后续通路或激活特定效果。"
+      },
+      "position": {
+        "x": 1067.6610171083116,
+        "y": 127.96327640978262
+      },
+      "createdAt": 1781558839169,
+      "updatedAt": 1781558904478,
+      "parentGroupId": "group_item_5"
+    },
+    {
+      "id": "custom_item_4_item",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "草系史莱姆",
+      "fields": {
+        "description": "免疫草系魔法，惧怕火系魔法，近战攻击"
+      },
+      "position": {
+        "x": 52,
+        "y": 40
+      },
+      "createdAt": 1781628557781,
+      "updatedAt": 1781629502509,
+      "parentGroupId": "group_item_11"
+    },
+    {
+      "id": "custom_item_4_item_10",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "岩浆虫",
+      "fields": {
+        "description": "岩浆虫是一种生活在熔岩区域的怪物，会喷吐岩浆攻击玩家，移动速度较慢，但攻击附带火焰效果。"
+      },
+      "position": {
+        "x": 54.96743528003344,
+        "y": 100.88301166259066
+      },
+      "createdAt": 1781630836469,
+      "updatedAt": 1781631338477,
+      "parentGroupId": "group_item_13"
+    },
+    {
+      "id": "custom_item_4_item_11",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "灯光水母",
+      "fields": {
+        "description": "灯光水母是一种生活在镜流群岛浅海区域的水系怪物，身体会发出柔和的光芒。它会在水中缓慢漂浮，当玩家靠近时，它会释放电流攻击，造成麻痹效果。"
+      },
+      "position": {
+        "x": 48.02617540585652,
+        "y": 48
+      },
+      "createdAt": 1781631606085,
+      "updatedAt": 1781633108521,
+      "parentGroupId": "group_item_14"
+    },
+    {
+      "id": "custom_item_4_item_12",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "潮汐甲蟹",
+      "fields": {
+        "description": "潮汐甲蟹是一种生活在潮间带的甲壳类怪物，拥有坚硬的甲壳和一对大钳子。它会随着潮汐涨落移动，在退潮时暴露在沙滩上，涨潮时潜入水中。攻击方式为近战钳击和喷射水柱。在水中其会回血"
+      },
+      "position": {
+        "x": 48,
+        "y": 111.25282995523412
+      },
+      "createdAt": 1781631642533,
+      "updatedAt": 1781633108521,
+      "parentGroupId": "group_item_14"
+    },
+    {
+      "id": "custom_item_4_item_13",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "硬壳蚌",
+      "fields": {
+        "description": "硬壳蚌是一种贝壳类怪物，平时紧闭外壳，免疫攻击。当玩家靠近时，它会张开贝壳，释放出高压水炮攻击玩家。弱点是其攻击时正面薄弱。"
+      },
+      "position": {
+        "x": 50.15158656395579,
+        "y": 176.38615946325967
+      },
+      "createdAt": 1781631971471,
+      "updatedAt": 1781633108521,
+      "parentGroupId": "group_item_14"
+    },
+    {
+      "id": "custom_item_4_item_14",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_boss",
+      "name": "巨型水系史莱姆",
+      "fields": {
+        "description": "巨型水系史莱姆是镜流群岛区域的水系Boss，体型巨大，由纯净的水元素凝聚而成。它能够操控周围的水流，召唤水龙卷和水弹攻击。降低至半血会进行分裂"
+      },
+      "position": {
+        "x": 48.525295388144514,
+        "y": 244.59719606615113
+      },
+      "createdAt": 1781632058160,
+      "updatedAt": 1781633108521,
+      "parentGroupId": "group_item_14"
+    },
+    {
+      "id": "custom_item_4_item_15",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "水妖精",
+      "fields": {
+        "description": "水妖精是一种小型水元素生物，会释放水弹攻击，也会释放水雾降低玩家命中率，移动速度快。"
+      },
+      "position": {
+        "x": 51.4150328611845,
+        "y": 310.7026638436548
+      },
+      "createdAt": 1781632383310,
+      "updatedAt": 1781633108521,
+      "parentGroupId": "group_item_14"
+    },
+    {
+      "id": "custom_item_4_item_16",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "镜湖水怪",
+      "fields": {
+        "description": "能够复制玩家的实体魔法并同时发射。"
+      },
+      "position": {
+        "x": 51.76005928323002,
+        "y": 366.1605715188982
+      },
+      "createdAt": 1781632510640,
+      "updatedAt": 1781633108521,
+      "parentGroupId": "group_item_14"
+    },
+    {
+      "id": "custom_item_4_item_17",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "冰面游猎者",
+      "fields": {
+        "description": "在冰面上快速滑行的猎手，擅长利用冰面进行突袭和追击。通过减速，击退等对策\n"
+      },
+      "position": {
+        "x": 48,
+        "y": 48
+      },
+      "createdAt": 1781633252213,
+      "updatedAt": 1781633565131,
+      "parentGroupId": "group_item_15"
+    },
+    {
+      "id": "custom_item_4_item_18",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "霜壳虫",
+      "fields": {
+        "description": "一种生活在霜语冰川的甲壳类怪物，外壳覆盖冰霜，移动缓慢但防御力高。攻击方式为近战撞击和喷射冰刺。弱点是火系攻击，受到火系伤害时会融化外壳，降低防御。"
+      },
+      "position": {
+        "x": 51.18324678250383,
+        "y": 121.60754091666809
+      },
+      "createdAt": 1781633313224,
+      "updatedAt": 1781633565131,
+      "parentGroupId": "group_item_15"
+    },
+    {
+      "id": "custom_item_4_item_19",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "雪盲幽影",
+      "fields": {
+        "description": "雪盲幽影是一种生活在霜语冰川的幽灵系怪物，擅长利用风雪隐藏身形，突然袭击玩家。它会释放雪盲效果，降低玩家视野范围，并召唤冰刺攻击。弱点是火系魔法和光。"
+      },
+      "position": {
+        "x": 53.456821632269566,
+        "y": 192.08836125940155
+      },
+      "createdAt": 1781633355056,
+      "updatedAt": 1781633565131,
+      "parentGroupId": "group_item_15"
+    },
+    {
+      "id": "custom_item_4_item_2",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "哥布林",
+      "fields": {
+        "description": "移动速度很快，近战攻击，掉落金币"
+      },
+      "position": {
+        "x": 51.822141880049685,
+        "y": 123.30442121879679
+      },
+      "createdAt": 1781628669367,
+      "updatedAt": 1781629504826,
+      "parentGroupId": "group_item_11"
+    },
+    {
+      "id": "custom_item_4_item_20",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "巡逻机",
+      "fields": {
+        "description": "一种自动巡逻的机械单位，会沿固定路线飞行并侦测入侵者。发现目标后发射雷电球，被击毁时冲向目标并爆炸。弱点：控制"
+      },
+      "position": {
+        "x": 51.454838121528155,
+        "y": 48.47260040207266
+      },
+      "createdAt": 1781633727842,
+      "updatedAt": 1781635739831,
+      "parentGroupId": "group_item_16"
+    },
+    {
+      "id": "custom_item_4_item_21",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "电容傀儡",
+      "fields": {
+        "description": "一种储存电能的机械傀儡，会释放电弧攻击周围敌人。当受到电系攻击时，会吸收电能并强化自身，攻击力提升且移动速度提高。弱点：过载时核心会暴露，此时受到物理攻击会爆炸。"
+      },
+      "position": {
+        "x": 48,
+        "y": 106.53094847607986
+      },
+      "createdAt": 1781633743146,
+      "updatedAt": 1781635739831,
+      "parentGroupId": "group_item_16"
+    },
+    {
+      "id": "custom_item_4_item_22",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "电系史莱姆",
+      "fields": {
+        "description": "由电元素凝聚而成的史莱姆，身体周围有电弧环绕。会跳跃撞击并释放电击，对周围造成范围伤害。免疫电系攻击。"
+      },
+      "position": {
+        "x": 48.897914694955034,
+        "y": 167.22831237163314
+      },
+      "createdAt": 1781633769407,
+      "updatedAt": 1781635739831,
+      "parentGroupId": "group_item_16"
+    },
+    {
+      "id": "custom_item_4_item_23",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "脉冲傀儡",
+      "fields": {
+        "description": "一种会周期性释放脉冲波的机械傀儡，脉冲波会对周围敌人造成电击伤害并短暂麻痹。当脉冲傀儡受到电系攻击时，会吸收电能并强化脉冲波的范围和伤害。"
+      },
+      "position": {
+        "x": 294.5624599841467,
+        "y": 104.6660302755322
+      },
+      "createdAt": 1781633841101,
+      "updatedAt": 1781635739831,
+      "parentGroupId": "group_item_16"
+    },
+    {
+      "id": "custom_item_4_item_24",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "反冲机",
+      "fields": {
+        "description": "一种会反弹投射物的机械单位，当被投射物击中时，会以更高速度将投射物反弹回去。反冲机自身移动缓慢，但反弹的投射物具有追踪能力。弱点：近战攻击或持续伤害可以使其过载。"
+      },
+      "position": {
+        "x": 296.82828621417593,
+        "y": 48
+      },
+      "createdAt": 1781634384544,
+      "updatedAt": 1781635739831,
+      "parentGroupId": "group_item_16"
+    },
+    {
+      "id": "custom_item_4_item_3",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "哥布林弓箭手",
+      "fields": {
+        "description": "远程攻击，射出箭矢，移动速度中等，掉落金币和箭矢"
+      },
+      "position": {
+        "x": 50.338430471077686,
+        "y": 161.15279192869065
+      },
+      "createdAt": 1781628722310,
+      "updatedAt": 1781629421563,
+      "parentGroupId": "group_item_11"
+    },
+    {
+      "id": "custom_item_4_item_4",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "栈溢藤蔓",
+      "fields": {
+        "description": "攻击方式为间隔在地上生成一格藤蔓，藤蔓会减速玩家并对玩家造成伤害。"
+      },
+      "position": {
+        "x": 51.30465558370014,
+        "y": 286.59194760773005
+      },
+      "createdAt": 1781629445077,
+      "updatedAt": 1781629509240,
+      "parentGroupId": "group_item_11"
+    },
+    {
+      "id": "custom_item_4_item_5",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "翼鸟",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 108.62943555374204,
+        "y": 53
+      },
+      "createdAt": 1781629642776,
+      "updatedAt": 1781630273042,
+      "parentGroupId": "group_item_12"
+    },
+    {
+      "id": "custom_item_4_item_6",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "风妖精",
+      "fields": {
+        "description": "风妖精是一种小型风系怪物，会释放风弹攻击玩家，移动速度快。"
+      },
+      "position": {
+        "x": 108.0111744706046,
+        "y": 117.50600794436491
+      },
+      "createdAt": 1781629814229,
+      "updatedAt": 1781630274768,
+      "parentGroupId": "group_item_12"
+    },
+    {
+      "id": "custom_item_4_item_7",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "御风兽",
+      "fields": {
+        "description": "身带风障，会偏转投射物，移动速度慢"
+      },
+      "position": {
+        "x": 106.55340788039939,
+        "y": 182.3534535419401
+      },
+      "createdAt": 1781629960341,
+      "updatedAt": 1781630277152,
+      "parentGroupId": "group_item_12"
+    },
+    {
+      "id": "custom_item_4_item_8",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "晶壳爬虫",
+      "fields": {
+        "description": "晶壳爬虫是一种拥有坚硬晶壳的怪物，免疫一切正面攻击。通过偏转或者击退等方式对策"
+      },
+      "position": {
+        "x": 53.268031910561604,
+        "y": 48
+      },
+      "createdAt": 1781630355973,
+      "updatedAt": 1781631338477,
+      "parentGroupId": "group_item_13"
+    },
+    {
+      "id": "custom_item_4_item_9",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_4",
+      "name": "失控傀儡",
+      "fields": {
+        "description": "移动速度慢，会近战攻击也会搬起石块进行远程攻击。可以通过沙尘、蒸汽等降低命中率，配合位移等来对策。"
+      },
+      "position": {
+        "x": 48.316220001623606,
+        "y": 156.1000650249524
+      },
+      "createdAt": 1781630386283,
+      "updatedAt": 1781631495023,
+      "parentGroupId": "group_item_13"
+    },
+    {
+      "id": "custom_item_item",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "易燃修正",
+      "fields": {
+        "description": "使目标变得易燃，受到火系伤害增加"
+      },
+      "position": {
+        "x": 680.9616012206643,
+        "y": 244.1334298497813
+      },
+      "createdAt": 1781532481126,
+      "updatedAt": 1781629458300,
+      "parentGroupId": "group_item"
+    },
+    {
+      "id": "custom_item_item_10",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "加速修正",
+      "fields": {
+        "description": "加速修正是一种魔法修正，可以提升法术的施法速度或弹道速度。"
+      },
+      "position": {
+        "x": 375.71264318260586,
+        "y": 436.1460482097564
+      },
+      "createdAt": 1781550059430,
+      "updatedAt": 1781559442543,
+      "parentGroupId": "group_item_4"
+    },
+    {
+      "id": "custom_item_item_11",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "生成石头",
+      "fields": {
+        "description": "生成一块石头"
+      },
+      "position": {
+        "x": 48,
+        "y": 212.17594633804507
+      },
+      "createdAt": 1781551886919,
+      "updatedAt": 1781558904478,
+      "parentGroupId": "group_item_5"
+    },
+    {
+      "id": "custom_item_item_12",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "巨石",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 784.6610171083116,
+        "y": 126.96327640978262
+      },
+      "createdAt": 1781554969510,
+      "updatedAt": 1781558904478,
+      "parentGroupId": "group_item_5"
+    },
+    {
+      "id": "custom_item_item_13",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "击退修正",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 122.29595358180536,
+        "y": 434.2923956323509
+      },
+      "createdAt": 1781557950846,
+      "updatedAt": 1781557964195,
+      "parentGroupId": "group_item_4"
+    },
+    {
+      "id": "custom_item_item_14",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "范围增加修正",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 386.3320235468136,
+        "y": 48
+      },
+      "createdAt": 1781561350305,
+      "updatedAt": 1781561971130,
+      "parentGroupId": "group_item_8"
+    },
+    {
+      "id": "custom_item_item_15",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "公转",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 833.0050137337362,
+        "y": 95.87123938445265
+      },
+      "createdAt": 1781558032210,
+      "updatedAt": 1781629487499,
+      "parentGroupId": "group_item"
+    },
+    {
+      "id": "custom_item_item_16",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "火焰修正",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 59.249351218068114,
+        "y": 194.08963853626983
+      },
+      "createdAt": 1781558070768,
+      "updatedAt": 1781629737149,
+      "parentGroupId": "group_item_2"
+    },
+    {
+      "id": "custom_item_item_17",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "溅射修正",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 947.1902816448987,
+        "y": 327.1802673938095
+      },
+      "createdAt": 1781558102055,
+      "updatedAt": 1781561968071,
+      "parentGroupId": "group_item_5"
+    },
+    {
+      "id": "custom_item_item_18",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "岩墙/ 岩盾",
+      "fields": {
+        "description": "岩墙/岩盾是一种土系防御魔法，可以召唤一面岩石墙壁或护盾来阻挡敌人的攻击和弹射物。它需要土符文作为前置条件，是土系防御链中的关键一环。岩墙可以承受多次攻击后碎裂，而岩盾则能持续一段时间保护施法者。"
+      },
+      "position": {
+        "x": 781.9344599535402,
+        "y": 50.61165168988839
+      },
+      "createdAt": 1781558741818,
+      "updatedAt": 1781558904478,
+      "parentGroupId": "group_item_5"
+    },
+    {
+      "id": "custom_item_item_19",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "生成水流",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 47.90471255908642,
+        "y": 111.73618237049686
+      },
+      "createdAt": 1781558936759,
+      "updatedAt": 1781626177615,
+      "parentGroupId": "group_item_6"
+    },
+    {
+      "id": "custom_item_item_2",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "延时修正",
+      "fields": {
+        "description": "延长法术时效"
+      },
+      "position": {
+        "x": 55.83495506966509,
+        "y": 320.0399822628169
+      },
+      "createdAt": 1781532496314,
+      "updatedAt": 1781545830214,
+      "parentGroupId": "group_item"
+    },
+    {
+      "id": "custom_item_item_20",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "水炮",
+      "fields": {
+        "description": "水炮是一种水元素魔法，可发射高压水柱冲击敌人或物体。它需要水符文作为前置条件，是水系法术链中的基础攻击手段。水炮对火系敌人有额外效果，并能扑灭火焰。"
+      },
+      "position": {
+        "x": 693.6586332440975,
+        "y": 135.8503944094382
+      },
+      "createdAt": 1781559377045,
+      "updatedAt": 1781622707156,
+      "parentGroupId": "group_item_6"
+    },
+    {
+      "id": "custom_item_item_21",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "分裂修正",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 98.7786039796265,
+        "y": 293.3592614333634
+      },
+      "createdAt": 1781559720315,
+      "updatedAt": 1781626184256,
+      "parentGroupId": "group_item_6"
+    },
+    {
+      "id": "custom_item_item_22",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "反弹修正",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 99.78782178807342,
+        "y": 355.9797218211713
+      },
+      "createdAt": 1781559864565,
+      "updatedAt": 1781626186527,
+      "parentGroupId": "group_item_6"
+    },
+    {
+      "id": "custom_item_item_23",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "生成冰霜",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 48,
+        "y": 303.6427907990147
+      },
+      "createdAt": 1781559956921,
+      "updatedAt": 1781560873129,
+      "parentGroupId": "group_item_7"
+    },
+    {
+      "id": "custom_item_item_24",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "冰霜修正",
+      "fields": {
+        "description": "冰霜修正是一种魔法修正，可以减速、冰冻、脆化敌人。它依赖于冰符文作为前置条件。"
+      },
+      "position": {
+        "x": 685.604692014655,
+        "y": 380.11464083398266
+      },
+      "createdAt": 1781560377937,
+      "updatedAt": 1781560873129,
+      "parentGroupId": "group_item_7"
+    },
+    {
+      "id": "custom_item_item_25",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "穿透修正",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 684.5666877050826,
+        "y": 48
+      },
+      "createdAt": 1781560625967,
+      "updatedAt": 1781560873129,
+      "parentGroupId": "group_item_7"
+    },
+    {
+      "id": "custom_item_item_26",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "冰凌",
+      "fields": {
+        "description": "冰凌是一种由冰符文生成的魔法尖刺，可对敌人造成冰冻伤害并减速。它可作为冰系法术的基础投射物，也可与其他符文组合产生复合效果。"
+      },
+      "position": {
+        "x": 684.5618377520941,
+        "y": 203.9739404674615
+      },
+      "createdAt": 1781560699963,
+      "updatedAt": 1781560873129,
+      "parentGroupId": "group_item_7"
+    },
+    {
+      "id": "custom_item_item_27",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "冰墙",
+      "fields": {
+        "description": "冰墙是一种防御性魔法，由冰符文触发，在目标位置生成一道冰墙，可以阻挡敌人和弹射物。冰墙持续一段时间后自动碎裂，碎裂时对周围敌人造成冰系伤害。"
+      },
+      "position": {
+        "x": 686.3029388786858,
+        "y": 116.91888413784913
+      },
+      "createdAt": 1781560835333,
+      "updatedAt": 1781560873129,
+      "parentGroupId": "group_item_7"
+    },
+    {
+      "id": "custom_item_item_28",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "火焰新星",
+      "fields": {
+        "description": "释放一颗火焰新星，对周围敌人造成范围火系伤害，并附加灼烧效果。"
+      },
+      "position": {
+        "x": 48.53163945324104,
+        "y": 57.483962083401025
+      },
+      "createdAt": 1781561124847,
+      "updatedAt": 1781561971130,
+      "parentGroupId": "group_item_8"
+    },
+    {
+      "id": "custom_item_item_29",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "精准修正",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 48,
+        "y": 144.64899064837812
+      },
+      "createdAt": 1781561925690,
+      "updatedAt": 1781561971130,
+      "parentGroupId": "group_item_8"
+    },
+    {
+      "id": "custom_item_item_3",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "强化修正",
+      "fields": {
+        "description": "强化魔法效果"
+      },
+      "position": {
+        "x": 52.99791881969486,
+        "y": 120.89163426389922
+      },
+      "createdAt": 1781542755983,
+      "updatedAt": 1781552384847,
+      "parentGroupId": "group_item_2"
+    },
+    {
+      "id": "custom_item_item_30",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "剧毒修正",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 48,
+        "y": 48
+      },
+      "createdAt": 1781561995360,
+      "updatedAt": 1781562885278,
+      "parentGroupId": "group_item_9"
+    },
+    {
+      "id": "custom_item_item_31",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "缠绕修正",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 49.34013095521095,
+        "y": 113.48418676622805
+      },
+      "createdAt": 1781562019650,
+      "updatedAt": 1781562885278,
+      "parentGroupId": "group_item_9"
+    },
+    {
+      "id": "custom_item_item_32",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "条件分支修正",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 348.73982080312317,
+        "y": 208.78586005371437
+      },
+      "createdAt": 1781562182574,
+      "updatedAt": 1781562191338,
+      "parentGroupId": "group_item_2"
+    },
+    {
+      "id": "custom_item_item_33",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "追踪修正",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 48.79723664919857,
+        "y": 253.37791837887585
+      },
+      "createdAt": 1781562658716,
+      "updatedAt": 1781562885278,
+      "parentGroupId": "group_item_9"
+    },
+    {
+      "id": "custom_item_item_34",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "生成电流",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 48.87055056329609,
+        "y": 113.4616703062527
+      },
+      "createdAt": 1781562919751,
+      "updatedAt": 1781563326526,
+      "parentGroupId": "group_item_10"
+    },
+    {
+      "id": "custom_item_item_35",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "连锁修正",
+      "fields": {
+        "description": "使法术连锁攻击多个目标"
+      },
+      "position": {
+        "x": 605.707310547441,
+        "y": 268.9719471422268
+      },
+      "createdAt": 1781563117586,
+      "updatedAt": 1781563301150,
+      "parentGroupId": "group_item_10"
+    },
+    {
+      "id": "custom_item_item_36",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "聚爆修正",
+      "fields": {
+        "description": "使法术产生聚爆效果"
+      },
+      "position": {
+        "x": 594.9001879432044,
+        "y": 373.93944212292
+      },
+      "createdAt": 1781563117586,
+      "updatedAt": 1781628266038,
+      "parentGroupId": "group_item_10"
+    },
+    {
+      "id": "custom_item_item_37",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "巨蔓束缚",
+      "fields": {
+        "description": "巨蔓束缚是一种强大的草系魔法，能够从地面召唤出巨大的藤蔓缠绕并束缚敌人。它专门用于对策巨型史莱姆等大型敌人，使其无法移动和攻击，持续数秒。藤蔓可以被火焰或风刃破坏，但需要一定时间。该魔法需要草符文作为前置条件，是草系控制链中的关键一环。"
+      },
+      "position": {
+        "x": 60.30895405380852,
+        "y": 252.25708255175277
+      },
+      "createdAt": 1781603731624,
+      "updatedAt": 1781629739158,
+      "parentGroupId": "group_item_2"
+    },
+    {
+      "id": "custom_item_item_38",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "缓时修正",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 888.0258650756405,
+        "y": 282.4696737380433
+      },
+      "createdAt": 1781634531920,
+      "updatedAt": 1781634547634,
+      "parentGroupId": "group_item_10"
+    },
+    {
+      "id": "custom_item_item_4",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "巨大火球",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 54.716573290424094,
+        "y": 55.42063073020631
+      },
+      "createdAt": 1781542870558,
+      "updatedAt": 1781550222002,
+      "parentGroupId": "group_item_2"
+    },
+    {
+      "id": "custom_item_item_5",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "凝聚魔法",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 392.04397275711835,
+        "y": 48.18343247625228
+      },
+      "createdAt": 1781543367834,
+      "updatedAt": 1781551721552,
+      "parentGroupId": "group_item_2"
+    },
+    {
+      "id": "custom_item_item_6",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "风弹",
+      "fields": {
+        "description": "发射风弹，可以吹起自己或是位移敌人\n"
+      },
+      "position": {
+        "x": 48,
+        "y": 154.2264988732412
+      },
+      "createdAt": 1781543861684,
+      "updatedAt": 1781549970585,
+      "parentGroupId": "group_item_4"
+    },
+    {
+      "id": "custom_item_item_7",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "风刃",
+      "fields": {
+        "description": "可以切割藤蔓，具有切割伤害\n"
+      },
+      "position": {
+        "x": 725.9968661352232,
+        "y": 385.62960848819534
+      },
+      "createdAt": 1781549338243,
+      "updatedAt": 1781607495030,
+      "parentGroupId": "group_item_4"
+    },
+    {
+      "id": "custom_item_item_8",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "风障",
+      "fields": {
+        "description": "可以一定程度上偏转弹射物，保护角色"
+      },
+      "position": {
+        "x": 731.700596807385,
+        "y": 177.90480668159535
+      },
+      "createdAt": 1781549633032,
+      "updatedAt": 1781549970585,
+      "parentGroupId": "group_item_4"
+    },
+    {
+      "id": "custom_item_item_9",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "狂风",
+      "fields": {
+        "description": "狂风是一种强大的风系魔法，可以制造强风区域，吹飞敌人或物体。它需要风符文作为前置条件，是风系法术链中的关键一环。"
+      },
+      "position": {
+        "x": 726.8207753771935,
+        "y": 288.79973934892496
+      },
+      "createdAt": 1781549741978,
+      "updatedAt": 1781549970585,
+      "parentGroupId": "group_item_4"
+    },
+    {
+      "id": "custom_npc_item",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_npc",
+      "name": "精灵伊芙",
+      "fields": {
+        "description": "精灵伊芙是一位居住在低语密林和风语高地交界处的精灵，擅长风系魔法，她可以教授玩家风系符文和风系魔法的使用技巧。"
+      },
+      "position": {
+        "x": 283.40133675190873,
+        "y": 679.5936428569363
+      },
+      "createdAt": 1781612437037,
+      "updatedAt": 1781612448915
+    },
+    {
+      "id": "custom_npc_npc",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_npc",
+      "name": "年老学者.塞利安",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": -96.90987106058606,
+        "y": 1687.3936365179002
+      },
+      "createdAt": 1781603862208,
+      "updatedAt": 1781608968880
+    },
+    {
+      "id": "custom_npc_npc_10",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_npc",
+      "name": "摆渡人.澜生",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 2143.2564322801322,
+        "y": 1698.8824449350836
+      },
+      "createdAt": 1781621600713,
+      "updatedAt": 1781626114198
+    },
+    {
+      "id": "custom_npc_npc_11",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_npc",
+      "name": "双子祭司.映/澈",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 2142.3315412454835,
+        "y": 1803.170148287659
+      },
+      "createdAt": 1781621634672,
+      "updatedAt": 1781627207700
+    },
+    {
+      "id": "custom_npc_npc_12",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_npc",
+      "name": "重构演算主机Ω",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 5248.988385832884,
+        "y": 1478.6005508428527
+      },
+      "createdAt": 1781622549150,
+      "updatedAt": 1781635954609
+    },
+    {
+      "id": "custom_npc_npc_13",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_npc",
+      "name": "漫游者.柯尔",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 2144.8838441665607,
+        "y": 1957.6051143453335
+      },
+      "createdAt": 1781622792419,
+      "updatedAt": 1781622909053
+    },
+    {
+      "id": "custom_npc_npc_2",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_npc",
+      "name": "工匠.埃德",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": -92.87967339462989,
+        "y": 1554.3782910450147
+      },
+      "createdAt": 1781607817592,
+      "updatedAt": 1781608968880
+    },
+    {
+      "id": "custom_npc_npc_3",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_npc",
+      "name": "炼金师.库西",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": -91.53666431742568,
+        "y": 1482.1780891020778
+      },
+      "createdAt": 1781608031505,
+      "updatedAt": 1781608968880
+    },
+    {
+      "id": "custom_npc_npc_4",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_npc",
+      "name": "矿工.赫脊",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 2158.214497405513,
+        "y": 866.1363224445671
+      },
+      "createdAt": 1781620055222,
+      "updatedAt": 1781623597005
+    },
+    {
+      "id": "custom_npc_npc_5",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_npc",
+      "name": "工匠学徒.璃砂",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 2152.8882024060918,
+        "y": 947.2738464488862
+      },
+      "createdAt": 1781620319534,
+      "updatedAt": 1781625217159
+    },
+    {
+      "id": "custom_npc_npc_6",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_npc",
+      "name": "破损傀儡.铁砧",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 2150.8991848298833,
+        "y": 1028.3069511459116
+      },
+      "createdAt": 1781620520267,
+      "updatedAt": 1781623600358
+    },
+    {
+      "id": "custom_npc_npc_7",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_npc",
+      "name": "守棺人.瑟琳",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 2123.5569650724547,
+        "y": 115.32371938812729
+      },
+      "createdAt": 1781621254988,
+      "updatedAt": 1781622582283
+    },
+    {
+      "id": "custom_npc_npc_8",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_npc",
+      "name": "雾帐婆婆",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 2123.6056637445517,
+        "y": 200.53802089010583
+      },
+      "createdAt": 1781621290373,
+      "updatedAt": 1781623865371
+    },
+    {
+      "id": "custom_npc_npc_9",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_npc",
+      "name": "棺者.希诺",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 3076.775712065005,
+        "y": 192.1579807128089
+      },
+      "createdAt": 1781621520988,
+      "updatedAt": 1781635139052
+    },
+    {
+      "id": "custom_npc_priest",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_npc",
+      "name": "牧师.米拉克",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": -93.98569273706914,
+        "y": 1622.000592675611
+      },
+      "createdAt": 1781607912252,
+      "updatedAt": 1781608968880
+    },
+    {
+      "id": "entity_item",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "entity",
+      "name": "蒸汽实体",
+      "fields": {
+        "description": "蒸发反应产生的蒸汽云，持续5秒，可遮挡视线。玩家或敌人进入蒸汽云区域时，会受到持续的水/火元素伤害。蒸汽云可被风吹散或与水元素反应生成水雾。",
+        "category": "环境实体"
+      },
+      "position": {
+        "x": 1005.7187465041966,
+        "y": 26.174153452977862
+      },
+      "createdAt": 1781561757347,
+      "updatedAt": 1781561782799,
+      "parentGroupId": "group_item_6"
+    },
+    {
+      "id": "entity_item_2",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_npc",
+      "name": "濒死冒险者",
+      "fields": {
+        "description": "学者，会在剧情杀后救玩家到新手村"
+      },
+      "position": {
+        "x": -955.523437775053,
+        "y": 1691.0426721887764
+      },
+      "createdAt": 1781602844936,
+      "updatedAt": 1781608968880
+    },
+    {
+      "id": "event_first_encounter",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "event",
+      "name": "剧情杀",
+      "fields": {
+        "description": "玩家首次遇到巨型史莱姆时触发剧情杀",
+        "trigger": "进入巨型史莱姆区域",
+        "phase": "初期"
+      },
+      "position": {
+        "x": -694.595996224316,
+        "y": 1842.5907045735532
+      },
+      "createdAt": 1781603851216,
+      "updatedAt": 1781620588026
+    },
+    {
+      "id": "event_item",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "event",
+      "name": "获救",
+      "fields": {
+        "description": "玩家在剧情杀后被塞利安救起，随后来到新手村\n",
+        "trigger": "剧情杀事件结束后自动触发",
+        "phase": "序章"
+      },
+      "position": {
+        "x": -353.3208982386535,
+        "y": 1841.2044486879115
+      },
+      "createdAt": 1781604250566,
+      "updatedAt": 1781620593971
+    },
+    {
+      "id": "event_item_2",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "event",
+      "name": "修正魔法应用教程",
+      "fields": {
+        "description": "在玩家掌握编织魔法基础后触发，引导玩家学习如何将修正魔法应用于基础法术中。通过一系列小任务，让玩家理解修正符文（如延时、强化、易燃等）与基础符文的组合效果。完成后解锁更复杂的魔法组合。",
+        "trigger": "完成编织魔法教程后自动触发",
+        "phase": "早期教学"
+      },
+      "position": {
+        "x": 396.7650598866794,
+        "y": 1844.265519186249
+      },
+      "createdAt": 1781607389129,
+      "updatedAt": 1781620599294
+    },
+    {
+      "id": "event_item_3",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "event",
+      "name": "元素反应教程",
+      "fields": {
+        "description": "在玩家完成修正魔法应用教程后触发，引导玩家学习并实践元素反应机制。通过一系列小任务，让玩家亲身体验蒸发、融化、扩散等基础元素反应，并理解其触发条件和效果。完成后解锁更复杂的元素组合与高级符文。",
+        "trigger": "完成修正魔法应用教程",
+        "phase": "中期"
+      },
+      "position": {
+        "x": 806.7567123760963,
+        "y": 1848.3454932905165
+      },
+      "createdAt": 1781607536696,
+      "updatedAt": 1781620601776
+    },
+    {
+      "id": "event_item_4",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "event",
+      "name": "学习领域魔法",
+      "fields": {
+        "description": "玩家在棺者.伊诺的引导下，开始学习领域魔法。该事件触发后，玩家将解锁领域魔法的相关能力或任务线。领域魔法是一种高阶魔法，需要玩家掌握基础元素反应后才能学习。",
+        "trigger": "与棺者.伊诺对话并完成前置任务",
+        "phase": "中期"
+      },
+      "position": {
+        "x": 3388.5975047636016,
+        "y": 192.8799490697173
+      },
+      "createdAt": 1781624914978,
+      "updatedAt": 1781633476999
+    },
+    {
+      "id": "group_item",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "group",
+      "name": "低语密林1",
+      "fields": {
+        "description": "",
+        "width": 1223.4279686269906,
+        "height": 561.8288890605028,
+        "color": "blue"
+      },
+      "position": {
+        "x": -84.33739746825722,
+        "y": 26.659882335560383
+      },
+      "createdAt": 1781543819724,
+      "updatedAt": 1781629425580
+    },
+    {
+      "id": "group_item_10",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "group",
+      "name": "锈演废都",
+      "fields": {
+        "description": "",
+        "width": 1142.0296373799074,
+        "height": 504.3860488824736,
+        "color": "blue"
+      },
+      "position": {
+        "x": 4281.329000306072,
+        "y": 666.7910276682684
+      },
+      "createdAt": 1781563301150,
+      "updatedAt": 1781633603681
+    },
+    {
+      "id": "group_item_11",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "group",
+      "name": "低语密林1怪物",
+      "fields": {
+        "description": "",
+        "width": 420,
+        "height": 445.2119268652842,
+        "color": "green"
+      },
+      "position": {
+        "x": 274.1158929065547,
+        "y": -465.57254469195806
+      },
+      "createdAt": 1781629421563,
+      "updatedAt": 1781629806325
+    },
+    {
+      "id": "group_item_12",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "group",
+      "name": "风语高地1怪物",
+      "fields": {
+        "description": "",
+        "width": 420,
+        "height": 352.4698713350856,
+        "color": "green"
+      },
+      "position": {
+        "x": 1241.9618919496747,
+        "y": 919.3603188383152
+      },
+      "createdAt": 1781630191714,
+      "updatedAt": 1781630223120
+    },
+    {
+      "id": "group_item_13",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "group",
+      "name": "炎息山谷1怪物",
+      "fields": {
+        "description": "",
+        "width": 420,
+        "height": 391.6330067129438,
+        "color": "pink"
+      },
+      "position": {
+        "x": 3225.009622135548,
+        "y": 814.5315322734236
+      },
+      "createdAt": 1781631338477,
+      "updatedAt": 1781635948786
+    },
+    {
+      "id": "group_item_14",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "group",
+      "name": "镜流群岛1怪物",
+      "fields": {
+        "description": "",
+        "width": 420,
+        "height": 544.4506383103767,
+        "color": "indigo"
+      },
+      "position": {
+        "x": 3221.586505595142,
+        "y": 1213.6843474551513
+      },
+      "createdAt": 1781633108521,
+      "updatedAt": 1781633131783
+    },
+    {
+      "id": "group_item_15",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "group",
+      "name": "霜语冰川1怪物",
+      "fields": {
+        "description": "",
+        "width": 420,
+        "height": 377.92569078938016,
+        "color": "teal"
+      },
+      "position": {
+        "x": 3389.3228448637074,
+        "y": -353.4197701224306
+      },
+      "createdAt": 1781633565131,
+      "updatedAt": 1781633580792
+    },
+    {
+      "id": "group_item_16",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "group",
+      "name": "锈演废都1怪物",
+      "fields": {
+        "description": "",
+        "width": 564.8282862141759,
+        "height": 472.35837396445686,
+        "color": "yellow"
+      },
+      "position": {
+        "x": 4630.088016674537,
+        "y": 1198.2424042274224
+      },
+      "createdAt": 1781635739831,
+      "updatedAt": 1781635952851
+    },
+    {
+      "id": "group_item_2",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "group",
+      "name": "新手村2",
+      "fields": {
+        "description": "玩家被救后到达的新手村",
+        "width": 675.0348812547543,
+        "height": 300,
+        "color": "blue"
+      },
+      "position": {
+        "x": 1244.9881560274544,
+        "y": 464.7129591564718
+      },
+      "createdAt": 1781543606062,
+      "updatedAt": 1781603851216
+    },
+    {
+      "id": "group_item_3",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "group",
+      "name": "教程关/新手村1",
+      "fields": {
+        "description": "",
+        "width": 754.9071686295256,
+        "height": 300.779915957021,
+        "color": "blue"
+      },
+      "position": {
+        "x": -1097.671075054188,
+        "y": 140.2028680201752
+      },
+      "createdAt": 1781543831232,
+      "updatedAt": 1781602751125
+    },
+    {
+      "id": "group_item_4",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "group",
+      "name": "风语高地1",
+      "fields": {
+        "description": "",
+        "width": 1300.700596807385,
+        "height": 528.0612429713345,
+        "color": "blue"
+      },
+      "position": {
+        "x": -159.1113475282292,
+        "y": 758.0201899565814
+      },
+      "createdAt": 1781549970585,
+      "updatedAt": 1781549989395
+    },
+    {
+      "id": "group_item_5",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "group",
+      "name": "炎息山谷1",
+      "fields": {
+        "description": "",
+        "width": 1348.9269609081816,
+        "height": 460.13477505945775,
+        "color": "amber"
+      },
+      "position": {
+        "x": 2014.9040994320444,
+        "y": 327.49423363173963
+      },
+      "createdAt": 1781558904478,
+      "updatedAt": 1781630289964
+    },
+    {
+      "id": "group_item_6",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "group",
+      "name": "镜流群岛1",
+      "fields": {
+        "description": "",
+        "width": 1259.204926906314,
+        "height": 476.8502723844674,
+        "color": "blue"
+      },
+      "position": {
+        "x": 1900.3146566451005,
+        "y": 1081.4071662939464
+      },
+      "createdAt": 1781559928777,
+      "updatedAt": 1781626183100
+    },
+    {
+      "id": "group_item_7",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "group",
+      "name": "霜语冰川1",
+      "fields": {
+        "description": "",
+        "width": 1257.2311642995815,
+        "height": 500.11464083398266,
+        "color": "blue"
+      },
+      "position": {
+        "x": 2066.4613112800507,
+        "y": -402.2800186241393
+      },
+      "createdAt": 1781560873129,
+      "updatedAt": 1781622579453
+    },
+    {
+      "id": "group_item_8",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "group",
+      "name": "新手村3",
+      "fields": {
+        "description": "",
+        "width": 654.3320235468136,
+        "height": 300,
+        "color": "blue"
+      },
+      "position": {
+        "x": 3528.902301789069,
+        "y": 378.62965094324943
+      },
+      "createdAt": 1781561971130,
+      "updatedAt": 1781563457298
+    },
+    {
+      "id": "group_item_9",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "group",
+      "name": "低语密林/风语高地 2",
+      "fields": {
+        "description": "",
+        "width": 420,
+        "height": 373.37791837887585,
+        "color": "blue"
+      },
+      "position": {
+        "x": 4637.607725456769,
+        "y": 117.09749059162914
+      },
+      "createdAt": 1781562885278,
+      "updatedAt": 1781600661559
+    },
+    {
+      "id": "lightning_ball",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "雷电球",
+      "fields": {
+        "description": "释放一颗雷电球，对敌人造成电击伤害"
+      },
+      "position": {
+        "x": 611.8729777822437,
+        "y": 162.28885050874885
+      },
+      "createdAt": 1781563203067,
+      "updatedAt": 1781563301150,
+      "parentGroupId": "group_item_10"
+    },
+    {
+      "id": "lock_electric",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_3",
+      "name": "电相关机关",
+      "fields": {
+        "description": "需要通电能力才能解锁的机关，用于解谜或战斗"
+      },
+      "position": {
+        "x": 621.2649863950846,
+        "y": 48.400320607151116
+      },
+      "createdAt": 1781562976450,
+      "updatedAt": 1781563301150,
+      "parentGroupId": "group_item_10"
+    },
+    {
+      "id": "lock_fragile_wall",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_3",
+      "name": "脆弱墙体",
+      "fields": {
+        "description": "一种需要聚爆修正才能破坏的脆弱墙体，破坏后可以开辟新路径。"
+      },
+      "position": {
+        "x": 897.5345025889028,
+        "y": 376.5510938128085
+      },
+      "createdAt": 1781563276934,
+      "updatedAt": 1781628267934,
+      "parentGroupId": "group_item_10"
+    },
+    {
+      "id": "lock_optical",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_3",
+      "name": "光学相关机关",
+      "fields": {
+        "description": "需要冰镜魔法才能解锁的光学机关，用于解谜或战斗"
+      },
+      "position": {
+        "x": 1011.4837508253158,
+        "y": 250.64609774721572
+      },
+      "createdAt": 1781560297891,
+      "updatedAt": 1781562748284,
+      "parentGroupId": "group_item_7"
+    },
+    {
+      "id": "module_spell",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "ability",
+      "name": "施法模块",
+      "fields": {
+        "description": "允许角色施放法术的核心模块",
+        "level": 1,
+        "cooldown": "",
+        "tags": []
+      },
+      "position": {
+        "x": 491.79362926659496,
+        "y": 176.18512253703287
+      },
+      "createdAt": 1781531598954,
+      "updatedAt": 1781603341779,
+      "parentGroupId": "group_item_3"
+    },
+    {
+      "id": "quest_ed_2",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "quest",
+      "name": "工匠的材料",
+      "fields": {
+        "description": "工匠埃德希望玩家在风语高地寻找稀有矿石",
+        "status_default": "未开始"
+      },
+      "position": {
+        "x": 555.2043421455885,
+        "y": 1549.094817271283
+      },
+      "createdAt": 1781608685336,
+      "updatedAt": 1781617882089
+    },
+    {
+      "id": "quest_elf_1",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "quest",
+      "name": "精灵的请求",
+      "fields": {
+        "description": "精灵伊芙请求玩家清理低语密林某处的怪物",
+        "status_default": "未开始"
+      },
+      "position": {
+        "x": 879.3767817794094,
+        "y": 665.2792508658437
+      },
+      "createdAt": 1781612497037,
+      "updatedAt": 1781618810968
+    },
+    {
+      "id": "quest_elf_2",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "quest",
+      "name": "风之试炼",
+      "fields": {
+        "description": "精灵伊芙会对玩家进行风相关魔法的考验\n",
+        "status_default": "未开始"
+      },
+      "position": {
+        "x": 1029.4833052801898,
+        "y": 30.420062164931778
+      },
+      "createdAt": 1781612497037,
+      "updatedAt": 1781618808560,
+      "parentGroupId": "group_item_4"
+    },
+    {
+      "id": "quest_item",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "quest",
+      "name": "工匠的考验",
+      "fields": {
+        "description": "工匠埃德要求玩家在风语高地击败一只精英怪物，以证明自己的实力。该任务需要玩家具备一定的战斗技巧。",
+        "status_default": "未开始"
+      },
+      "position": {
+        "x": 1541.0828990759207,
+        "y": 1549.094817271283
+      },
+      "createdAt": 1781617969540,
+      "updatedAt": 1781618264280
+    },
+    {
+      "id": "quest_item_2",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "quest",
+      "name": "婆婆的药",
+      "fields": {
+        "description": "运送药物到世界某处，有时限要求，同时不能受伤，旨在找到霜语冰川的捷径",
+        "status_default": "未开始"
+      },
+      "position": {
+        "x": 2419.591815681085,
+        "y": 193.35185536902887
+      },
+      "createdAt": 1781624592196,
+      "updatedAt": 1781624799101
+    },
+    {
+      "id": "quest_item_3",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "quest",
+      "name": "矿工的委托",
+      "fields": {
+        "description": "矿工赫脊委托玩家寻找新的矿脉",
+        "status_default": "未开始"
+      },
+      "position": {
+        "x": 2453.8844075448433,
+        "y": 860.0424685014942
+      },
+      "createdAt": 1781625031231,
+      "updatedAt": 1781625232535
+    },
+    {
+      "id": "quest_item_4",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "quest",
+      "name": "矿工的委托2",
+      "fields": {
+        "description": "矿工赫脊委托玩家固化矿井，防止坍塌，同时提供冷却矿道的手段。玩家需要收集材料或使用特定能力完成任务。",
+        "status_default": "未开始"
+      },
+      "position": {
+        "x": 2741.013856981547,
+        "y": 861.7835696280865
+      },
+      "createdAt": 1781625137696,
+      "updatedAt": 1781625185934
+    },
+    {
+      "id": "quest_item_5",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "quest",
+      "name": "收集大量晶砂",
+      "fields": {
+        "description": "工匠学徒.璃砂需要玩家收集大量晶砂以完成她的委托。",
+        "status_default": "未开始"
+      },
+      "position": {
+        "x": 2448.2992136720145,
+        "y": 941.2738464488862
+      },
+      "createdAt": 1781625564435,
+      "updatedAt": 1781625600683
+    },
+    {
+      "id": "quest_item_6",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "quest",
+      "name": "搬运巨石开辟道路",
+      "fields": {
+        "description": "",
+        "status_default": "locked"
+      },
+      "position": {
+        "x": 2443.9475090787914,
+        "y": 1019.1251240338163
+      },
+      "createdAt": 1781625744457,
+      "updatedAt": 1781625868334
+    },
+    {
+      "id": "quest_item_7",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "quest",
+      "name": "修复机械电路",
+      "fields": {
+        "description": "玩家需要修复破损傀儡的机械电路\n",
+        "status_default": "inactive"
+      },
+      "position": {
+        "x": 4389.02316178301,
+        "y": 1216.6850601715253
+      },
+      "createdAt": 1781625915932,
+      "updatedAt": 1781634556892
+    },
+    {
+      "id": "quest_item_8",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "quest",
+      "name": "摆渡人的委托",
+      "fields": {
+        "description": "玩家在渡口遇到摆渡人澜生，他请求玩家清理水上的怪物。完成后可以学习水下呼吸",
+        "status_default": "未开始"
+      },
+      "position": {
+        "x": 2442.7843043150815,
+        "y": 1690.267207272606
+      },
+      "createdAt": 1781626157587,
+      "updatedAt": 1781626574404
+    },
+    {
+      "id": "quest_item_9",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "quest",
+      "name": "守护祭坛",
+      "fields": {
+        "description": "玩家需要在镜流群岛的祭坛处抵御一波波怪物攻击，保护祭坛不被破坏。成功守护后，双子祭司会给予奖励并解锁后续任务。",
+        "status_default": "未开始"
+      },
+      "position": {
+        "x": 2751.551573176629,
+        "y": 1793.0758488885967
+      },
+      "createdAt": 1781627788788,
+      "updatedAt": 1781627794693
+    },
+    {
+      "id": "quest_kuxi_1",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "quest",
+      "name": "炼金师的材料",
+      "fields": {
+        "description": "炼金师库西需要玩家在低语密林里采集特定材料",
+        "status_default": "未开始"
+      },
+      "position": {
+        "x": 271.2658448144436,
+        "y": 1468.608272883898
+      },
+      "createdAt": 1781608106914,
+      "updatedAt": 1781617995631
+    },
+    {
+      "id": "quest_kuxi_2",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "quest",
+      "name": "炼金师的配方",
+      "fields": {
+        "description": "炼金师库西需要玩家帮助她编织魔法",
+        "status_default": "未开始"
+      },
+      "position": {
+        "x": 1293.5854719415481,
+        "y": 1466.9638280726524
+      },
+      "createdAt": 1781608685336,
+      "updatedAt": 1781618263288
+    },
+    {
+      "id": "quest_milak_1",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "quest",
+      "name": "牧师的祈祷",
+      "fields": {
+        "description": "牧师米拉克希望玩家净化毒沼，使用狂风吹散毒雾。",
+        "status_default": "未开始"
+      },
+      "position": {
+        "x": 862.0598857731898,
+        "y": 1618.8616075216364
+      },
+      "createdAt": 1781608106914,
+      "updatedAt": 1781611991262
+    },
+    {
+      "id": "quest_milak_2",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "quest",
+      "name": "牧师的仪式",
+      "fields": {
+        "description": "牧师米拉克希望玩家编织魔法\n",
+        "status_default": "未开始"
+      },
+      "position": {
+        "x": 1785.3491798650862,
+        "y": 1628.8005030139054
+      },
+      "createdAt": 1781608685336,
+      "updatedAt": 1781623206331
+    },
+    {
+      "id": "quest_selian_1",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "quest",
+      "name": "主线.探索与收集",
+      "fields": {
+        "description": "年老学者塞利安请求玩家收集所有的元素符文和魔法碑，以进行魔法研究\n",
+        "status_default": "未开始"
+      },
+      "position": {
+        "x": 276.8711635839769,
+        "y": 1677.0135284767582
+      },
+      "createdAt": 1781608106914,
+      "updatedAt": 1781621056206
+    },
+    {
+      "id": "quest_seren_1",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "quest",
+      "name": "守棺人的委托",
+      "fields": {
+        "description": "守棺人瑟琳请求玩家在霜语冰川寻找一件古老的遗物，以解开某个封印。",
+        "status_default": "未开始"
+      },
+      "position": {
+        "x": 2414.8741223953043,
+        "y": 110.10041600835056
+      },
+      "createdAt": 1781624470533,
+      "updatedAt": 1781624493953
+    },
+    {
+      "id": "quest_twin_priest",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "quest",
+      "name": "双子祭司的委托",
+      "fields": {
+        "description": "双子祭司.映/澈请求玩家在镜流群岛寻找一对失落的双子符文，以恢复祭坛的平衡。",
+        "status_default": "未开始"
+      },
+      "position": {
+        "x": 2443.551573176629,
+        "y": 1794.0758488885967
+      },
+      "createdAt": 1781627671751,
+      "updatedAt": 1781627753152
+    },
+    {
+      "id": "rune_earth",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_2",
+      "name": "土符文",
+      "fields": {
+        "description": "土元素符文，可与其他符文产生反应"
+      },
+      "position": {
+        "x": 364.08315830853735,
+        "y": 124.797560260084
+      },
+      "createdAt": 1781551956319,
+      "updatedAt": 1781558904478,
+      "parentGroupId": "group_item_5"
+    },
+    {
+      "id": "rune_electric",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_2",
+      "name": "电符文",
+      "fields": {
+        "description": "电元素符文，可与其他符文产生反应"
+      },
+      "position": {
+        "x": 298.63132514214885,
+        "y": 180.32973899372803
+      },
+      "createdAt": 1781562976450,
+      "updatedAt": 1781563301150,
+      "parentGroupId": "group_item_10"
+    },
+    {
+      "id": "rune_fire",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_2",
+      "name": "火符文",
+      "fields": {
+        "description": "火系符文，可镶嵌在装备上"
+      },
+      "position": {
+        "x": 493.79935875950775,
+        "y": 98.97397324445404
+      },
+      "createdAt": 1781531598954,
+      "updatedAt": 1781603339840,
+      "parentGroupId": "group_item_3"
+    },
+    {
+      "id": "rune_grass",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_2",
+      "name": "草符文",
+      "fields": {
+        "description": "草属性的符文"
+      },
+      "position": {
+        "x": 353.2780316430916,
+        "y": 175.40417716958473
+      },
+      "createdAt": 1781532029861,
+      "updatedAt": 1781629459183,
+      "parentGroupId": "group_item"
+    },
+    {
+      "id": "rune_ice",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_2",
+      "name": "冰符文",
+      "fields": {
+        "description": "冰元素符文，可与其他符文产生反应"
+      },
+      "position": {
+        "x": 344.4938488846615,
+        "y": 292.77009792366607
+      },
+      "createdAt": 1781560297891,
+      "updatedAt": 1781560873129,
+      "parentGroupId": "group_item_7"
+    },
+    {
+      "id": "rune_water",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item_2",
+      "name": "水符文",
+      "fields": {
+        "description": "水元素符文，可与其他符文产生反应"
+      },
+      "position": {
+        "x": 364.3064203958593,
+        "y": 101.90701666195594
+      },
+      "createdAt": 1781559230837,
+      "updatedAt": 1781561651017,
+      "parentGroupId": "group_item_6"
+    },
+    {
+      "id": "skill_fireball",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "火球术",
+      "fields": {
+        "description": "释放一颗火球攻击敌人"
+      },
+      "position": {
+        "x": 105.11036322426003,
+        "y": 61.53669821928062
+      },
+      "createdAt": 1781531598954,
+      "updatedAt": 1781602754299,
+      "parentGroupId": "group_item_3"
+    },
+    {
+      "id": "skill_vine_bind",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "生成藤蔓",
+      "fields": {
+        "description": "释放藤蔓束缚敌人"
+      },
+      "position": {
+        "x": 48.000000000000014,
+        "y": 174.08466925881186
+      },
+      "createdAt": 1781532029861,
+      "updatedAt": 1781629460542,
+      "parentGroupId": "group_item"
+    },
+    {
+      "id": "spell_ice_mirror",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "冰镜",
+      "fields": {
+        "description": "生成冰镜，可以反射光线或弹射物"
+      },
+      "position": {
+        "x": 685.22414418688,
+        "y": 292.407112835102
+      },
+      "createdAt": 1781560297891,
+      "updatedAt": 1781560873129,
+      "parentGroupId": "group_item_7"
+    },
+    {
+      "id": "tutorial_weave_magic",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "event",
+      "name": "编织魔法教程",
+      "fields": {
+        "description": "玩家在获救后触发，学习如何组合符文和修正来编织魔法",
+        "trigger": "获救事件结束后自动触发",
+        "phase": "序章"
+      },
+      "position": {
+        "x": -3.247908523104485,
+        "y": 1839.3925779745598
+      },
+      "createdAt": 1781607256387,
+      "updatedAt": 1781620596663
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge_019200c7",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_2_item_2",
+      "to": "custom_item_item_8",
+      "relationType": "requires",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781549633033,
+      "updatedAt": 1781549633033
+    },
+    {
+      "id": "edge_075b70bf",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "rune_earth",
+      "to": "custom_item_2_new_sand",
+      "relationType": "triggers",
+      "label": "风化反应",
+      "createdAt": 1781552503255,
+      "updatedAt": 1781552503255
+    },
+    {
+      "id": "edge_08c8c765",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "buff_item_7",
+      "to": "custom_item_item_36",
+      "relationType": "unlocks",
+      "label": "解锁",
+      "createdAt": 1781563117586,
+      "updatedAt": 1781628262663,
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in"
+    },
+    {
+      "id": "edge_09c5db91",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_11",
+      "to": "custom_item_3_item_7",
+      "relationType": "unlocks",
+      "label": "配合",
+      "createdAt": 1781552384847,
+      "updatedAt": 1781552400412,
+      "sourceHandle": "bottom-out",
+      "targetHandle": "left-in"
+    },
+    {
+      "id": "edge_0d6f450b",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "ability_item_4",
+      "to": "custom_item_3_item_13",
+      "relationType": "unlocks",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781626599021,
+      "updatedAt": 1781626599021
+    },
+    {
+      "id": "edge_10c4de47",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_2",
+      "to": "custom_item_3_item_4",
+      "relationType": "unlocks",
+      "sourceHandle": "bottom-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781546614856,
+      "updatedAt": 1781546742185
+    },
+    {
+      "id": "edge_126746e4",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_npc_item",
+      "to": "quest_elf_2",
+      "relationType": "triggers",
+      "createdAt": 1781612497037,
+      "updatedAt": 1781612497037
+    },
+    {
+      "id": "edge_1552e4c0",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "quest_ed_2",
+      "to": "quest_item",
+      "relationType": "triggers",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781617969541,
+      "updatedAt": 1781617988771
+    },
+    {
+      "id": "edge_1973d699",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "rune_water",
+      "to": "ability_item_3",
+      "relationType": "requires",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781562330765,
+      "updatedAt": 1781562330765
+    },
+    {
+      "id": "edge_198a2d38",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_11",
+      "to": "rune_earth",
+      "relationType": "unlocks",
+      "createdAt": 1781551956319,
+      "updatedAt": 1781552396678,
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in"
+    },
+    {
+      "id": "edge_1a2b3c4d",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_4",
+      "to": "custom_item_item_5",
+      "relationType": "unlocks",
+      "createdAt": 1781543367834,
+      "updatedAt": 1781543367834
+    },
+    {
+      "id": "edge_1cf4f793",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_24",
+      "to": "buff_item_5",
+      "relationType": "triggers",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781561708175,
+      "updatedAt": 1781561715063
+    },
+    {
+      "id": "edge_1d5fe442",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_npc_npc",
+      "to": "event_item",
+      "relationType": "triggers",
+      "label": "学者救援",
+      "createdAt": 1781603851216,
+      "updatedAt": 1781604285501,
+      "sourceHandle": "bottom-out",
+      "targetHandle": "top-in"
+    },
+    {
+      "id": "edge_1ec6980e",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_37",
+      "to": "custom_boss_item",
+      "relationType": "rel_item",
+      "sourceHandle": "bottom-out",
+      "targetHandle": "top-in",
+      "createdAt": 1781603794325,
+      "updatedAt": 1781603794325
+    },
+    {
+      "id": "edge_2096b542",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_npc_npc_6",
+      "to": "quest_item_6",
+      "relationType": "triggers",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781625744458,
+      "updatedAt": 1781625872740
+    },
+    {
+      "id": "edge_26ced848",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "tutorial_weave_magic",
+      "to": "event_item_2",
+      "relationType": "triggers",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781607389130,
+      "updatedAt": 1781607395000
+    },
+    {
+      "id": "edge_272b985f",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_3",
+      "to": "custom_item_3_item_7",
+      "relationType": "unlocks",
+      "label": "配合",
+      "createdAt": 1781552384847,
+      "updatedAt": 1781552392479,
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in"
+    },
+    {
+      "id": "edge_296bbe22",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_19",
+      "to": "rune_water",
+      "relationType": "unlocks",
+      "createdAt": 1781559230837,
+      "updatedAt": 1781559230837
+    },
+    {
+      "id": "edge_2a4682fb",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_npc_npc_11",
+      "to": "quest_twin_priest",
+      "relationType": "triggers",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781627678010,
+      "updatedAt": 1781627683889
+    },
+    {
+      "id": "edge_2b27d9d9",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "entity_item_2",
+      "to": "group_item_2",
+      "relationType": "unlocks",
+      "label": "救到新手村",
+      "createdAt": 1781603851216,
+      "updatedAt": 1781603851216
+    },
+    {
+      "id": "edge_313a547e",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "rune_electric",
+      "to": "buff_item_7",
+      "relationType": "unlocks",
+      "label": "解锁",
+      "createdAt": 1781563117586,
+      "updatedAt": 1781634561712,
+      "sourceHandle": "bottom-out",
+      "targetHandle": "top-in"
+    },
+    {
+      "id": "edge_37597666",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "rune_water",
+      "to": "buff_item_4",
+      "relationType": "triggers",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781561676183,
+      "updatedAt": 1781561676183
+    },
+    {
+      "id": "edge_3c734221",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "quest_item_6",
+      "to": "quest_item_7",
+      "relationType": "requires",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781625915933,
+      "updatedAt": 1781625915933
+    },
+    {
+      "id": "edge_3ecafcbf",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_npc_npc_5",
+      "to": "quest_item_5",
+      "relationType": "triggers",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781625564436,
+      "updatedAt": 1781625564436
+    },
+    {
+      "id": "edge_3edae28a",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_2_item_2",
+      "to": "custom_item_item_13",
+      "relationType": "requires",
+      "sourceHandle": "bottom-out",
+      "targetHandle": "top-in",
+      "createdAt": 1781557950847,
+      "updatedAt": 1781557957781
+    },
+    {
+      "id": "edge_400c383d",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_npc_npc_8",
+      "to": "quest_item_2",
+      "relationType": "unlocks",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781624592197,
+      "updatedAt": 1781624597001
+    },
+    {
+      "id": "edge_460761d7",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "skill_fireball",
+      "to": "rune_fire",
+      "relationType": "unlocks",
+      "label": "解锁",
+      "createdAt": 1781531598954,
+      "updatedAt": 1781532602758
+    },
+    {
+      "id": "edge_48310f78",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "rune_electric",
+      "to": "quest_item_7",
+      "relationType": "unlocks",
+      "sourceHandle": "bottom-out",
+      "targetHandle": "top-in",
+      "createdAt": 1781634569225,
+      "updatedAt": 1781634569225
+    },
+    {
+      "id": "edge_4a9936b5",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "event_item_2",
+      "to": "event_item_3",
+      "relationType": "triggers",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781607536697,
+      "updatedAt": 1781607536697
+    },
+    {
+      "id": "edge_50325d7c",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "rune_ice",
+      "to": "custom_item_item_27",
+      "relationType": "requires",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781560835334,
+      "updatedAt": 1781560835334
+    },
+    {
+      "id": "edge_51870108",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item",
+      "to": "custom_item_3_item_2",
+      "relationType": "rel_item",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781542199098,
+      "updatedAt": 1781542199098
+    },
+    {
+      "id": "edge_52908f56",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_2_item_2",
+      "to": "buff_item_6",
+      "relationType": "triggers",
+      "sourceHandle": "top-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781562141858,
+      "updatedAt": 1781562141858
+    },
+    {
+      "id": "edge_5a4afec4",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_2_item_2",
+      "to": "custom_item_item_9",
+      "relationType": "requires",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781549741978,
+      "updatedAt": 1781549741978
+    },
+    {
+      "id": "edge_5e27d77b",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_npc_item",
+      "to": "quest_elf_1",
+      "relationType": "triggers",
+      "createdAt": 1781612497037,
+      "updatedAt": 1781612497037
+    },
+    {
+      "id": "edge_5eb07226",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "skill_fireball",
+      "to": "custom_item_3_item",
+      "relationType": "rel_item",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781541648574,
+      "updatedAt": 1781543801490
+    },
+    {
+      "id": "edge_611e0eab",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_28",
+      "to": "custom_item_item_14",
+      "relationType": "unlocks",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781561373184,
+      "updatedAt": 1781561373184
+    },
+    {
+      "id": "edge_61415d53",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "entity_item_2",
+      "to": "custom_boss_item",
+      "relationType": "requires",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781603535337,
+      "updatedAt": 1781603964178,
+      "label": "遭遇"
+    },
+    {
+      "id": "edge_6232853d",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "ability_electrify",
+      "to": "lock_electric",
+      "relationType": "unlocks",
+      "createdAt": 1781562976450,
+      "updatedAt": 1781562976450
+    },
+    {
+      "id": "edge_66e25c6a",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_6",
+      "to": "custom_item_3_item_4",
+      "relationType": "unlocks",
+      "label": "",
+      "createdAt": 1781544265441,
+      "updatedAt": 1781548107239
+    },
+    {
+      "id": "edge_6baa6463",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_8",
+      "to": "custom_item_3_item_5",
+      "relationType": "unlocks",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781549763509,
+      "updatedAt": 1781549920130
+    },
+    {
+      "id": "edge_712f5ffc",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "rune_earth",
+      "to": "custom_item_item_18",
+      "relationType": "requires",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781558741819,
+      "updatedAt": 1781558741819
+    },
+    {
+      "id": "edge_76b13258",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_9",
+      "to": "custom_item_3_item_6",
+      "relationType": "unlocks",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781549928609,
+      "updatedAt": 1781549928609
+    },
+    {
+      "id": "edge_7df92a0a",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_6",
+      "to": "ability_item",
+      "relationType": "unlocks",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781544099176,
+      "updatedAt": 1781544099176
+    },
+    {
+      "id": "edge_80acfd2b",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_12",
+      "to": "custom_item_3_item_9",
+      "relationType": "unlocks",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781558839169,
+      "updatedAt": 1781558839169
+    },
+    {
+      "id": "edge_81dbc5dd",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_npc_npc_7",
+      "to": "quest_seren_1",
+      "relationType": "triggers",
+      "createdAt": 1781624470533,
+      "updatedAt": 1781624470533
+    },
+    {
+      "id": "edge_85f9b5ca",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "spell_ice_mirror",
+      "to": "lock_optical",
+      "relationType": "unlocks",
+      "createdAt": 1781560297891,
+      "updatedAt": 1781560297891
+    },
+    {
+      "id": "edge_86ad2689",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_npc_npc_4",
+      "to": "quest_item_3",
+      "relationType": "triggers",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781625031232,
+      "updatedAt": 1781625031232
+    },
+    {
+      "id": "edge_87c20bc9",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "rune_grass",
+      "to": "custom_item_item",
+      "relationType": "requires",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781532986199,
+      "updatedAt": 1781532986199
+    },
+    {
+      "id": "edge_8847fdfc",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_2_item_2",
+      "to": "custom_item_item_10",
+      "relationType": "requires",
+      "sourceHandle": "bottom-out",
+      "targetHandle": "top-in",
+      "createdAt": 1781550059431,
+      "updatedAt": 1781550077573
+    },
+    {
+      "id": "edge_8d8f6442",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "entity_item_2",
+      "to": "skill_fireball",
+      "relationType": "unlocks",
+      "createdAt": 1781603126816,
+      "updatedAt": 1781603157038,
+      "sourceHandle": "top-out",
+      "targetHandle": "bottom-in"
+    },
+    {
+      "id": "edge_8e912167",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "rune_electric",
+      "to": "conductive_effect",
+      "relationType": "triggers",
+      "createdAt": 1781563044640,
+      "updatedAt": 1781563145903,
+      "sourceHandle": "bottom-out",
+      "targetHandle": "top-in"
+    },
+    {
+      "id": "edge_8f4c2ace",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_2",
+      "to": "custom_item_3_item_3",
+      "relationType": "unlocks",
+      "sourceHandle": "bottom-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781542556550,
+      "updatedAt": 1781548081876
+    },
+    {
+      "id": "edge_934e806a",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "quest_item_3",
+      "to": "quest_item_4",
+      "relationType": "requires",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781625137696,
+      "updatedAt": 1781625137696
+    },
+    {
+      "id": "edge_9802c4a9",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_npc_npc_10",
+      "to": "quest_item_8",
+      "relationType": "triggers",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781626157588,
+      "updatedAt": 1781626157588
+    },
+    {
+      "id": "edge_a1cc7d3a",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_23",
+      "to": "rune_ice",
+      "relationType": "unlocks",
+      "createdAt": 1781560297891,
+      "updatedAt": 1781560297891
+    },
+    {
+      "id": "edge_a5c1e220",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "rune_ice",
+      "to": "spell_ice_mirror",
+      "relationType": "unlocks",
+      "createdAt": 1781560297891,
+      "updatedAt": 1781560297891
+    },
+    {
+      "id": "edge_a62b4fc9",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_34",
+      "to": "ability_electrify",
+      "relationType": "unlocks",
+      "createdAt": 1781562976450,
+      "updatedAt": 1781562985322,
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in"
+    },
+    {
+      "id": "edge_a75d559e",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "rune_fire",
+      "to": "custom_item_item",
+      "relationType": "requires",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781532983402,
+      "updatedAt": 1781532983402
+    },
+    {
+      "id": "edge_a7c9548a",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "rune_ice",
+      "to": "custom_item_item_26",
+      "relationType": "requires",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781560699963,
+      "updatedAt": 1781560699963
+    },
+    {
+      "id": "edge_a973a161",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_npc_npc_9",
+      "to": "event_item_4",
+      "relationType": "triggers",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781624914979,
+      "updatedAt": 1781624914979
+    },
+    {
+      "id": "edge_ad9d9477",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_boss_boss_8",
+      "to": "custom_npc_npc_12",
+      "relationType": "unlocks",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781635814486,
+      "updatedAt": 1781635819904,
+      "label": "重构"
+    },
+    {
+      "id": "edge_b3861428",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "skill_fireball",
+      "to": "module_spell",
+      "relationType": "unlocks",
+      "label": "解锁",
+      "createdAt": 1781531598954,
+      "updatedAt": 1781532602758
+    },
+    {
+      "id": "edge_b709e9d7",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "rune_water",
+      "to": "custom_item_item_20",
+      "relationType": "unlocks",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781559377046,
+      "updatedAt": 1781559381850
+    },
+    {
+      "id": "edge_bb25fe9e",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_2_item_2",
+      "to": "custom_item_item_7",
+      "relationType": "requires",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781549338243,
+      "updatedAt": 1781549627139
+    },
+    {
+      "id": "edge_c13fc127",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "quest_twin_priest",
+      "to": "quest_item_9",
+      "relationType": "requires",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781627788790,
+      "updatedAt": 1781627788790
+    },
+    {
+      "id": "edge_c2a91848",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_2",
+      "to": "custom_item_2_item",
+      "relationType": "unlocks",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781533008733,
+      "updatedAt": 1781546603295
+    },
+    {
+      "id": "edge_c6d0e5c9",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "rune_water",
+      "to": "conductive_effect",
+      "relationType": "triggers",
+      "createdAt": 1781563044640,
+      "updatedAt": 1781563049049,
+      "sourceHandle": "right-out",
+      "targetHandle": "bottom-in"
+    },
+    {
+      "id": "edge_c7282151",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "buff_item_4",
+      "to": "entity_item",
+      "relationType": "rel_item_2",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781561757348,
+      "updatedAt": 1781561780780
+    },
+    {
+      "id": "edge_cd0a8630",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_boss_boss_7",
+      "to": "custom_npc_npc_9",
+      "relationType": "unlocks",
+      "sourceHandle": "bottom-out",
+      "targetHandle": "top-in",
+      "createdAt": 1781633472323,
+      "updatedAt": 1781633585322
+    },
+    {
+      "id": "edge_cf138d45",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_24",
+      "to": "buff_item_3",
+      "relationType": "triggers",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781561636569,
+      "updatedAt": 1781561636569
+    },
+    {
+      "id": "edge_cf50a994",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "skill_vine_bind",
+      "to": "rune_grass",
+      "relationType": "unlocks",
+      "label": "解锁",
+      "createdAt": 1781532029861,
+      "updatedAt": 1781532602758
+    },
+    {
+      "id": "edge_d150cc8b",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "rune_earth",
+      "to": "custom_item_item_12",
+      "relationType": "requires",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781554969510,
+      "updatedAt": 1781554969510
+    },
+    {
+      "id": "edge_d5886b3f",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_boss_boss",
+      "to": "custom_item_item_15",
+      "relationType": "unlocks",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781629065530,
+      "updatedAt": 1781629065530
+    },
+    {
+      "id": "edge_d6d9d1cf",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_11",
+      "to": "custom_item_3_item_8",
+      "relationType": "unlocks",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781554682087,
+      "updatedAt": 1781554855379
+    },
+    {
+      "id": "edge_d8a649ce",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "buff_item_2",
+      "to": "custom_item_2_new_sand",
+      "relationType": "rel_item_2",
+      "sourceHandle": "top-out",
+      "targetHandle": "bottom-in",
+      "createdAt": 1781561429224,
+      "updatedAt": 1781561778330
+    },
+    {
+      "id": "edge_dc55a027",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_3_item_6",
+      "to": "quest_milak_1",
+      "relationType": "triggers",
+      "sourceHandle": "bottom-out",
+      "targetHandle": "top-in",
+      "createdAt": 1781608311282,
+      "updatedAt": 1781608311282
+    },
+    {
+      "id": "edge_e321e094",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "event_item",
+      "to": "tutorial_weave_magic",
+      "relationType": "triggers",
+      "label": "触发",
+      "createdAt": 1781607256387,
+      "updatedAt": 1781607287219,
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in"
+    },
+    {
+      "id": "edge_e7abf689",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_npc_npc_2",
+      "to": "quest_ed_2",
+      "relationType": "triggers",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781617886334,
+      "updatedAt": 1781617896198,
+      "label": "触发任务"
+    },
+    {
+      "id": "edge_ebd6d984",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "rune_electric",
+      "to": "custom_item_item_35",
+      "relationType": "unlocks",
+      "label": "解锁",
+      "createdAt": 1781563117586,
+      "updatedAt": 1781563117586
+    },
+    {
+      "id": "edge_f20b5150",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_6",
+      "to": "custom_item_2_item_2",
+      "relationType": "unlocks",
+      "label": "解锁",
+      "createdAt": 1781549061769,
+      "updatedAt": 1781549261504,
+      "sourceHandle": "bottom-out",
+      "targetHandle": "left-in"
+    },
+    {
+      "id": "edge_f21a7b13",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "ability_item_3",
+      "to": "custom_item_3_item_12",
+      "relationType": "requires",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781562406389,
+      "updatedAt": 1781562406389
+    },
+    {
+      "id": "edge_f3359127",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_2_item_2",
+      "to": "buff_item_2",
+      "relationType": "triggers",
+      "label": "风化反应",
+      "createdAt": 1781552503255,
+      "updatedAt": 1781561419974,
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in"
+    },
+    {
+      "id": "edge_f6d3db91",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_20",
+      "to": "custom_item_3_item_11",
+      "relationType": "unlocks",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781560724591,
+      "updatedAt": 1781560724591
+    },
+    {
+      "id": "edge_f8eb7582",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_34",
+      "to": "rune_electric",
+      "relationType": "unlocks",
+      "createdAt": 1781562976450,
+      "updatedAt": 1781562976450
+    },
+    {
+      "id": "edge_faf1e25b",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_18",
+      "to": "custom_item_3_item_10",
+      "relationType": "unlocks",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781558859670,
+      "updatedAt": 1781558866108
+    },
+    {
+      "id": "edge_fb53f7a7",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_boss_item",
+      "to": "event_first_encounter",
+      "relationType": "triggers",
+      "label": "触发",
+      "createdAt": 1781603851216,
+      "updatedAt": 1781604213965,
+      "sourceHandle": "bottom-out",
+      "targetHandle": "top-in"
+    },
+    {
+      "id": "edge_fb7ad430",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_2_item",
+      "to": "custom_item_item_3",
+      "relationType": "requires",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781542822120,
+      "updatedAt": 1781542858265
+    },
+    {
+      "id": "edge_fb844f16",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_2_new_sand",
+      "to": "ability_item_2",
+      "relationType": "unlocks",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781558883585,
+      "updatedAt": 1781558887864
+    },
+    {
+      "id": "edge_fc88cc8e",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "quest_item_8",
+      "to": "ability_item_4",
+      "relationType": "unlocks",
+      "sourceHandle": "top-out",
+      "targetHandle": "bottom-in",
+      "createdAt": 1781626530041,
+      "updatedAt": 1781626530041
+    },
+    {
+      "id": "edge_ffe38a62",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "event_first_encounter",
+      "to": "event_item",
+      "relationType": "triggers",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781604250567,
+      "updatedAt": 1781604271459
+    },
+    {
+      "id": "edge_kuxi_quest",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_npc_npc_3",
+      "to": "quest_kuxi_1",
+      "relationType": "triggers",
+      "label": "触发任务",
+      "createdAt": 1781608106914,
+      "updatedAt": 1781608106914
+    },
+    {
+      "id": "edge_kuxi_quest2",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "quest_kuxi_1",
+      "to": "quest_kuxi_2",
+      "relationType": "triggers",
+      "label": "触发任务",
+      "createdAt": 1781608685336,
+      "updatedAt": 1781629782161,
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in"
+    },
+    {
+      "id": "edge_lightning_ball_unlock",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "rune_electric",
+      "to": "lightning_ball",
+      "relationType": "unlocks",
+      "createdAt": 1781563203067,
+      "updatedAt": 1781563203067
+    },
+    {
+      "id": "edge_milak_quest",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_npc_priest",
+      "to": "quest_milak_1",
+      "relationType": "triggers",
+      "label": "触发任务",
+      "createdAt": 1781608106914,
+      "updatedAt": 1781608106914
+    },
+    {
+      "id": "edge_milak_quest2",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "quest_milak_1",
+      "to": "quest_milak_2",
+      "relationType": "triggers",
+      "label": "触发任务",
+      "createdAt": 1781608685336,
+      "updatedAt": 1781608739737,
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in"
+    },
+    {
+      "id": "edge_new_1",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "rune_ice",
+      "to": "custom_item_item_24",
+      "relationType": "requires",
+      "createdAt": 1781559442543,
+      "updatedAt": 1781633194614,
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in"
+    },
+    {
+      "id": "edge_new_2",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_10",
+      "to": "custom_item_3_item_11",
+      "relationType": "unlocks",
+      "createdAt": 1781559442543,
+      "updatedAt": 1781559469212,
+      "sourceHandle": "right-out",
+      "targetHandle": "bottom-in"
+    },
+    {
+      "id": "edge_selian_quest",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_npc_npc",
+      "to": "quest_selian_1",
+      "relationType": "triggers",
+      "label": "触发任务",
+      "createdAt": 1781608106914,
+      "updatedAt": 1781608106914
+    },
+    {
+      "id": "edge_unlock_fragile_wall",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_36",
+      "to": "lock_fragile_wall",
+      "relationType": "unlocks",
+      "label": "解锁",
+      "createdAt": 1781563276934,
+      "updatedAt": 1781563276934
+    }
+  ]
+}
