@@ -682,12 +682,13 @@ function CanvasInner() {
             </div>
           </Panel>
         )}
-        <Panel position="top-left" className="flex flex-col gap-1 m-2 max-w-md">
-          <div className="flex flex-wrap gap-2">
+        <Panel position="top-left" className="flex flex-col gap-1 m-1 md:m-2 max-w-[calc(100vw-5rem)] md:max-w-md">
+          <div className="flex flex-wrap gap-1 md:gap-2">
             <Button size="sm" onClick={autoLayout}>自动布局</Button>
             <ExportCanvasPngButton />
-            <Button size="sm" onClick={() => addNode('group', { x: 120, y: 120 })}>
-              + 区块备注
+            <Button size="sm" onClick={() => addNode('group', { x: 120, y: 120 })} className="max-md:px-2">
+              <span className="max-md:hidden">+ 区块备注</span>
+              <span className="md:hidden">区块</span>
             </Button>
             {selectedDesignCount >= 2 && (
               <Button
@@ -704,7 +705,7 @@ function CanvasInner() {
               </span>
             )}
           </div>
-          <p className="text-[10px] text-gray-400 bg-white/80 px-2 py-0.5 rounded border border-gray-100">
+          <p className="hidden md:block text-[10px] text-gray-400 bg-white/80 px-2 py-0.5 rounded border border-gray-100">
             从右侧针脚拖线 · 选中连线后拖动首尾端点可改接
           </p>
         </Panel>

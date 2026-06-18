@@ -132,13 +132,13 @@ export function SettingsPage() {
   return (
     <div className="min-h-screen bg-[#F7F8FA]">
       <header className="border-b border-gray-200 bg-white">
-        <div className="max-w-2xl mx-auto px-6 h-14 flex items-center gap-4">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 h-14 flex items-center gap-4">
           <Link to="/" className="text-sm text-gray-500 hover:text-gray-700">← 返回</Link>
           <span className="font-semibold text-gray-900">设置</span>
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-6 py-8 space-y-8">
+      <main className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
         <section className="bg-white border border-gray-200 rounded-lg p-6 space-y-4">
           <h2 className="font-medium text-gray-900">DeepSeek API</h2>
           <p className="text-xs text-gray-400">
@@ -181,7 +181,7 @@ export function SettingsPage() {
           )}
         </section>
 
-        <section id="collab" className="bg-white border border-gray-200 rounded-lg p-6 space-y-4">
+        <section id="collab" className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 space-y-4">
           <h2 className="font-medium text-gray-900">多人协作</h2>
           <p className="text-xs text-gray-400">
             可以<strong>用你自己的电脑当主机</strong>：跑 <code className="text-[11px] bg-gray-100 px-1 rounded">start-with-collab.bat</code>（局域网）或{' '}

@@ -11,6 +11,8 @@ import { cn } from '@/lib/utils'
 
 interface RelationTypePaletteProps {
   collapsed: boolean
+  /** 手机抽屉内：全宽布局 */
+  embedded?: boolean
 }
 
 function ColorSwatches({
@@ -159,7 +161,7 @@ function RelationTypeEditor({
   )
 }
 
-export function RelationTypePalette({ collapsed }: RelationTypePaletteProps) {
+export function RelationTypePalette({ collapsed, embedded }: RelationTypePaletteProps) {
   const customRelationTypes = useEditorStore((s) => s.project?.settings.customRelationTypes)
   const colorOverrides = useEditorStore((s) => s.project?.settings.relationTypeColorOverrides)
   const relationOptions = useMemo(
@@ -195,7 +197,12 @@ export function RelationTypePalette({ collapsed }: RelationTypePaletteProps) {
   }
 
   return (
-    <div className="w-44 border-r border-gray-200 bg-white flex flex-col max-h-[45%] min-h-0 shrink-0">
+    <div
+      className={cn(
+        'border-r border-gray-200 bg-white flex flex-col min-h-0 shrink-0',
+        embedded ? 'w-full border-r-0 flex-1 max-h-none' : 'w-44 max-h-[45%]',
+      )}
+    >
       <div className="px-3 py-2 border-b border-gray-100 shrink-0">
         <span className="text-xs font-medium text-gray-500">关系类型</span>
       </div>

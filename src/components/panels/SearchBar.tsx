@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
 import { useEditorStore } from '@/store/editorStore'
 import { Input } from '@/components/ui/primitives'
+import { cn } from '@/lib/utils'
 
-export function SearchBar() {
+export function SearchBar({ className }: { className?: string }) {
   const [local, setLocal] = useState('')
   const nodes = useEditorStore((s) => s.nodes)
   const focusNode = useEditorStore((s) => s.focusNode)
@@ -24,15 +25,15 @@ export function SearchBar() {
   }, [local, nodes])
 
   return (
-    <div className="relative">
+    <div className="relative w-full max-md:max-w-none">
       <Input
         placeholder="搜索节点…"
         value={local}
         onChange={(e) => setLocal(e.target.value)}
-        className="w-48 h-8 text-xs"
+        className={cn('w-48 h-8 text-xs max-md:w-full', className)}
       />
       {results.length > 0 && local.trim() && (
-        <div className="absolute top-full mt-1 right-0 w-64 bg-white border border-gray-200 rounded-md shadow-lg z-50 py-1">
+        <div className="absolute top-full mt-1 right-0 max-md:left-0 w-64 max-md:w-full bg-white border border-gray-200 rounded-md shadow-lg z-50 py-1">
           {results.map((n) => (
             <button
               key={n.id}

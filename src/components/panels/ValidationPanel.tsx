@@ -14,7 +14,7 @@ export function ValidationPanel() {
   const infos = issues.filter((i) => i.level === 'info')
 
   return (
-    <div className="absolute bottom-10 left-44 right-80 mx-4 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-hidden flex flex-col z-10">
+    <div className="absolute bottom-14 md:bottom-10 left-2 right-2 max-h-48 overflow-hidden flex flex-col z-10 md:left-44 md:right-80 md:mx-4 bg-white border border-gray-200 rounded-lg shadow-lg">
       <div className="px-3 py-2 border-b border-gray-100 flex items-center justify-between">
         <span className="text-sm font-medium text-gray-700">
           校验结果

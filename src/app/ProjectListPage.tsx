@@ -39,18 +39,18 @@ export function ProjectListPage() {
   return (
     <div className="min-h-screen bg-[#F7F8FA]">
       <header className="border-b border-gray-200 bg-white">
-        <div className="max-w-4xl mx-auto px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-md bg-blue-600 flex items-center justify-center text-white text-sm font-bold">G</div>
-            <span className="font-semibold text-gray-900">Game Design Graph</span>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="w-8 h-8 rounded-md bg-blue-600 flex items-center justify-center text-white text-sm font-bold shrink-0">G</div>
+            <span className="font-semibold text-gray-900 truncate">Game Design Graph</span>
           </div>
           <Link to="/settings" className="text-sm text-gray-500 hover:text-gray-700">设置</Link>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-6 py-10">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-xl font-semibold text-gray-900">我的项目</h1>
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+        <div className="flex items-center justify-between gap-3 mb-6">
+          <h1 className="text-lg sm:text-xl font-semibold text-gray-900">我的项目</h1>
           <Button variant="primary" onClick={() => setShowCreate(true)}>新建项目</Button>
         </div>
 
@@ -66,10 +66,10 @@ export function ProjectListPage() {
             {projects.map((p) => (
               <div
                 key={p.id}
-                className="bg-white border border-gray-200 rounded-lg px-5 py-4 flex items-center justify-between hover:border-gray-300 transition-colors"
+                className="bg-white border border-gray-200 rounded-lg px-4 sm:px-5 py-4 flex items-center gap-3 hover:border-gray-300 transition-colors"
               >
                 <button
-                  className="text-left flex-1"
+                  className="text-left flex-1 min-w-0"
                   onClick={() => navigate(`/project/${p.id}`)}
                 >
                   <div className="font-medium text-gray-900">{p.name}</div>

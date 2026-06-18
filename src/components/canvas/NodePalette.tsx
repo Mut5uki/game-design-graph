@@ -9,6 +9,8 @@ interface NodePaletteProps {
   collapsed: boolean
   onToggle: () => void
   onAddNode: (type: NodeType) => void
+  /** 手机抽屉内：全宽、无右边框 */
+  embedded?: boolean
 }
 
 function ColorSwatches({
@@ -206,7 +208,7 @@ function NodeTypeButton({
   )
 }
 
-export function NodePalette({ collapsed, onToggle, onAddNode }: NodePaletteProps) {
+export function NodePalette({ collapsed, onToggle, onAddNode, embedded }: NodePaletteProps) {
   const customNodeTypes = useEditorStore((s) => s.project?.settings.customNodeTypes)
   const colorOverrides = useEditorStore((s) => s.project?.settings.nodeTypeColorOverrides)
   const paletteTypes = useMemo(
@@ -236,7 +238,7 @@ export function NodePalette({ collapsed, onToggle, onAddNode }: NodePaletteProps
     }
   }
 
-  if (collapsed) {
+  if (collapsed && !embedded) {
     return (
       <div className="w-12 border-r border-gray-200 bg-white flex flex-col items-center py-3 gap-2">
         <button
@@ -261,7 +263,12 @@ export function NodePalette({ collapsed, onToggle, onAddNode }: NodePaletteProps
   }
 
   return (
-    <div className="w-44 border-r border-gray-200 bg-white flex flex-col min-h-0 flex-1">
+    <div
+      className={cn(
+        'border-r border-gray-200 bg-white flex flex-col min-h-0 flex-1',
+        embedded ? 'w-full border-r-0' : 'w-44',
+      )}
+    >
       <div className="px-3 py-2.5 border-b border-gray-100 flex items-center justify-between shrink-0">
         <span className="text-xs font-medium text-gray-500">节点库</span>
         <button onClick={onToggle} className="text-gray-400 hover:text-gray-600 text-xs">←</button>
