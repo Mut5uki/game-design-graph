@@ -35,14 +35,12 @@ echo ============================================================
 echo  樱花 FRP 协作主机
 echo ============================================================
 echo.
-echo  1. 先在 natfrp.com 创建两条 TCP 隧道（详见 docs\COLLAB_SAKURAFRP.md）：
-echo       网页  127.0.0.1:3888
-echo       协作  127.0.0.1:1234
+echo  1. 先在 natfrp.com 创建 1 条隧道 → 本地 127.0.0.1:3888
+echo     详见 docs\COLLAB_SAKURAFRP.md
 echo.
-echo  2. 用樱花启动器或 frpc 启动上述隧道
-echo       模板：deploy\sakurafrp\frpc.local.cmd.example
+echo  2. 用樱花启动器或 frpc 启动该隧道
 echo.
-echo  3. 本脚本将启动协作服务 + 前端；然后在设置里「套用 Sakura FRP」
+echo  3. 设置里粘贴公网地址 →「套用 Sakura FRP」→ 保存
 echo.
 echo ============================================================
 echo.

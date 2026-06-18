@@ -54,7 +54,7 @@ export async function applyLocalHostPreset(
 export const HOST_MODE_HINT = {
   p2p: '你的电脑跑网页；同事打开你的局域网地址即可 P2P 协作（需先运行 npm run start，且用 --host）。',
   server:
-    '你的电脑跑网页 + 协作服务（start-with-collab.bat）；同事连你的 ws://IP:1234（需放行防火墙 3888、1234）。',
+    '你的电脑跑 start-with-collab.bat；同事只访问 http://你的IP:3888，协作走同端口 /collab（无需单独暴露 1234）。',
   remote:
-    '外地同事需路由器端口转发，或 Tailscale 虚拟组网；否则只能用局域网 IP。',
+    '外地同事用樱花等穿透时，也只需映射 3888 一个端口；或 Tailscale 虚拟组网。',
 } as const

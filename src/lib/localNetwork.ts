@@ -32,8 +32,8 @@ export function buildHostInviteUrl(ip: string, port = 3888): string {
   return `http://${ip}:${port}`
 }
 
-export function buildHostCollabWsUrl(ip: string, port = 1234): string {
-  return `ws://${ip}:${port}`
+export function buildHostCollabWsUrl(ip: string, port = 3888): string {
+  return `ws://${ip}:${port}/collab`
 }
 
 export function getCurrentDevPort(): number {

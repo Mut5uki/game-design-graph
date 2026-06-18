@@ -32,11 +32,11 @@ if not exist "server\node_modules\" (
 
 echo.
 echo 将打开两个窗口：
-echo   1. 协作 WebSocket  ws://localhost:1234
-echo   2. 前端编辑器      http://本机IP:3888 （已启用局域网访问）
+echo   1. 协作 WebSocket  ws://127.0.0.1:1234 （本机，经 3888/collab 转发）
+echo   2. 前端编辑器      http://本机IP:3888 （同事只访问此端口）
 echo.
 echo 设置里点「检测 IP · 服务器模式」，保存后把邀请链接发给同事。
-echo 防火墙需放行 3888、1234 端口（专用网络）。
+echo 防火墙只需放行 3888（1234 不必对局域网开放）。
 echo.
 
 start "Game Design Graph - 协作服务" cmd /k "cd /d "%~dp0" && call npm run collab:server"

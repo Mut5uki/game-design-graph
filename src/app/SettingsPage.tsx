@@ -32,8 +32,7 @@ export function SettingsPage() {
   const [collabSaved, setCollabSaved] = useState(false)
   const [hostDetectMsg, setHostDetectMsg] = useState<string | null>(null)
   const [hostDetecting, setHostDetecting] = useState(false)
-  const [sakuraWebUrl, setSakuraWebUrl] = useState('')
-  const [sakuraWsUrl, setSakuraWsUrl] = useState('')
+  const [sakuraPublicUrl, setSakuraPublicUrl] = useState('')
   const [sakuraMsg, setSakuraMsg] = useState<string | null>(null)
 
   useEffect(() => {
@@ -112,12 +111,9 @@ export function SettingsPage() {
 
   const handleApplySakuraFrp = () => {
     setSakuraMsg(null)
-    const result = applySakuraFrpPreset({
-      webPublicUrl: sakuraWebUrl,
-      wsPublicUrl: sakuraWsUrl,
-    })
+    const result = applySakuraFrpPreset({ publicUrl: sakuraPublicUrl })
     if (!result) {
-      setSakuraMsg('请填写樱花面板日志里的网页地址和协作 WebSocket 地址。')
+      setSakuraMsg('请填写樱花面板日志里的公网访问地址（一条隧道即可）。')
       return
     }
     setCollabMode('server')
@@ -192,26 +188,19 @@ export function SettingsPage() {
           <div className="rounded-md border border-pink-100 bg-pink-50/60 p-3 space-y-2">
             <p className="text-xs font-medium text-pink-900">樱花 FRP（SakuraFrp）</p>
             <p className="text-[10px] text-pink-800/90 leading-relaxed">
-              在 natfrp.com 建两条 TCP 隧道：{SAKURAFRP_TUNNEL_HINT.web}；{SAKURAFRP_TUNNEL_HINT.ws}。
-              {SAKURAFRP_TUNNEL_HINT.node} 启动隧道后把日志里的公网地址填到下面。
+              {SAKURAFRP_TUNNEL_HINT.single} {SAKURAFRP_TUNNEL_HINT.node}
             </p>
             <div>
-              <Label>网页隧道地址（3888）</Label>
+              <Label>公网访问地址（樱花隧道日志）</Label>
               <Input
-                value={sakuraWebUrl}
-                onChange={(e) => setSakuraWebUrl(e.target.value)}
+                value={sakuraPublicUrl}
+                onChange={(e) => setSakuraPublicUrl(e.target.value)}
                 placeholder="https://cn-xx.natfrp.cloud:51906"
                 className="font-mono text-xs"
               />
-            </div>
-            <div>
-              <Label>协作 WebSocket 隧道地址（1234）</Label>
-              <Input
-                value={sakuraWsUrl}
-                onChange={(e) => setSakuraWsUrl(e.target.value)}
-                placeholder="wss://cn-xx.natfrp.cloud:51907"
-                className="font-mono text-xs"
-              />
+              <p className="text-[10px] text-pink-700/70 mt-1">
+                协作 WebSocket 会自动设为同地址的 <code className="bg-pink-100/80 px-1 rounded">/collab</code>，同事无需再填端口。
+              </p>
             </div>
             <Button size="sm" variant="secondary" onClick={handleApplySakuraFrp}>
               套用 Sakura FRP

@@ -5,7 +5,16 @@
 import type { CollabMode } from '@/collab/types'
 import { COLLAB_SETTINGS_KEY, loadCollabSettings } from '@/collab/types'
 
-export const LOCAL_COLLAB_WS_URL = 'ws://localhost:1234'
+export const LOCAL_COLLAB_WS_URL = 'ws://localhost:3888/collab'
+
+/** 由编辑器网页地址推导协作 WebSocket（同域 /collab） */
+export function deriveCollabWsFromInviteBase(inviteBaseUrl: string): string {
+  const raw = inviteBaseUrl.trim().replace(/\/$/, '')
+  const withScheme = /^https?:\/\//i.test(raw) ? raw : `http://${raw}`
+  const u = new URL(withScheme)
+  const wsProtocol = u.protocol === 'https:' ? 'wss:' : 'ws:'
+  return `${wsProtocol}//${u.host}/collab`
+}
 
 function readInviteBaseUrlFromStorage(): string {
   try {
@@ -56,10 +65,7 @@ export function getSuggestedCollabWsUrl(): string {
   const inviteBase = readInviteBaseUrlFromStorage()
   if (inviteBase) {
     try {
-      const u = new URL(inviteBase)
-      const wsProtocol = u.protocol === 'https:' ? 'wss:' : 'ws:'
-      const host = u.host
-      return `${wsProtocol}//${host}/collab`
+      return deriveCollabWsFromInviteBase(inviteBase)
     } catch {
       // fall through
     }
@@ -69,7 +75,7 @@ export function getSuggestedCollabWsUrl(): string {
 
   const { protocol, hostname, host } = window.location
   if (isLocalhostHost(hostname)) {
-    return LOCAL_COLLAB_WS_URL
+    return deriveCollabWsFromInviteBase(window.location.origin)
   }
 
   const wsProtocol = protocol === 'https:' ? 'wss:' : 'ws:'

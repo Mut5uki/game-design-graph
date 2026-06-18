@@ -28,7 +28,7 @@ export interface CollabSettings {
   displayName: string
 }
 
-export const DEFAULT_COLLAB_SERVER_URL = 'ws://localhost:1234'
+export const DEFAULT_COLLAB_SERVER_URL = 'ws://localhost:3888/collab'
 
 /** y-webrtc 公共信令（仅握手，不含画布内容） */
 export const DEFAULT_SIGNALING_URLS = [

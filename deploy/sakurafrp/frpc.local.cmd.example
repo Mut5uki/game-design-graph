@@ -1,19 +1,18 @@
 @echo off
 chcp 65001 >nul
-REM 复制本文件为 frpc.local.cmd（勿提交 git），填入樱花面板「批量操作 → 配置文件」里的启动参数
-REM 示例：frpc_windows_amd64.exe -f 你的访问密钥:网页隧道ID,协作隧道ID
-REM 请把 frpc 放在本目录，或写完整路径
+REM 复制为 frpc.local.cmd，填入樱花面板「配置文件」里的启动参数（只需 1 个隧道 ID）
+REM 示例：frpc_windows_amd64.exe -f 你的访问密钥:隧道ID
+REM 隧道本地端口必须是 3888（见 docs\COLLAB_SAKURAFRP.md）
 
 cd /d "%~dp0"
 
 if not exist "frpc_windows_amd64.exe" (
-  echo [提示] 请从 SakuraFrp 面板「软件下载」下载 frpc，放到 deploy\sakurafrp\
-  echo 或在下方命令里写 frpc 的完整路径
+  echo [提示] 请从 SakuraFrp 面板下载 frpc 放到 deploy\sakurafrp\
   pause
   exit /b 1
 )
 
-echo 启动樱花 FRP（网页 3888 + 协作 1234）...
-frpc_windows_amd64.exe -f 在此填入访问密钥:隧道ID1,隧道ID2
+echo 启动樱花 FRP（仅映射本地 3888）...
+frpc_windows_amd64.exe -f 在此填入访问密钥:隧道ID
 
 pause

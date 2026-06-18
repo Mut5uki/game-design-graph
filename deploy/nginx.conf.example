@@ -29,7 +29,7 @@ server {
 
     # 协作 WebSocket（与 VITE_PUBLIC_COLLAB_WS_URL 路径一致）
     location /collab {
-        proxy_pass http://gdg_collab;
+        proxy_pass http://gdg_collab/;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
