@@ -1,5 +1,6 @@
 import fs from 'fs/promises'
 import path from 'path'
+import { pathToFileURL } from 'url'
 import type { IncomingMessage, ServerResponse } from 'http'
 import type { Plugin, PreviewServer, ViteDevServer } from 'vite'
 
@@ -15,6 +16,18 @@ function projectFilePath(id: string): string {
 
 async function ensureDataDir(): Promise<void> {
   await fs.mkdir(DATA_DIR, { recursive: true })
+}
+
+async function syncPublicProjectAfterSave(projectId: string): Promise<void> {
+  try {
+    const mod = await import(
+      pathToFileURL(path.resolve(process.cwd(), 'scripts/lib/publicProjectSync.mjs')).href
+    )
+    await mod.syncProjectFile(`${projectId}.json`)
+    await mod.rebuildPublicIndex()
+  } catch (err) {
+    console.warn('[local-data] sync public/projects failed:', err)
+  }
 }
 
 async function readBody(req: IncomingMessage): Promise<string> {
@@ -101,6 +114,7 @@ async function handleLocalData(
       }
       await ensureDataDir()
       await fs.writeFile(filePath, JSON.stringify(snapshot, null, 2), 'utf8')
+      void syncPublicProjectAfterSave(projectId)
       sendJson(res, 200, { ok: true })
       return
     }

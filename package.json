@@ -16,6 +16,7 @@
     "build": "tsc -p tsconfig.app.json --noEmit && vite build",
     "build:pages": "tsc -p tsconfig.app.json --noEmit && vite build && node scripts/pages-postbuild.mjs",
     "sync:public-projects": "node scripts/sync-public-projects.mjs",
+    "push:projects": "node scripts/push-public-projects.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

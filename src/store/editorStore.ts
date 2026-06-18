@@ -1120,6 +1120,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
             validationIssues: issues,
           })
           applyingRemoteCollab = false
+          debouncedCollabRemotePersist()
         },
         onStatusChange: (status, detail) => {
           if (status === 'connected') {
@@ -1427,6 +1428,12 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 const debouncedPersist = debounce(() => {
   useEditorStore.getState().persist()
 }, 1000)
+
+const debouncedCollabRemotePersist = debounce(() => {
+  const { collabEnabled, collabStatus, canvas } = useEditorStore.getState()
+  if (!canvas || !collabEnabled || collabStatus !== 'connected') return
+  useEditorStore.getState().persist()
+}, 1500)
 
 const debouncedPersistViewport = debounce(async () => {
   const { canvas } = useEditorStore.getState()

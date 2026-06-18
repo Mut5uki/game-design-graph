@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "exportedAt": 1781739079479,
+  "exportedAt": 1781779292695,
   "project": {
     "id": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
     "name": "织法者",
     "schemaVersion": 1,
     "createdAt": 1781486647077,
-    "updatedAt": 1781738673740,
+    "updatedAt": 1781779179305,
     "settings": {
       "deepseekModel": "deepseek-chat",
       "customNodeTypes": [
@@ -79,14 +79,11 @@
       "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
       "name": "主画布",
       "viewport": {
-        "x": -465.079327694674,
-        "y": -2.1094440583468668,
+        "x": 274.3994107953813,
+        "y": 383.5173595806017,
         "zoom": 0.5
       },
       "nodeIds": [
-        "group_item_16",
-        "group_item_15",
-        "group_item_14",
         "ability_electrify",
         "ability_item",
         "ability_item_2",
@@ -105,6 +102,10 @@
         "custom_boss_boss_3",
         "custom_boss_boss_4",
         "custom_boss_boss_5",
+        "custom_boss_boss_6",
+        "custom_boss_boss_7",
+        "custom_boss_boss_8",
+        "custom_boss_boss_9",
         "custom_boss_item",
         "custom_item_2_item",
         "custom_item_2_item_2",
@@ -129,7 +130,16 @@
         "custom_item_4_item_13",
         "custom_item_4_item_14",
         "custom_item_4_item_15",
+        "custom_item_4_item_16",
+        "custom_item_4_item_17",
+        "custom_item_4_item_18",
+        "custom_item_4_item_19",
         "custom_item_4_item_2",
+        "custom_item_4_item_20",
+        "custom_item_4_item_21",
+        "custom_item_4_item_22",
+        "custom_item_4_item_23",
+        "custom_item_4_item_24",
         "custom_item_4_item_3",
         "custom_item_4_item_4",
         "custom_item_4_item_5",
@@ -168,7 +178,9 @@
         "custom_item_item_35",
         "custom_item_item_36",
         "custom_item_item_37",
+        "custom_item_item_38",
         "custom_item_item_4",
+        "custom_item_item_40",
         "custom_item_item_5",
         "custom_item_item_6",
         "custom_item_item_7",
@@ -201,6 +213,9 @@
         "group_item_11",
         "group_item_12",
         "group_item_13",
+        "group_item_14",
+        "group_item_15",
+        "group_item_16",
         "group_item_2",
         "group_item_3",
         "group_item_4",
@@ -242,21 +257,7 @@
         "skill_fireball",
         "skill_vine_bind",
         "spell_ice_mirror",
-        "tutorial_weave_magic",
-        "custom_item_4_item_16",
-        "custom_boss_boss_6",
-        "custom_item_4_item_17",
-        "custom_item_4_item_18",
-        "custom_item_4_item_19",
-        "custom_boss_boss_7",
-        "custom_item_4_item_20",
-        "custom_item_4_item_21",
-        "custom_item_4_item_22",
-        "custom_boss_boss_8",
-        "custom_item_4_item_23",
-        "custom_boss_boss_9",
-        "custom_item_4_item_24",
-        "custom_item_item_38"
+        "tutorial_weave_magic"
       ],
       "edgeIds": [
         "edge_019200c7",
@@ -286,6 +287,7 @@
         "edge_3edae28a",
         "edge_400c383d",
         "edge_460761d7",
+        "edge_48310f78",
         "edge_4a9936b5",
         "edge_50325d7c",
         "edge_51870108",
@@ -318,6 +320,7 @@
         "edge_a75d559e",
         "edge_a7c9548a",
         "edge_a973a161",
+        "edge_ad9d9477",
         "edge_b3861428",
         "edge_b709e9d7",
         "edge_bb25fe9e",
@@ -325,6 +328,7 @@
         "edge_c2a91848",
         "edge_c6d0e5c9",
         "edge_c7282151",
+        "edge_cd0a8630",
         "edge_cf138d45",
         "edge_cf50a994",
         "edge_d150cc8b",
@@ -334,6 +338,7 @@
         "edge_dc55a027",
         "edge_e321e094",
         "edge_e7abf689",
+        "edge_e9c059b1",
         "edge_ebd6d984",
         "edge_f20b5150",
         "edge_f21a7b13",
@@ -354,13 +359,10 @@
         "edge_new_1",
         "edge_new_2",
         "edge_selian_quest",
-        "edge_unlock_fragile_wall",
-        "edge_cd0a8630",
-        "edge_48310f78",
-        "edge_ad9d9477"
+        "edge_unlock_fragile_wall"
       ],
       "createdAt": 1781486647077,
-      "updatedAt": 1781739079476
+      "updatedAt": 1781779292688
     }
   ],
   "nodes": [
@@ -524,11 +526,11 @@
         "stack_rule": "replace"
       },
       "position": {
-        "x": 1008.3576013359193,
-        "y": 430.4646748476574
+        "x": 1012.9047510354508,
+        "y": 427.4332417146366
       },
       "createdAt": 1781561602519,
-      "updatedAt": 1781561855969,
+      "updatedAt": 1781777523215,
       "parentGroupId": "group_item_7"
     },
     {
@@ -653,11 +655,11 @@
         "description": ""
       },
       "position": {
-        "x": 50.646300456807694,
-        "y": 196.86254870750935
+        "x": 48.979633790141065,
+        "y": 199.36254870750935
       },
       "createdAt": 1781628931109,
-      "updatedAt": 1781629512921,
+      "updatedAt": 1781777822841,
       "parentGroupId": "group_item_11"
     },
     {
@@ -939,14 +941,14 @@
       "type": "custom_item_3",
       "name": "再生藤蔓",
       "fields": {
-        "description": ""
+        "description": "藤蔓会进行再生"
       },
       "position": {
-        "x": 984.4571426639943,
-        "y": 241.0116921050439
+        "x": 974.3007194255396,
+        "y": 243.91352731603098
       },
       "createdAt": 1781541545985,
-      "updatedAt": 1781629461987,
+      "updatedAt": 1781777794238,
       "parentGroupId": "group_item"
     },
     {
@@ -1047,11 +1049,11 @@
         "tags": []
       },
       "position": {
-        "x": 350.15023343868415,
-        "y": 231.79469855653727
+        "x": 572.7238177283471,
+        "y": 249.51279898555123
       },
       "createdAt": 1781554682086,
-      "updatedAt": 1781558904478,
+      "updatedAt": 1781778862267,
       "parentGroupId": "group_item_5"
     },
     {
@@ -1367,14 +1369,14 @@
       "type": "custom_item_4",
       "name": "哥布林弓箭手",
       "fields": {
-        "description": "远程攻击，射出箭矢，移动速度中等，掉落金币和箭矢"
+        "description": "远程攻击，射出箭矢，移动速度中等，掉落金币"
       },
       "position": {
-        "x": 50.338430471077686,
-        "y": 161.15279192869065
+        "x": 49.505097137744315,
+        "y": 161.98612526202396
       },
       "createdAt": 1781628722310,
-      "updatedAt": 1781629421563,
+      "updatedAt": 1781777830660,
       "parentGroupId": "group_item_11"
     },
     {
@@ -1387,11 +1389,11 @@
         "description": "攻击方式为间隔在地上生成一格藤蔓，藤蔓会减速玩家并对玩家造成伤害。"
       },
       "position": {
-        "x": 51.30465558370014,
-        "y": 286.59194760773005
+        "x": 52.637988917033454,
+        "y": 284.09194760773005
       },
       "createdAt": 1781629445077,
-      "updatedAt": 1781629509240,
+      "updatedAt": 1781777816503,
       "parentGroupId": "group_item_11"
     },
     {
@@ -1401,14 +1403,14 @@
       "type": "custom_item_4",
       "name": "翼鸟",
       "fields": {
-        "description": ""
+        "description": "从高空俯冲攻击玩家"
       },
       "position": {
         "x": 108.62943555374204,
         "y": 53
       },
       "createdAt": 1781629642776,
-      "updatedAt": 1781630273042,
+      "updatedAt": 1781778010344,
       "parentGroupId": "group_item_12"
     },
     {
@@ -1523,11 +1525,11 @@
         "description": "生成一块石头"
       },
       "position": {
-        "x": 48,
-        "y": 212.17594633804507
+        "x": 12.38066068700573,
+        "y": 206.11308007200347
       },
       "createdAt": 1781551886919,
-      "updatedAt": 1781558904478,
+      "updatedAt": 1781778864770,
       "parentGroupId": "group_item_5"
     },
     {
@@ -1588,14 +1590,14 @@
       "type": "custom_item",
       "name": "公转",
       "fields": {
-        "description": ""
+        "description": "魔法投射物以环绕自身的轨迹发射"
       },
       "position": {
         "x": 833.0050137337362,
         "y": 95.87123938445265
       },
       "createdAt": 1781558032210,
-      "updatedAt": 1781629487499,
+      "updatedAt": 1781777865093,
       "parentGroupId": "group_item"
     },
     {
@@ -1612,7 +1614,7 @@
         "y": 194.08963853626983
       },
       "createdAt": 1781558070768,
-      "updatedAt": 1781629737149,
+      "updatedAt": 1781777965681,
       "parentGroupId": "group_item_2"
     },
     {
@@ -1863,11 +1865,11 @@
         "description": "强化魔法效果"
       },
       "position": {
-        "x": 52.99791881969486,
-        "y": 120.89163426389922
+        "x": 54.73901994628727,
+        "y": 117.40943201071468
       },
       "createdAt": 1781542755983,
-      "updatedAt": 1781552384847,
+      "updatedAt": 1781778031253,
       "parentGroupId": "group_item_2"
     },
     {
@@ -1914,11 +1916,11 @@
         "description": ""
       },
       "position": {
-        "x": 348.73982080312317,
-        "y": 208.78586005371437
+        "x": 395.74955122111396,
+        "y": 205.3036578005299
       },
       "createdAt": 1781562182574,
-      "updatedAt": 1781562191338,
+      "updatedAt": 1781778197517,
       "parentGroupId": "group_item_2"
     },
     {
@@ -1996,14 +1998,14 @@
       "type": "custom_item",
       "name": "巨蔓束缚",
       "fields": {
-        "description": "巨蔓束缚是一种强大的草系魔法，能够从地面召唤出巨大的藤蔓缠绕并束缚敌人。它专门用于对策巨型史莱姆等大型敌人，使其无法移动和攻击，持续数秒。藤蔓可以被火焰或风刃破坏，但需要一定时间。该魔法需要草符文作为前置条件，是草系控制链中的关键一环。"
+        "description": "巨蔓束缚是一种强大的草系魔法，能够从地面召唤出巨大的藤蔓缠绕并束缚敌人。它专门用于对策巨型史莱姆等大型敌人，使其无法移动和攻击，持续数秒。藤蔓具有一定血量和存在时间。该魔法需要草符文作为前置条件，是草系控制链中的关键一环。"
       },
       "position": {
-        "x": 60.30895405380852,
-        "y": 252.25708255175277
+        "x": 56.82675180062415,
+        "y": 247.033779171976
       },
       "createdAt": 1781603731624,
-      "updatedAt": 1781629739158,
+      "updatedAt": 1781778028086,
       "parentGroupId": "group_item_2"
     },
     {
@@ -2041,6 +2043,23 @@
       "parentGroupId": "group_item_2"
     },
     {
+      "id": "custom_item_item_40",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "type": "custom_item",
+      "name": "固化",
+      "fields": {
+        "description": ""
+      },
+      "position": {
+        "x": 297.56350878483,
+        "y": 230.37133325098768
+      },
+      "createdAt": 1781778815897,
+      "updatedAt": 1781778866381,
+      "parentGroupId": "group_item_5"
+    },
+    {
       "id": "custom_item_item_5",
       "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
       "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
@@ -2050,11 +2069,11 @@
         "description": ""
       },
       "position": {
-        "x": 392.04397275711835,
-        "y": 48.18343247625228
+        "x": 392.91452332041445,
+        "y": 45.57178078636389
       },
       "createdAt": 1781543367834,
-      "updatedAt": 1781551721552,
+      "updatedAt": 1781778034246,
       "parentGroupId": "group_item_2"
     },
     {
@@ -2411,11 +2430,11 @@
         "phase": "初期"
       },
       "position": {
-        "x": -694.595996224316,
-        "y": 1842.5907045735532
+        "x": -665.7973814606183,
+        "y": 1840.3171297237877
       },
       "createdAt": 1781603851216,
-      "updatedAt": 1781620588026
+      "updatedAt": 1781778226290
     },
     {
       "id": "event_item",
@@ -2483,11 +2502,11 @@
         "phase": "中期"
       },
       "position": {
-        "x": 3388.5975047636016,
-        "y": 192.8799490697173
+        "x": 3404.4315996928763,
+        "y": 190.24093324817153
       },
       "createdAt": 1781624914978,
-      "updatedAt": 1781633476999
+      "updatedAt": 1781779177537
     },
     {
       "id": "group_item",
@@ -2692,11 +2711,11 @@
         "color": "blue"
       },
       "position": {
-        "x": -159.1113475282292,
+        "x": -149.1113475282292,
         "y": 758.0201899565814
       },
       "createdAt": 1781549970585,
-      "updatedAt": 1781549989395
+      "updatedAt": 1781777899758
     },
     {
       "id": "group_item_5",
@@ -3131,11 +3150,11 @@
         "status_default": "未开始"
       },
       "position": {
-        "x": 862.0598857731898,
+        "x": 881.2048583564737,
         "y": 1618.8616075216364
       },
       "createdAt": 1781608106914,
-      "updatedAt": 1781611991262
+      "updatedAt": 1781777589517
     },
     {
       "id": "quest_milak_2",
@@ -4241,13 +4260,13 @@
       "id": "edge_d6d9d1cf",
       "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
       "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
-      "from": "custom_item_item_11",
+      "from": "custom_item_item_40",
       "to": "custom_item_3_item_8",
       "relationType": "unlocks",
       "sourceHandle": "right-out",
       "targetHandle": "left-in",
       "createdAt": 1781554682087,
-      "updatedAt": 1781554855379
+      "updatedAt": 1781778856022
     },
     {
       "id": "edge_d8a649ce",
@@ -4298,6 +4317,18 @@
       "createdAt": 1781617886334,
       "updatedAt": 1781617896198,
       "label": "触发任务"
+    },
+    {
+      "id": "edge_e9c059b1",
+      "projectId": "366c4255-e8ef-42d4-ad63-d1bba173db5e",
+      "canvasId": "7efc6399-bc34-4a5b-82dd-98d7ce76c3bc",
+      "from": "custom_item_item_11",
+      "to": "custom_item_item_40",
+      "relationType": "unlocks",
+      "sourceHandle": "right-out",
+      "targetHandle": "left-in",
+      "createdAt": 1781778831310,
+      "updatedAt": 1781778858428
     },
     {
       "id": "edge_ebd6d984",
