@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "vite --host",
     "start": "vite --host --open",
+    "start:collab": "node scripts/start-collab-host.mjs",
+    "free:ports": "node scripts/free-port.mjs 1234 3888",
+    "wait:collab": "node scripts/wait-port.mjs 1234",
     "collab:server": "npm run start --prefix server",
     "collab:server:dev": "npm run dev --prefix server",
     "collab:install": "npm install --prefix server",

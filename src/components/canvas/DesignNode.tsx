@@ -3,6 +3,8 @@ import { Handle, Position, type NodeProps } from '@xyflow/react'
 import { getNodeMeta, getRelationLabel } from '@/domain/templates/nodeTemplates'
 import { NODE_HANDLES } from '@/domain/templates/relationPins'
 import type { ImpactRole } from '@/domain/types'
+import type { RemotePeerRef } from '@/collab/useCollab'
+import { RemoteSelectionBadge, remoteSelectionRingStyle } from '@/components/collab/RemoteSelectionBadge'
 import { cn } from '@/lib/utils'
 import { InlineNodeName } from './InlineNodeName'
 
@@ -12,6 +14,7 @@ export interface DesignNodeData {
   inboundSummary?: string
   impactRole?: ImpactRole
   remoteSelectColor?: string
+  remoteSelections?: RemotePeerRef[]
   [key: string]: unknown
 }
 
@@ -53,7 +56,8 @@ function SideHandles({
 function DesignNodeCard({ id, data, selected, dragging }: NodeProps & { data: DesignNodeData }) {
   const meta = getNodeMeta(data.nodeType)
   const impactRole = data.impactRole
-  const remoteColor = data.remoteSelectColor
+  const remoteSelections = data.remoteSelections ?? []
+  const remoteColor = data.remoteSelectColor ?? remoteSelections[0]?.color
 
   return (
     <div
@@ -61,16 +65,18 @@ function DesignNodeCard({ id, data, selected, dragging }: NodeProps & { data: De
         'relative rounded-lg border bg-white shadow-sm w-[200px]',
         !dragging && 'transition-[box-shadow,border-color] duration-100',
         selected && 'ring-2 shadow-md',
-        !selected && remoteColor && 'ring-2 ring-offset-1',
         impactRole === 'upstream' && 'bg-blue-50/80',
         impactRole === 'downstream' && 'bg-orange-50/80',
       )}
       style={{
-        borderColor: selected ? meta.color : '#E5E7EB',
+        borderColor: selected ? meta.color : remoteColor && !selected ? remoteColor : '#E5E7EB',
         ...(selected ? { ringColor: meta.color } : {}),
-        ...(!selected && remoteColor ? { ringColor: remoteColor } : {}),
+        ...(!selected && remoteColor ? remoteSelectionRingStyle(remoteColor) : {}),
       }}
     >
+      {!selected && remoteSelections.length > 0 && (
+        <RemoteSelectionBadge selections={remoteSelections} />
+      )}
       <SideHandles
         position={Position.Left}
         sideClass="gdg-handle-left"

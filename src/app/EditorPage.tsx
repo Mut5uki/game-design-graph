@@ -201,11 +201,12 @@ export function EditorPage() {
   }
 
   const toolbarActions = (
-    <>
+    <div className="flex items-center gap-1.5 flex-nowrap shrink-0">
       {selectedNodeIds.length > 1 && (
         <Button
           size="sm"
           variant="danger"
+          className="whitespace-nowrap shrink-0"
           onClick={() => {
             if (confirm(`确定删除 ${selectedNodeIds.length} 个节点？`)) {
               deleteNodes(selectedNodeIds)
@@ -218,16 +219,21 @@ export function EditorPage() {
       <Button
         size="sm"
         variant={impactAnalysis ? 'primary' : 'secondary'}
+        className="whitespace-nowrap shrink-0"
         onClick={() => setImpactAnalysis(!impactAnalysis)}
       >
         影响分析
       </Button>
-      <Button size="sm" onClick={() => runValidation()}>校验</Button>
-      {editorView === 'canvas' && <ExportCanvasPngHeaderButton />}
-      <Link to="/settings">
-        <Button size="sm" variant="ghost">设置</Button>
+      <Button size="sm" className="whitespace-nowrap shrink-0" onClick={() => runValidation()}>
+        校验
+      </Button>
+      {editorView === 'canvas' && <ExportCanvasPngHeaderButton compact />}
+      <Link to="/settings" className="shrink-0">
+        <Button size="sm" variant="ghost" className="whitespace-nowrap">
+          设置
+        </Button>
       </Link>
-    </>
+    </div>
   )
 
   const inspectPanelBody = (
@@ -274,11 +280,15 @@ export function EditorPage() {
 
   return (
     <div className="h-[100dvh] flex flex-col bg-[#F7F8FA]">
-      <header className="shrink-0 border-b border-gray-200 bg-white">
-        <div className="flex items-center gap-2 px-3 py-2 min-w-0 md:h-12 md:py-0 md:gap-3">
-          <Link to="/" className="text-gray-400 hover:text-gray-600 text-sm shrink-0">← 项目</Link>
-          <span className="font-medium text-gray-900 truncate min-w-0 flex-1 md:flex-none">{project.name}</span>
-          <div className="hidden md:flex items-center gap-1 overflow-x-auto flex-1 min-w-0">
+      <header className="shrink-0 border-b border-gray-200 bg-white z-20 relative">
+        <div className="flex items-center gap-2 px-3 h-10 min-w-0">
+          <Link to="/" className="text-gray-400 hover:text-gray-600 text-sm shrink-0 whitespace-nowrap">
+            ← 项目
+          </Link>
+          <span className="font-medium text-gray-900 truncate min-w-0 max-w-[8rem] sm:max-w-[12rem] md:max-w-none shrink">
+            {project.name}
+          </span>
+          <div className="hidden md:flex items-center gap-1 overflow-x-auto flex-1 min-w-0 scrollbar-thin">
             {canvases.map((c) => (
               <CanvasTab
                 key={c.id}
@@ -292,17 +302,23 @@ export function EditorPage() {
             <button
               type="button"
               onClick={() => setShowNewCanvas(true)}
-              className="px-2 py-1 text-gray-400 hover:text-gray-600 text-sm shrink-0"
+              className="px-2 py-1 text-gray-400 hover:text-gray-600 text-sm shrink-0 whitespace-nowrap"
             >
               + 画布
             </button>
           </div>
-          <div className="hidden md:flex items-center gap-2 shrink-0">
-            <SearchBar />
-            {projectId && canvasId && <CollabBar projectId={projectId} canvasId={canvasId} />}
-            {toolbarActions}
-          </div>
-          <Link to="/settings" className="md:hidden text-xs text-gray-500 shrink-0 px-1">设置</Link>
+          <Link to="/settings" className="md:hidden text-xs text-gray-500 shrink-0 px-1 ml-auto">
+            设置
+          </Link>
+        </div>
+
+        <div className="hidden md:flex items-center gap-2 px-3 h-9 min-w-0 border-t border-gray-100 bg-gray-50/60">
+          <SearchBar className="w-36 shrink-0" />
+          <div className="flex-1 min-w-0" />
+          {projectId && canvasId && (
+            <CollabBar projectId={projectId} canvasId={canvasId} compact />
+          )}
+          {toolbarActions}
         </div>
 
         <div className="flex md:hidden items-center gap-1 overflow-x-auto px-2 pb-2 border-t border-gray-50 pt-1.5">

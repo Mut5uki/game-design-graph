@@ -12,6 +12,13 @@ export interface CollabUser {
 export interface CollabPeer extends CollabUser {
   selectedNodeIds: string[]
   selectedEdgeId: string | null
+  /** 画布坐标（flow space） */
+  cursor: CollabCursor | null
+}
+
+export interface CollabCursor {
+  x: number
+  y: number
 }
 
 export interface CollabSettings {

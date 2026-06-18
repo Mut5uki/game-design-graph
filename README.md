@@ -4,21 +4,30 @@
 
 ## 快速开始
 
-**方式一（推荐）**：双击项目根目录的 **`start.bat`**，会自动安装依赖（首次）、启动服务器并打开浏览器。
+### 单人编辑（本机）
 
-**方式二**：命令行
+双击 **`start.bat`**，或：
 
 ```bash
 npm install
 npm start
 ```
 
-浏览器将自动打开 http://localhost:3888
+浏览器打开 http://localhost:3888
 
-仅启动服务器、不自动开浏览器：
+### 樱花协作（多人）
+
+1. 双击 **`start-with-sakurafrp.bat`**（会启动协作服务 + 前端）
+2. 樱花映射 **127.0.0.1:3888** 一条隧道
+3. **设置 → 樱花协作** 填公网地址并保存
+
+详见 [docs/COLLAB_SAKURAFRP.md](./docs/COLLAB_SAKURAFRP.md)
+
+命令行等价：
 
 ```bash
-npm run dev
+npm run setup          # 首次：安装前端 + server 依赖
+npm run start:collab   # 协作服务(1234) + 前端(3888)
 ```
 
 ## 功能概览

@@ -40,6 +40,11 @@ interface AwarenessSelection {
   edgeId?: string | null
 }
 
+interface AwarenessCursor {
+  x?: number
+  y?: number
+}
+
 export class CanvasCollabSession {
   private ydoc: CanvasYDoc | null = null
   private provider: HocuspocusProvider | null = null
@@ -47,6 +52,8 @@ export class CanvasCollabSession {
   private seeded = false
   private graphObserver: (() => void) | null = null
   private synced = false
+  private cursorFlushTimer: number | null = null
+  private pendingCursor: { x: number; y: number } | null | undefined = undefined
 
   get connected(): boolean {
     return this.synced
@@ -177,8 +184,26 @@ export class CanvasCollabSession {
     this.emitPeers()
   }
 
+  publishCursor(cursor: { x: number; y: number } | null): void {
+    this.pendingCursor = cursor
+    if (this.cursorFlushTimer != null) return
+    this.cursorFlushTimer = window.setTimeout(() => {
+      this.cursorFlushTimer = null
+      const awareness = this.getAwareness()
+      if (!awareness) return
+      awareness.setLocalStateField('cursor', this.pendingCursor ?? null)
+      this.pendingCursor = undefined
+      this.emitPeers()
+    }, 48)
+  }
+
   disconnect(): void {
     this.clearConnectTimeout()
+    if (this.cursorFlushTimer != null) {
+      window.clearTimeout(this.cursorFlushTimer)
+      this.cursorFlushTimer = null
+    }
+    this.pendingCursor = undefined
     this.graphObserver?.()
     this.graphObserver = null
     this.provider?.destroy()
@@ -213,12 +238,20 @@ export class CanvasCollabSession {
       const user = state.user as CollabUser | undefined
       if (!user?.name) return
       const selection = state.selection as AwarenessSelection | undefined
+      const rawCursor = state.cursor as AwarenessCursor | null | undefined
+      const cursor =
+        rawCursor != null &&
+        typeof rawCursor.x === 'number' &&
+        typeof rawCursor.y === 'number'
+          ? { x: rawCursor.x, y: rawCursor.y }
+          : null
       peers.push({
         clientId,
         name: user.name,
         color: user.color || pickPeerColor(clientId),
         selectedNodeIds: selection?.nodeIds ?? [],
         selectedEdgeId: selection?.edgeId ?? null,
+        cursor,
       })
     })
     this.callbacks.onPeersChange(peers)

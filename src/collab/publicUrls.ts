@@ -86,6 +86,30 @@ export function resolveCollabServerUrl(savedUrl?: string | null): string {
   return getSuggestedCollabWsUrl()
 }
 
+/**
+ * 建立协作连接时使用的 WebSocket：与当前页面同域（/collab → 本机 1234）。
+ * 樱花地址仅用于邀请链接；在本机 127.0.0.1 编辑时不应绕公网再连回来。
+ */
+export function resolveActiveCollabServerUrl(): string {
+  const fromEnv = import.meta.env.VITE_PUBLIC_COLLAB_WS_URL?.trim()
+  if (fromEnv) return fromEnv
+
+  if (typeof window !== 'undefined') {
+    return deriveCollabWsFromInviteBase(window.location.origin)
+  }
+
+  const inviteBase = readInviteBaseUrlFromStorage()
+  if (inviteBase) {
+    try {
+      return deriveCollabWsFromInviteBase(inviteBase)
+    } catch {
+      // fall through
+    }
+  }
+
+  return LOCAL_COLLAB_WS_URL
+}
+
 function getAppOriginAndPathPrefix(): { origin: string; pathPrefix: string } {
   const appBase = getPublicAppBaseUrl().replace(/\/$/, '') || 'http://localhost'
   try {

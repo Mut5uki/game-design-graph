@@ -44,20 +44,46 @@ export function useCollabSync() {
 
 export type { CollabPeer, CollabStatus }
 
+export interface RemotePeerRef {
+  color: string
+  name: string
+}
+
+export function collectRemoteNodeSelections(peers: CollabPeer[]): Map<string, RemotePeerRef[]> {
+  const map = new Map<string, RemotePeerRef[]>()
+  for (const peer of peers) {
+    for (const id of peer.selectedNodeIds) {
+      const list = map.get(id) ?? []
+      list.push({ color: peer.color, name: peer.name })
+      map.set(id, list)
+    }
+  }
+  return map
+}
+
+/** @deprecated use collectRemoteNodeSelections */
+export function collectRemoteSelectedNodeIds(peers: CollabPeer[]): Map<string, string> {
+  const map = new Map<string, string>()
+  for (const [id, refs] of collectRemoteNodeSelections(peers)) {
+    if (refs[0]) map.set(id, refs[0].color)
+  }
+  return map
+}
+
+export function collectRemoteEdgeSelections(peers: CollabPeer[]): Map<string, RemotePeerRef> {
+  const map = new Map<string, RemotePeerRef>()
+  for (const peer of peers) {
+    if (peer.selectedEdgeId && !map.has(peer.selectedEdgeId)) {
+      map.set(peer.selectedEdgeId, { color: peer.color, name: peer.name })
+    }
+  }
+  return map
+}
+
 export function getCollabShareUrl(projectId: string, canvasId: string): string {
   return buildPublicShareUrl(projectId, canvasId)
 }
 
 export function readCollabSettingsForUi() {
   return loadCollabSettings()
-}
-
-export function collectRemoteSelectedNodeIds(peers: CollabPeer[]): Map<string, string> {
-  const map = new Map<string, string>()
-  for (const peer of peers) {
-    for (const id of peer.selectedNodeIds) {
-      if (!map.has(id)) map.set(id, peer.color)
-    }
-  }
-  return map
 }

@@ -59,6 +59,7 @@ import {
   syncRelationTypeColorOverrides,
 } from '@/domain/templates/relationTypeRegistry'
 import { canvasCollabSession } from '@/collab/CanvasCollabSession'
+import { resolveActiveCollabServerUrl } from '@/collab/publicUrls'
 import {
   defaultDisplayName,
   loadCollabSettings,
@@ -1102,10 +1103,12 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       collabPeers: [],
     })
 
+    const serverUrl = resolveActiveCollabServerUrl()
+
     canvasCollabSession.connect({
       roomId,
       displayName,
-      serverUrl: settings.serverUrl,
+      serverUrl,
       seed: { nodes, edges },
       callbacks: {
         onGraphChange: (snapshot) => {

@@ -38,7 +38,7 @@ export function ExportCanvasPngButton() {
   )
 }
 
-export function ExportCanvasPngHeaderButton() {
+export function ExportCanvasPngHeaderButton({ compact }: { compact?: boolean } = {}) {
   const [exporting, setExporting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -57,11 +57,11 @@ export function ExportCanvasPngHeaderButton() {
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <Button size="sm" disabled={exporting} onClick={() => void handleExport()}>
-        {exporting ? '导出中…' : '导出 PNG'}
+    <div className="flex items-center gap-1 shrink-0">
+      <Button size="sm" disabled={exporting} className="whitespace-nowrap shrink-0" onClick={() => void handleExport()}>
+        {exporting ? '导出中…' : compact ? 'PNG' : '导出 PNG'}
       </Button>
-      {error && <span className="text-xs text-red-600">{error}</span>}
+      {error && !compact && <span className="text-xs text-red-600 max-w-[8rem] truncate" title={error}>{error}</span>}
     </div>
   )
 }

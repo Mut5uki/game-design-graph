@@ -27,6 +27,36 @@ function resolvePagesBase(): string {
   return '/'
 }
 
+/** 樱花 FRP 等穿透域名；Vite 6 默认只接受 localhost，经隧道访问需放行 Host */
+const TUNNEL_ALLOWED_HOSTS = [
+  '.frp-tip.com',
+  '.natfrp.cloud',
+  '.natfrp.vip',
+  '.natfrp.cc',
+  '.frp.one',
+]
+
+function resolveAllowedHosts(): true | string[] {
+  const extra = process.env.VITE_ALLOWED_HOSTS?.trim()
+  if (extra === 'true' || extra === '*') return true
+  if (extra) {
+    return [...TUNNEL_ALLOWED_HOSTS, ...extra.split(',').map((h) => h.trim()).filter(Boolean)]
+  }
+  return TUNNEL_ALLOWED_HOSTS
+}
+
+const collabProxy = {
+  '/collab': {
+    target: 'http://127.0.0.1:1234',
+    ws: true,
+    changeOrigin: true,
+    rewrite: (p: string) => {
+      const stripped = p.replace(/^\/collab\/?/, '')
+      return stripped ? `/${stripped}` : '/'
+    },
+  },
+} as const
+
 export default defineConfig({
   base: resolvePagesBase(),
   plugins: [react(), tailwindcss(), localDataPlugin()],
@@ -38,6 +68,7 @@ export default defineConfig({
   server: {
     port: 3888,
     strictPort: true,
+    allowedHosts: resolveAllowedHosts(),
     proxy: {
       '/api/deepseek': {
         target: 'https://api.deepseek.com',
@@ -45,30 +76,15 @@ export default defineConfig({
         rewrite: (p) => p.replace(/^\/api\/deepseek/, ''),
       },
       /** 协作 WebSocket 与网页同端口，穿透/邀请只需一个公网地址 */
-      '/collab': {
-        target: 'http://127.0.0.1:1234',
-        ws: true,
-        changeOrigin: true,
-        rewrite: (p) => {
-          const stripped = p.replace(/^\/collab\/?/, '')
-          return stripped ? `/${stripped}` : '/'
-        },
-      },
+      ...collabProxy,
     },
   },
   preview: {
     port: 3888,
     strictPort: true,
+    allowedHosts: resolveAllowedHosts(),
     proxy: {
-      '/collab': {
-        target: 'http://127.0.0.1:1234',
-        ws: true,
-        changeOrigin: true,
-        rewrite: (p) => {
-          const stripped = p.replace(/^\/collab\/?/, '')
-          return stripped ? `/${stripped}` : '/'
-        },
-      },
+      ...collabProxy,
     },
   },
 })

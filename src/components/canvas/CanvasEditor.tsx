@@ -32,7 +32,12 @@ import { useEditorStore } from '@/store/editorStore'
 import { Button } from '@/components/ui/primitives'
 import { getNodeMeta, getRelationLabel } from '@/domain/templates/nodeTemplates'
 import { buildFlowEdges, buildFlowNodes } from '@/lib/flowNodes'
-import { collectRemoteSelectedNodeIds } from '@/collab/useCollab'
+import {
+  collectRemoteEdgeSelections,
+  collectRemoteNodeSelections,
+} from '@/collab/useCollab'
+import { canvasCollabSession } from '@/collab/CanvasCollabSession'
+import { RemoteCollabCursors } from '@/components/collab/RemoteCollabCursors'
 import { ContextMenu } from '@/components/ui/ContextMenu'
 import { AiSelectionModal } from '@/components/panels/AiSelectionModal'
 import { useCanvasContextMenu } from './useCanvasContextMenu'
@@ -84,6 +89,8 @@ function CanvasInner() {
     selectedEdgeId,
     impactMap,
     collabPeers,
+    collabEnabled,
+    collabStatus,
     moveNodes,
     resizeCommentBlock,
     autoAssignGroupsAfterMove,
@@ -178,10 +185,29 @@ function CanvasInner() {
 
   const nodeNames = useMemo(() => new Map(nodes.map((n) => [n.id, n.name])), [nodes])
 
-  const remoteSelectedColors = useMemo(
-    () => collectRemoteSelectedNodeIds(collabPeers),
+  const remoteNodeSelections = useMemo(
+    () => collectRemoteNodeSelections(collabPeers),
     [collabPeers],
   )
+
+  const remoteEdgeSelections = useMemo(
+    () => collectRemoteEdgeSelections(collabPeers),
+    [collabPeers],
+  )
+
+  const publishCollabCursor = useCallback(
+    (clientX: number, clientY: number) => {
+      if (!collabEnabled || collabStatus !== 'connected') return
+      const pos = screenToFlow({ x: clientX, y: clientY })
+      canvasCollabSession.publishCursor({ x: pos.x, y: pos.y })
+    },
+    [collabEnabled, collabStatus, screenToFlow],
+  )
+
+  const clearCollabCursor = useCallback(() => {
+    if (!collabEnabled || collabStatus !== 'connected') return
+    canvasCollabSession.publishCursor(null)
+  }, [collabEnabled, collabStatus])
 
   const storeFlowNodes = useMemo(
     () =>
@@ -191,9 +217,9 @@ function CanvasInner() {
         nodeNames,
         impactMap,
         selectedNodeIds,
-        remoteSelectedColors,
+        remoteNodeSelections,
       ),
-    [nodes, edges, nodeNames, impactMap, selectedNodeIds, remoteSelectedColors],
+    [nodes, edges, nodeNames, impactMap, selectedNodeIds, remoteNodeSelections],
   )
 
   const [flowNodes, setFlowNodes] = useNodesState(storeFlowNodes)
@@ -205,8 +231,8 @@ function CanvasInner() {
   }, [storeFlowNodes, setFlowNodes])
 
   const flowEdges = useMemo(
-    () => buildFlowEdges(edges, nodes, selectedEdgeId, hoveredEdgeId),
-    [edges, nodes, selectedEdgeId, hoveredEdgeId],
+    () => buildFlowEdges(edges, nodes, selectedEdgeId, hoveredEdgeId, remoteEdgeSelections),
+    [edges, nodes, selectedEdgeId, hoveredEdgeId, remoteEdgeSelections],
   )
 
   const onConnectStart = useCallback(() => {
@@ -503,13 +529,25 @@ function CanvasInner() {
   const onNodeMouseMove = useCallback(
     (e: ReactMouseEvent, node: { id: string }) => {
       showNodeTooltip(e, node.id)
+      publishCollabCursor(e.clientX, e.clientY)
     },
-    [showNodeTooltip],
+    [showNodeTooltip, publishCollabCursor],
   )
 
   const onNodeMouseLeave = useCallback(() => {
     setNodeTooltip(null)
   }, [])
+
+  const onPaneMouseMove = useCallback(
+    (e: ReactMouseEvent) => {
+      publishCollabCursor(e.clientX, e.clientY)
+    },
+    [publishCollabCursor],
+  )
+
+  const onPaneMouseLeave = useCallback(() => {
+    clearCollabCursor()
+  }, [clearCollabCursor])
 
   const onEdgeMouseEnter = useCallback(
     (e: ReactMouseEvent, edge: { id: string; data?: unknown }) => {
@@ -527,6 +565,7 @@ function CanvasInner() {
 
   const onEdgeMouseMove = useCallback(
     (e: ReactMouseEvent, edge: { id: string; data?: unknown }) => {
+      publishCollabCursor(e.clientX, e.clientY)
       if (hoveredEdgeId !== String(edge.id)) return
       const data = edge.data as DesignEdgeData | undefined
       setEdgeTooltip({
@@ -535,7 +574,7 @@ function CanvasInner() {
         text: edgeTooltipText(data),
       })
     },
-    [hoveredEdgeId, edgeTooltipText],
+    [hoveredEdgeId, edgeTooltipText, publishCollabCursor],
   )
 
   const onEdgeMouseLeave = useCallback(() => {
@@ -610,6 +649,8 @@ function CanvasInner() {
         autoPanOnConnect
         onSelectionChange={onSelectionChange}
         onPaneClick={onPaneClick}
+        onPaneMouseMove={onPaneMouseMove}
+        onPaneMouseLeave={onPaneMouseLeave}
         onNodeMouseEnter={onNodeMouseEnter}
         onNodeMouseMove={onNodeMouseMove}
         onNodeMouseLeave={onNodeMouseLeave}
@@ -659,6 +700,7 @@ function CanvasInner() {
         proOptions={{ hideAttribution: true }}
       >
         <Background gap={20} size={1} color="#E5E7EB" />
+        <RemoteCollabCursors />
         <Controls showInteractive={false} className="!shadow-sm !border-gray-200" />
         <MiniMap
           nodeColor={minimapNodeColor}

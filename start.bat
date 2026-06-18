@@ -1,33 +1,33 @@
 @echo off
-chcp 65001 >nul
 title Game Design Graph
 cd /d "%~dp0"
 
 where node >nul 2>nul
 if errorlevel 1 (
-    echo [错误] 未找到 Node.js，请先安装：https://nodejs.org/
+    echo [ERROR] Node.js not found. Install from https://nodejs.org/
     pause
     exit /b 1
 )
 
 if not exist "node_modules\" (
-    echo 正在安装依赖，请稍候...
+    echo Installing dependencies...
     call npm install
     if errorlevel 1 (
-        echo [错误] 依赖安装失败
+        echo [ERROR] npm install failed
         pause
         exit /b 1
     )
 )
 
 echo.
-echo 启动 Game Design Graph ...
-echo 浏览器将自动打开；同事可用 http://你的局域网IP:3888 访问
-echo 按 Ctrl+C 可停止服务器
+echo Starting Game Design Graph...
+echo Browser: http://localhost:3888
+echo LAN:     http://YOUR_LAN_IP:3888
+echo Press Ctrl+C to stop.
 echo.
 
 call npm run start
 
 echo.
-echo 服务器已停止
+echo Server stopped.
 pause

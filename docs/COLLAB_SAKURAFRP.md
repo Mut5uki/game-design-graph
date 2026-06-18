@@ -30,8 +30,7 @@
 | 隧道类型 | TCP（或 HTTP + 自有域名） |
 | 本地 IP | `127.0.0.1` |
 | 本地端口 | **3888** |
-
-可选：开启 **自动 HTTPS**（推荐，避免浏览器拦截 WebSocket）。
+| **自动 HTTPS** | **必须开启**（否则公网访问会 501，浏览器也拦 ws://） |
 
 **不要**再单独映射 1234；1234 只在本机跑协作服务，由 3888 代理。
 
@@ -39,9 +38,9 @@
 
 ## 3. 启动
 
-1. 双击 **`start-with-sakurafrp.bat`**（协作 1234 + 前端 3888）
+1. 双击 **`start-with-sakurafrp.bat`**（或 `npm run start:collab`）（协作 1234 + 前端 3888）
 2. 樱花启动器里 **只开这一条隧道**
-3. 从日志复制公网地址，例如：`https://cn-xx.natfrp.cloud:51906`
+3. 从日志复制公网地址，例如：`https://cn-xx.natfrp.cloud:51906`（**必须用 https://**，不要用 http://）
 
 frpc 示例（仅一个隧道 ID）：
 
@@ -85,6 +84,12 @@ frpc_windows_amd64.exe -f <访问密钥>:<隧道ID>
 
 **frpc 报无法连接本地服务**  
 先运行 `start-with-sakurafrp.bat`，确认本机 3888 已监听，再开隧道。
+
+**公网打开出现 501 /「您正在使用 HTTP 协议访问」**  
+樱花已禁止 plain HTTP。到 [natfrp.com](https://natfrp.com/) 编辑该隧道 → 开启 **自动 HTTPS** → 设置里改用 `https://frp-tip.com:端口` → 保存后重新复制邀请链接。
+
+**Vite 报 Blocked request / allowedHosts**  
+已在 `vite.config.ts` 放行樱花域名。修改配置后需 **重启** `start-with-sakurafrp.bat`。若用其它穿透域名，可设环境变量 `VITE_ALLOWED_HOSTS=你的域名.com` 或 `VITE_ALLOWED_HOSTS=*`。
 
 ---
 

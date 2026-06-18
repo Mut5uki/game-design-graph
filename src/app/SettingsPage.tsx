@@ -58,13 +58,28 @@ export function SettingsPage() {
   }
 
   const handleSaveCollab = () => {
-    const inviteBaseUrl = (sakuraPublicUrl || collabInviteBaseUrl).trim().replace(/\/$/, '')
+    const raw = (sakuraPublicUrl || collabInviteBaseUrl).trim()
+    if (!raw) {
+      saveCollabSettings({
+        inviteBaseUrl: '',
+        serverUrl: '',
+        displayName: collabDisplayName.trim(),
+      })
+      setCollabInviteBaseUrl('')
+      setCollabSaved(true)
+      setTimeout(() => setCollabSaved(false), 2000)
+      return
+    }
+    const preset = applySakuraFrpPreset({ publicUrl: raw })
+    const inviteBaseUrl = preset?.settings.inviteBaseUrl ?? raw.replace(/\/$/, '')
+    const serverUrl = preset?.settings.serverUrl ?? deriveCollabWsFromInviteBase(inviteBaseUrl)
     saveCollabSettings({
       inviteBaseUrl,
-      serverUrl: inviteBaseUrl ? deriveCollabWsFromInviteBase(inviteBaseUrl) : '',
+      serverUrl,
       displayName: collabDisplayName.trim(),
     })
     setCollabInviteBaseUrl(inviteBaseUrl)
+    setSakuraPublicUrl(inviteBaseUrl)
     setCollabSaved(true)
     setTimeout(() => setCollabSaved(false), 2000)
   }
@@ -152,7 +167,7 @@ export function SettingsPage() {
               <Input
                 value={sakuraPublicUrl}
                 onChange={(e) => setSakuraPublicUrl(e.target.value)}
-                placeholder="https://cn-xx.natfrp.cloud:51906"
+                placeholder="https://frp-tip.com:43337"
                 className="font-mono text-xs"
               />
               <p className="text-[10px] text-pink-700/70 mt-1">
