@@ -12,6 +12,7 @@ import {
 } from '@/collab/types'
 import { getSuggestedCollabWsUrl, isInviteUrlLocalhostOnly } from '@/collab/publicUrls'
 import { applyLocalHostPreset, HOST_MODE_HINT } from '@/collab/hostPreset'
+import { applySakuraFrpPreset, SAKURAFRP_TUNNEL_HINT } from '@/collab/sakurafrpPreset'
 import { getDiskDataDir, isDiskStorageAvailable } from '@/db/diskSync'
 import { Button, Input, Label, Select } from '@/components/ui/primitives'
 
@@ -31,6 +32,9 @@ export function SettingsPage() {
   const [collabSaved, setCollabSaved] = useState(false)
   const [hostDetectMsg, setHostDetectMsg] = useState<string | null>(null)
   const [hostDetecting, setHostDetecting] = useState(false)
+  const [sakuraWebUrl, setSakuraWebUrl] = useState('')
+  const [sakuraWsUrl, setSakuraWsUrl] = useState('')
+  const [sakuraMsg, setSakuraMsg] = useState<string | null>(null)
 
   useEffect(() => {
     listProjects().then((ps) => {
@@ -106,6 +110,25 @@ export function SettingsPage() {
     }
   }
 
+  const handleApplySakuraFrp = () => {
+    setSakuraMsg(null)
+    const result = applySakuraFrpPreset({
+      webPublicUrl: sakuraWebUrl,
+      wsPublicUrl: sakuraWsUrl,
+    })
+    if (!result) {
+      setSakuraMsg('请填写樱花面板日志里的网页地址和协作 WebSocket 地址。')
+      return
+    }
+    setCollabMode('server')
+    setCollabInviteBaseUrl(result.settings.inviteBaseUrl)
+    setCollabServerUrl(result.settings.serverUrl)
+    const warn = result.warnings.length ? `\n\n⚠ ${result.warnings.join('\n⚠ ')}` : ''
+    setSakuraMsg(
+      `已填入服务器模式。\n邀请：${result.settings.inviteBaseUrl}\n协作 WS：${result.settings.serverUrl}${warn}\n\n请点击下方「保存协作设置」，并确保已运行 start-with-sakurafrp.bat + 樱花隧道。`,
+    )
+  }
+
   return (
     <div className="min-h-screen bg-[#F7F8FA]">
       <header className="border-b border-gray-200 bg-white">
@@ -161,10 +184,42 @@ export function SettingsPage() {
         <section id="collab" className="bg-white border border-gray-200 rounded-lg p-6 space-y-4">
           <h2 className="font-medium text-gray-900">多人协作</h2>
           <p className="text-xs text-gray-400">
-            可以<strong>用你自己的电脑当主机</strong>：跑 <code className="text-[11px] bg-gray-100 px-1 rounded">start-with-collab.bat</code>，
-            同事连你的局域网 IP 即可（见下方「本机作为主机」）。不必买云服务器。
-            P2P 模式只需你的电脑提供网页，画布数据在浏览器之间直连。
+            可以<strong>用你自己的电脑当主机</strong>：跑 <code className="text-[11px] bg-gray-100 px-1 rounded">start-with-collab.bat</code>（局域网）或{' '}
+            <code className="text-[11px] bg-gray-100 px-1 rounded">start-with-sakurafrp.bat</code>（樱花穿透，见{' '}
+            <code className="text-[11px] bg-gray-100 px-1 rounded">docs/COLLAB_SAKURAFRP.md</code>）。
           </p>
+
+          <div className="rounded-md border border-pink-100 bg-pink-50/60 p-3 space-y-2">
+            <p className="text-xs font-medium text-pink-900">樱花 FRP（SakuraFrp）</p>
+            <p className="text-[10px] text-pink-800/90 leading-relaxed">
+              在 natfrp.com 建两条 TCP 隧道：{SAKURAFRP_TUNNEL_HINT.web}；{SAKURAFRP_TUNNEL_HINT.ws}。
+              {SAKURAFRP_TUNNEL_HINT.node} 启动隧道后把日志里的公网地址填到下面。
+            </p>
+            <div>
+              <Label>网页隧道地址（3888）</Label>
+              <Input
+                value={sakuraWebUrl}
+                onChange={(e) => setSakuraWebUrl(e.target.value)}
+                placeholder="https://cn-xx.natfrp.cloud:51906"
+                className="font-mono text-xs"
+              />
+            </div>
+            <div>
+              <Label>协作 WebSocket 隧道地址（1234）</Label>
+              <Input
+                value={sakuraWsUrl}
+                onChange={(e) => setSakuraWsUrl(e.target.value)}
+                placeholder="wss://cn-xx.natfrp.cloud:51907"
+                className="font-mono text-xs"
+              />
+            </div>
+            <Button size="sm" variant="secondary" onClick={handleApplySakuraFrp}>
+              套用 Sakura FRP
+            </Button>
+            {sakuraMsg && (
+              <p className="text-[10px] text-pink-900 whitespace-pre-wrap leading-snug">{sakuraMsg}</p>
+            )}
+          </div>
 
           <div className="rounded-md border border-sky-100 bg-sky-50/60 p-3 space-y-2">
             <p className="text-xs font-medium text-sky-800">本机作为主机</p>

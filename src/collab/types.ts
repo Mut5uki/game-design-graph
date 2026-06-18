@@ -33,6 +33,7 @@ export const DEFAULT_COLLAB_SERVER_URL = 'ws://localhost:1234'
 /** y-webrtc 公共信令（仅握手，不含画布内容） */
 export const DEFAULT_SIGNALING_URLS = [
   'wss://y-webrtc-eu.fly.dev',
+  'wss://y-webrtc-us.fly.dev',
 ] as const
 
 export const COLLAB_SETTINGS_KEY = 'gdg-collab-settings'
@@ -47,8 +48,8 @@ const DEPRECATED_SIGNALING_URLS = new Set([
 function sanitizeSignalingUrls(urls: string[]): string[] {
   const cleaned = urls.map((u) => u.trim()).filter(Boolean)
   const filtered = cleaned.filter((u) => !DEPRECATED_SIGNALING_URLS.has(u))
-  if (filtered.length) return filtered
-  return [...DEFAULT_SIGNALING_URLS]
+  const base = filtered.length ? filtered : [...DEFAULT_SIGNALING_URLS]
+  return [...new Set([...base, ...DEFAULT_SIGNALING_URLS])]
 }
 
 function normalizeSignalingUrls(value: unknown): string[] {

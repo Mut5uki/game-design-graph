@@ -19,6 +19,7 @@ import {
   type CollabPeer,
   type CollabUser,
 } from '@/collab/types'
+import { DEFAULT_WEBRTC_PEER_OPTS } from '@/collab/webrtcConfig'
 
 export interface CanvasCollabCallbacks {
   onGraphChange: (snapshot: { nodes: DesignNode[]; edges: DesignEdge[] }) => void
@@ -27,6 +28,7 @@ export interface CanvasCollabCallbacks {
     detail?: string,
   ) => void
   onPeersChange: (peers: CollabPeer[]) => void
+  onTransportChange?: (webrtcCount: number, bcCount: number) => void
 }
 
 export interface CanvasCollabConnectOptions {
@@ -164,6 +166,7 @@ export class CanvasCollabSession {
     const provider = new WebrtcProvider(options.roomId, ydoc.doc, {
       signaling,
       password,
+      peerOpts: { ...DEFAULT_WEBRTC_PEER_OPTS },
     })
 
     this.provider = provider
@@ -194,7 +197,15 @@ export class CanvasCollabSession {
       }
     })
 
-    provider.on('peers', () => this.emitPeers())
+    provider.on('peers', (event: {
+      webrtcPeers?: string[]
+      bcPeers?: string[]
+    }) => {
+      const webrtcCount = event.webrtcPeers?.length ?? 0
+      const bcCount = event.bcPeers?.length ?? 0
+      this.callbacks?.onTransportChange?.(webrtcCount, bcCount)
+      this.emitPeers()
+    })
 
     window.setTimeout(() => {
       if (this.provider === provider && this.ydoc) {

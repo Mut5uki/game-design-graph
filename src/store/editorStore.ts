@@ -166,6 +166,8 @@ interface EditorState {
   collabMode: CollabMode | null
   collabRoomId: string | null
   collabPeers: CollabPeer[]
+  collabWebrtcLinks: number
+  collabBcLinks: number
   collabError: string | null
   startCollab: (roomId: string, opts?: { mode?: CollabMode }) => void
   stopCollab: () => void
@@ -275,6 +277,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   collabMode: null,
   collabRoomId: null,
   collabPeers: [],
+  collabWebrtcLinks: 0,
+  collabBcLinks: 0,
   collabError: null,
 
   setProject: (project, canvases) => {
@@ -1105,6 +1109,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       collabStatus: 'connecting',
       collabError: null,
       collabPeers: [],
+      collabWebrtcLinks: 0,
+      collabBcLinks: 0,
     })
 
     canvasCollabSession.connect({
@@ -1155,6 +1161,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
               collabMode: null,
               collabRoomId: null,
               collabPeers: [],
+              collabWebrtcLinks: 0,
+              collabBcLinks: 0,
             })
             return
           }
@@ -1164,9 +1172,13 @@ export const useEditorStore = create<EditorState>((set, get) => ({
             collabMode: null,
             collabRoomId: null,
             collabPeers: [],
+            collabWebrtcLinks: 0,
+            collabBcLinks: 0,
           })
         },
         onPeersChange: (peers) => set({ collabPeers: peers }),
+        onTransportChange: (webrtcCount, bcCount) =>
+          set({ collabWebrtcLinks: webrtcCount, collabBcLinks: bcCount }),
       },
     })
   },
@@ -1179,6 +1191,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       collabRoomId: null,
       collabStatus: 'offline',
       collabPeers: [],
+      collabWebrtcLinks: 0,
+      collabBcLinks: 0,
       collabError: null,
     })
   },

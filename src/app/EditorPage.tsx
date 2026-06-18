@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils'
 import { ExportCanvasPngHeaderButton } from '@/components/canvas/ExportCanvasPngButton'
 import { CollabBar } from '@/components/collab/CollabBar'
 import { useCollabLifecycle, useCollabSync } from '@/collab/useCollab'
-import { buildCollabRoomId } from '@/collab/types'
+import { buildCollabRoomId, defaultDisplayName, loadCollabSettings, saveCollabSettings } from '@/collab/types'
 import { resolveCollabModeFromUrl } from '@/collab/collabMode'
 import { isCollabJoinUrl } from '@/collab/publicUrls'
 
@@ -64,10 +64,17 @@ export function EditorPage() {
     if (!projectId || !canvasId || isLoading) return
     const params = new URLSearchParams(window.location.search)
     if (params.get('collab') !== '1') return
-    const { collabEnabled, startCollab } = useEditorStore.getState()
-    if (collabEnabled) return
-    const mode = resolveCollabModeFromUrl() ?? undefined
-    startCollab(buildCollabRoomId(projectId, canvasId), { mode })
+    const timer = window.setTimeout(() => {
+      const { collabEnabled, startCollab } = useEditorStore.getState()
+      if (collabEnabled) return
+      const settings = loadCollabSettings()
+      if (!settings.displayName.trim()) {
+        saveCollabSettings({ ...settings, displayName: defaultDisplayName() })
+      }
+      const mode = resolveCollabModeFromUrl() ?? settings.mode ?? 'p2p'
+      startCollab(buildCollabRoomId(projectId, canvasId), { mode })
+    }, 400)
+    return () => window.clearTimeout(timer)
   }, [projectId, canvasId, isLoading])
 
   useEffect(() => {

@@ -5,4 +5,5 @@ dist
 .env
 .env.*
 data/projects/*.json
-vite-dev.log
+deploy/sakurafrp/frpc.local.cmd
+deploy/sakurafrp/frpc_windows_*.exe
