@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { canvasCollabSession } from '@/collab/CanvasCollabSession'
 import { buildPublicShareUrl } from '@/collab/publicUrls'
-import { loadCollabSettings, type CollabPeer, type CollabStatus } from '@/collab/types'
+import { loadCollabSettings, defaultDisplayName } from '@/collab/types'
 import { isApplyingRemoteCollab, useEditorStore } from '@/store/editorStore'
 
 let collabPushTimer: ReturnType<typeof setTimeout> | null = null
@@ -14,7 +14,7 @@ function scheduleCollabPush(
   collabPushTimer = setTimeout(() => {
     if (isApplyingRemoteCollab()) return
     canvasCollabSession.pushLocalGraph(nodes, edges)
-  }, 300)
+  }, 500)
 }
 
 export function useCollabLifecycle() {
@@ -32,53 +32,19 @@ export function useCollabSync() {
 
   useEffect(() => {
     if (!collabEnabled || collabStatus !== 'connected') return
-    if (isApplyingRemoteCollab()) return
-    scheduleCollabPush(nodes, edges)
-  }, [collabEnabled, collabStatus, nodes, edges])
+    const settings = loadCollabSettings()
+    const name = settings.displayName.trim() || defaultDisplayName()
+    canvasCollabSession.republishLocalPresence(name, selectedNodeIds, selectedEdgeId)
+  }, [collabEnabled, collabStatus, selectedNodeIds, selectedEdgeId])
 
   useEffect(() => {
     if (!collabEnabled || collabStatus !== 'connected') return
-    canvasCollabSession.publishSelection(selectedNodeIds, selectedEdgeId)
-  }, [collabEnabled, collabStatus, selectedNodeIds, selectedEdgeId])
+    if (isApplyingRemoteCollab()) return
+    scheduleCollabPush(nodes, edges)
+  }, [collabEnabled, collabStatus, nodes, edges])
 }
 
-export type { CollabPeer, CollabStatus }
-
-export interface RemotePeerRef {
-  color: string
-  name: string
-}
-
-export function collectRemoteNodeSelections(peers: CollabPeer[]): Map<string, RemotePeerRef[]> {
-  const map = new Map<string, RemotePeerRef[]>()
-  for (const peer of peers) {
-    for (const id of peer.selectedNodeIds) {
-      const list = map.get(id) ?? []
-      list.push({ color: peer.color, name: peer.name })
-      map.set(id, list)
-    }
-  }
-  return map
-}
-
-/** @deprecated use collectRemoteNodeSelections */
-export function collectRemoteSelectedNodeIds(peers: CollabPeer[]): Map<string, string> {
-  const map = new Map<string, string>()
-  for (const [id, refs] of collectRemoteNodeSelections(peers)) {
-    if (refs[0]) map.set(id, refs[0].color)
-  }
-  return map
-}
-
-export function collectRemoteEdgeSelections(peers: CollabPeer[]): Map<string, RemotePeerRef> {
-  const map = new Map<string, RemotePeerRef>()
-  for (const peer of peers) {
-    if (peer.selectedEdgeId && !map.has(peer.selectedEdgeId)) {
-      map.set(peer.selectedEdgeId, { color: peer.color, name: peer.name })
-    }
-  }
-  return map
-}
+export type { CollabPeer, CollabStatus } from '@/collab/types'
 
 export function getCollabShareUrl(projectId: string, canvasId: string): string {
   return buildPublicShareUrl(projectId, canvasId)

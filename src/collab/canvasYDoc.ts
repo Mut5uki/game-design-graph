@@ -29,6 +29,17 @@ export function readCanvasGraph(yNodes: Y.Map<DesignNode>, yEdges: Y.Map<DesignE
   }
 }
 
+/** 避免 Yjs 回显导致 store ↔ ydoc 无限同步 */
+export function graphSnapshotEqual(a: CanvasGraphSnapshot, b: CanvasGraphSnapshot): boolean {
+  if (a.nodes.length !== b.nodes.length || a.edges.length !== b.edges.length) return false
+  const sortNodes = (nodes: DesignNode[]) => [...nodes].sort((x, y) => x.id.localeCompare(y.id))
+  const sortEdges = (edges: DesignEdge[]) => [...edges].sort((x, y) => x.id.localeCompare(y.id))
+  return (
+    JSON.stringify(sortNodes(a.nodes)) === JSON.stringify(sortNodes(b.nodes)) &&
+    JSON.stringify(sortEdges(a.edges)) === JSON.stringify(sortEdges(b.edges))
+  )
+}
+
 export function seedCanvasGraph(
   { doc, nodes: yNodes, edges: yEdges }: CanvasYDoc,
   snapshot: CanvasGraphSnapshot,

@@ -14,22 +14,17 @@ import { buildInboundSummary } from '@/components/canvas/DesignNode'
 import { resolveDefaultEdgeHandles } from '@/lib/edgeHandles'
 import { resolveFlowEdgeEndpoints } from '@/lib/edgeParallel'
 
-import type { RemotePeerRef } from '@/collab/useCollab'
-
 export function buildFlowNodes(
   nodes: DesignNode[],
   edges: DesignEdge[],
   nodeNames: Map<string, string>,
   impactMap: Map<string, ImpactRole>,
   selectedNodeIds: string[],
-  remoteNodeSelections?: Map<string, RemotePeerRef[]>,
 ): Node<DesignNodeData | CommentBlockData | ListBlockData>[] {
   const sorted = sortNodesForFlow(nodes)
 
   return sorted.map((n) => {
     const selected = selectedNodeIds.includes(n.id)
-    const remoteSelections = remoteNodeSelections?.get(n.id)
-    const remoteSelectColor = remoteSelections?.[0]?.color
 
     if (isCommentBlock(n)) {
       const { width, height } = getCommentSize(n)
@@ -41,8 +36,6 @@ export function buildFlowNodes(
           label: n.name,
           description: String(n.fields.description ?? ''),
           colorId: String(n.fields.color ?? 'blue'),
-          remoteSelections,
-          remoteSelectColor,
         },
         style: { width, height, zIndex: 0 },
         draggable: true,
@@ -66,8 +59,6 @@ export function buildFlowNodes(
           listType: String(n.fields.listType ?? 'ability'),
           items: getListItems(n),
           description: String(n.fields.description ?? ''),
-          remoteSelections,
-          remoteSelectColor,
         },
         draggable: true,
         selectable: true,
@@ -89,8 +80,6 @@ export function buildFlowNodes(
         nodeType: n.type,
         inboundSummary: buildInboundSummary(n.id, edges, nodeNames),
         impactRole: impactMap.get(n.id),
-        remoteSelectColor,
-        remoteSelections,
       },
       draggable: true,
       selectable: true,
@@ -106,7 +95,6 @@ export function buildFlowEdges(
   nodes: DesignNode[],
   selectedEdgeId: string | null,
   hoveredEdgeId: string | null = null,
-  remoteEdgeSelections?: Map<string, RemotePeerRef>,
 ): Edge[] {
   const groupIds = new Set(nodes.filter(isCommentBlock).map((n) => n.id))
   const endpoints = resolveFlowEdgeEndpoints(edges, nodes)
@@ -126,7 +114,6 @@ export function buildFlowEdges(
             }
       const isSelected = selectedEdgeId === e.id
       const isHovered = hoveredEdgeId === e.id
-      const remoteSelect = remoteEdgeSelections?.get(e.id)
       return {
         id: e.id,
         source: e.from,
@@ -143,8 +130,6 @@ export function buildFlowEdges(
           targetDx: resolved?.targetDx ?? 0,
           targetDy: resolved?.targetDy ?? 0,
           curvature: resolved?.curvature ?? 0.25,
-          remoteSelectColor: remoteSelect?.color,
-          remoteSelectName: remoteSelect?.name,
         },
         selected: isSelected,
         interactionWidth: 36,

@@ -4,7 +4,7 @@ import { deriveCollabWsFromInviteBase, resolveCollabServerUrl } from '@/collab/p
 export type CollabStatus = 'offline' | 'connecting' | 'connected' | 'error'
 
 export interface CollabUser {
-  clientId?: number
+  clientId: number
   name: string
   color: string
 }
@@ -27,6 +27,10 @@ export interface CollabSettings {
   /** 协作 WebSocket，由 inviteBaseUrl 自动推导为 …/collab */
   serverUrl: string
   displayName: string
+  /** 画布上显示同伴指针（默认开） */
+  showPeerCursors?: boolean
+  /** 画布上显示同伴选中框（默认开） */
+  showPeerSelections?: boolean
 }
 
 export const COLLAB_SETTINGS_KEY = 'gdg-collab-settings'
@@ -39,6 +43,8 @@ export function loadCollabSettings(): CollabSettings {
         inviteBaseUrl: '',
         serverUrl: resolveCollabServerUrl(),
         displayName: '',
+        showPeerCursors: true,
+        showPeerSelections: true,
       }
     }
     const parsed = JSON.parse(raw) as Partial<CollabSettings> & {
@@ -56,12 +62,16 @@ export function loadCollabSettings(): CollabSettings {
       inviteBaseUrl,
       serverUrl,
       displayName: parsed.displayName?.trim() ?? '',
+      showPeerCursors: parsed.showPeerCursors !== false,
+      showPeerSelections: parsed.showPeerSelections !== false,
     }
   } catch {
     return {
       inviteBaseUrl: '',
       serverUrl: resolveCollabServerUrl(),
       displayName: '',
+      showPeerCursors: true,
+      showPeerSelections: true,
     }
   }
 }
@@ -77,6 +87,8 @@ export function saveCollabSettings(settings: CollabSettings): void {
       inviteBaseUrl,
       serverUrl,
       displayName: settings.displayName.trim(),
+      showPeerCursors: settings.showPeerCursors !== false,
+      showPeerSelections: settings.showPeerSelections !== false,
     }),
   )
 }

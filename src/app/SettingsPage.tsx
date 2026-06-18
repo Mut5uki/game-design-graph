@@ -21,6 +21,8 @@ export function SettingsPage() {
   const [collabSaved, setCollabSaved] = useState(false)
   const [sakuraPublicUrl, setSakuraPublicUrl] = useState('')
   const [sakuraMsg, setSakuraMsg] = useState<string | null>(null)
+  const [showPeerCursors, setShowPeerCursors] = useState(true)
+  const [showPeerSelections, setShowPeerSelections] = useState(true)
 
   useEffect(() => {
     listProjects().then((ps) => {
@@ -31,6 +33,8 @@ export function SettingsPage() {
     setCollabInviteBaseUrl(collab.inviteBaseUrl)
     setSakuraPublicUrl(collab.inviteBaseUrl)
     setCollabDisplayName(collab.displayName)
+    setShowPeerCursors(collab.showPeerCursors !== false)
+    setShowPeerSelections(collab.showPeerSelections !== false)
   }, [])
 
   useEffect(() => {
@@ -64,6 +68,8 @@ export function SettingsPage() {
         inviteBaseUrl: '',
         serverUrl: '',
         displayName: collabDisplayName.trim(),
+        showPeerCursors,
+        showPeerSelections,
       })
       setCollabInviteBaseUrl('')
       setCollabSaved(true)
@@ -77,6 +83,8 @@ export function SettingsPage() {
       inviteBaseUrl,
       serverUrl,
       displayName: collabDisplayName.trim(),
+      showPeerCursors,
+      showPeerSelections,
     })
     setCollabInviteBaseUrl(inviteBaseUrl)
     setSakuraPublicUrl(inviteBaseUrl)
@@ -192,6 +200,27 @@ export function SettingsPage() {
               onChange={(e) => setCollabDisplayName(e.target.value)}
               placeholder="例如：主策划"
             />
+          </div>
+          <div className="space-y-2 pt-1">
+            <p className="text-xs text-gray-500">画布感知（不影响数据同步，可随时关闭以减轻卡顿）</p>
+            <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showPeerCursors}
+                onChange={(e) => setShowPeerCursors(e.target.checked)}
+                className="rounded border-gray-300"
+              />
+              显示同伴指针
+            </label>
+            <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showPeerSelections}
+                onChange={(e) => setShowPeerSelections(e.target.checked)}
+                className="rounded border-gray-300"
+              />
+              显示同伴选中框
+            </label>
           </div>
           <Button variant="primary" onClick={handleSaveCollab}>
             {collabSaved ? '已保存' : '保存协作设置'}

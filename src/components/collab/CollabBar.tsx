@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useCollabPresenceStore } from '@/collab/collabPresenceStore'
+import { buildPeerFocusTitle, focusCollabPeer } from '@/collab/focusPeerSelection'
 import { getCollabShareUrl, readCollabSettingsForUi } from '@/collab/useCollab'
 import { isInviteUrlLocalhostOnly } from '@/collab/publicUrls'
 import { saveCollabSettings, buildCollabRoomId } from '@/collab/types'
@@ -17,7 +19,9 @@ interface CollabBarProps {
 export function CollabBar({ projectId, canvasId, compact = false }: CollabBarProps) {
   const collabEnabled = useEditorStore((s) => s.collabEnabled)
   const collabStatus = useEditorStore((s) => s.collabStatus)
-  const collabPeers = useEditorStore((s) => s.collabPeers)
+  const collabPeers = useCollabPresenceStore((s) => s.peers)
+  const trackedPeerClientId = useCollabPresenceStore((s) => s.trackedPeerClientId)
+  const setTrackedPeerClientId = useCollabPresenceStore((s) => s.setTrackedPeerClientId)
   const collabError = useEditorStore((s) => s.collabError)
   const startCollab = useEditorStore((s) => s.startCollab)
   const stopCollab = useEditorStore((s) => s.stopCollab)
@@ -51,7 +55,7 @@ export function CollabBar({ projectId, canvasId, compact = false }: CollabBarPro
     if (!settings.inviteBaseUrl.trim()) {
       return '请先在设置填写樱花公网地址，并运行 start-with-sakurafrp.bat。'
     }
-    return '请复制邀请链接发给同伴；对方打开链接后会自动加入。'
+    return '请复制邀请链接；同伴加入后可见指针与选中（需至少 2 人在线）。'
   }, [collabEnabled, collabStatus, remotePeerCount, settings.inviteBaseUrl, compact])
 
   const handleToggle = () => {
@@ -104,17 +108,23 @@ export function CollabBar({ projectId, canvasId, compact = false }: CollabBarPro
   const peerBadges = collabPeers.length > 0 && (
     <div className="flex items-center gap-0.5 shrink-0">
       {collabPeers.slice(0, compact ? 2 : 5).map((p) => (
-        <span
+        <button
           key={p.clientId}
+          type="button"
+          onClick={() => {
+            setTrackedPeerClientId(p.clientId)
+            focusCollabPeer(p)
+          }}
           className={cn(
-            'inline-flex items-center gap-0.5 rounded-full bg-gray-100 text-gray-600 shrink-0',
+            'inline-flex items-center gap-0.5 rounded-full bg-gray-100 text-gray-600 shrink-0 hover:bg-gray-200 transition-colors',
             compact ? 'px-1.5 py-0.5 text-[10px] max-w-[4.5rem] truncate' : 'px-2 py-0.5 text-[10px]',
+            trackedPeerClientId === p.clientId && 'ring-1 ring-gray-400 bg-white',
           )}
-          title={`${p.name}${p.selectedNodeIds.length ? ` · 选中 ${p.selectedNodeIds.length} 个节点` : ''}`}
+          title={buildPeerFocusTitle(p)}
         >
           <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: p.color }} />
           {!compact && p.name}
-        </span>
+        </button>
       ))}
       {compact && collabPeers.length > 2 && (
         <span className="text-[10px] text-gray-400">+{collabPeers.length - 2}</span>

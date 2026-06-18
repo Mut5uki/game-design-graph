@@ -32,12 +32,10 @@ import { useEditorStore } from '@/store/editorStore'
 import { Button } from '@/components/ui/primitives'
 import { getNodeMeta, getRelationLabel } from '@/domain/templates/nodeTemplates'
 import { buildFlowEdges, buildFlowNodes } from '@/lib/flowNodes'
-import {
-  collectRemoteEdgeSelections,
-  collectRemoteNodeSelections,
-} from '@/collab/useCollab'
 import { canvasCollabSession } from '@/collab/CanvasCollabSession'
-import { RemoteCollabCursors } from '@/components/collab/RemoteCollabCursors'
+import { loadCollabSettings } from '@/collab/types'
+import { MIN_CURSOR_STEP } from '@/collab/presenceUtils'
+import { RemoteCollabPresence } from '@/components/collab/RemoteCollabPresence'
 import { ContextMenu } from '@/components/ui/ContextMenu'
 import { AiSelectionModal } from '@/components/panels/AiSelectionModal'
 import { useCanvasContextMenu } from './useCanvasContextMenu'
@@ -88,7 +86,6 @@ function CanvasInner() {
     selectedNodeIds,
     selectedEdgeId,
     impactMap,
-    collabPeers,
     collabEnabled,
     collabStatus,
     moveNodes,
@@ -185,41 +182,30 @@ function CanvasInner() {
 
   const nodeNames = useMemo(() => new Map(nodes.map((n) => [n.id, n.name])), [nodes])
 
-  const remoteNodeSelections = useMemo(
-    () => collectRemoteNodeSelections(collabPeers),
-    [collabPeers],
-  )
-
-  const remoteEdgeSelections = useMemo(
-    () => collectRemoteEdgeSelections(collabPeers),
-    [collabPeers],
-  )
+  const cursorSendRef = useRef<{ x: number; y: number } | null>(null)
+  const showPeerCursors = loadCollabSettings().showPeerCursors !== false
 
   const publishCollabCursor = useCallback(
     (clientX: number, clientY: number) => {
-      if (!collabEnabled || collabStatus !== 'connected') return
+      if (!collabEnabled || collabStatus !== 'connected' || !showPeerCursors) return
       const pos = screenToFlow({ x: clientX, y: clientY })
+      const last = cursorSendRef.current
+      if (last && Math.hypot(pos.x - last.x, pos.y - last.y) < MIN_CURSOR_STEP) return
+      cursorSendRef.current = pos
       canvasCollabSession.publishCursor({ x: pos.x, y: pos.y })
     },
-    [collabEnabled, collabStatus, screenToFlow],
+    [collabEnabled, collabStatus, showPeerCursors, screenToFlow],
   )
 
   const clearCollabCursor = useCallback(() => {
     if (!collabEnabled || collabStatus !== 'connected') return
+    cursorSendRef.current = null
     canvasCollabSession.publishCursor(null)
   }, [collabEnabled, collabStatus])
 
   const storeFlowNodes = useMemo(
-    () =>
-      buildFlowNodes(
-        nodes,
-        edges,
-        nodeNames,
-        impactMap,
-        selectedNodeIds,
-        remoteNodeSelections,
-      ),
-    [nodes, edges, nodeNames, impactMap, selectedNodeIds, remoteNodeSelections],
+    () => buildFlowNodes(nodes, edges, nodeNames, impactMap, selectedNodeIds),
+    [nodes, edges, nodeNames, impactMap, selectedNodeIds],
   )
 
   const [flowNodes, setFlowNodes] = useNodesState(storeFlowNodes)
@@ -231,8 +217,8 @@ function CanvasInner() {
   }, [storeFlowNodes, setFlowNodes])
 
   const flowEdges = useMemo(
-    () => buildFlowEdges(edges, nodes, selectedEdgeId, hoveredEdgeId, remoteEdgeSelections),
-    [edges, nodes, selectedEdgeId, hoveredEdgeId, remoteEdgeSelections],
+    () => buildFlowEdges(edges, nodes, selectedEdgeId, hoveredEdgeId),
+    [edges, nodes, selectedEdgeId, hoveredEdgeId],
   )
 
   const onConnectStart = useCallback(() => {
@@ -606,7 +592,7 @@ function CanvasInner() {
   )
 
   useEffect(() => {
-    const handler = (e: Event) => {
+    const onFocusNode = (e: Event) => {
       const nodeId = (e as CustomEvent<{ nodeId: string }>).detail.nodeId
       const node = nodes.find((n) => n.id === nodeId)
       if (node) {
@@ -619,8 +605,28 @@ function CanvasInner() {
         })
       }
     }
-    window.addEventListener('gdg:focus-node', handler)
-    return () => window.removeEventListener('gdg:focus-node', handler)
+    const onFocusPoint = (e: Event) => {
+      const { x, y, zoom = 1.2 } = (e as CustomEvent<{ x: number; y: number; zoom?: number }>).detail
+      reactFlow.setCenter(x, y, { zoom, duration: 300 })
+    }
+    const onFocusNodes = (e: Event) => {
+      const nodeIds = (e as CustomEvent<{ nodeIds: string[] }>).detail.nodeIds
+      if (!nodeIds.length) return
+      void reactFlow.fitView({
+        nodes: nodeIds.map((id) => ({ id })),
+        padding: 0.25,
+        duration: 300,
+        maxZoom: 1.5,
+      })
+    }
+    window.addEventListener('gdg:focus-node', onFocusNode)
+    window.addEventListener('gdg:focus-point', onFocusPoint)
+    window.addEventListener('gdg:focus-nodes', onFocusNodes)
+    return () => {
+      window.removeEventListener('gdg:focus-node', onFocusNode)
+      window.removeEventListener('gdg:focus-point', onFocusPoint)
+      window.removeEventListener('gdg:focus-nodes', onFocusNodes)
+    }
   }, [nodes, reactFlow])
 
   const defaultViewport = canvas?.viewport ?? { x: 0, y: 0, zoom: 1 }
@@ -700,7 +706,7 @@ function CanvasInner() {
         proOptions={{ hideAttribution: true }}
       >
         <Background gap={20} size={1} color="#E5E7EB" />
-        <RemoteCollabCursors />
+        <RemoteCollabPresence />
         <Controls showInteractive={false} className="!shadow-sm !border-gray-200" />
         <MiniMap
           nodeColor={minimapNodeColor}

@@ -10,16 +10,12 @@ import {
 import { useEditorStore } from '@/store/editorStore'
 import { cn } from '@/lib/utils'
 import { InlineNodeName } from './InlineNodeName'
-import type { RemotePeerRef } from '@/collab/useCollab'
-import { RemoteSelectionBadge, remoteSelectionRingStyle } from '@/components/collab/RemoteSelectionBadge'
 
 export interface ListBlockData {
   label: string
   listType: string
   items: ListBlockItem[]
   description?: string
-  remoteSelections?: RemotePeerRef[]
-  remoteSelectColor?: string
   [key: string]: unknown
 }
 
@@ -27,8 +23,6 @@ function ListBlockCard({ data, selected, id }: NodeProps & { data: ListBlockData
   const contentType = (data.listType ?? 'ability') as string
   const meta = getNodeMeta(contentType)
   const items: ListBlockItem[] = Array.isArray(data.items) ? data.items : []
-  const remoteSelections = data.remoteSelections ?? []
-  const remoteColor = data.remoteSelectColor ?? remoteSelections[0]?.color
   const updateListItems = useEditorStore((s) => s.updateListItems)
   const reorderListItems = useEditorStore((s) => s.reorderListItems)
   const setListItemOffset = useEditorStore((s) => s.setListItemOffset)
@@ -73,14 +67,8 @@ function ListBlockCard({ data, selected, id }: NodeProps & { data: ListBlockData
         'relative rounded-lg border bg-white shadow-sm min-w-[220px] max-w-[280px]',
         selected && 'ring-2 ring-sky-400 shadow-md',
       )}
-      style={{
-        borderColor: selected ? meta.color : remoteColor && !selected ? remoteColor : '#E5E7EB',
-        ...(!selected && remoteColor ? remoteSelectionRingStyle(remoteColor) : {}),
-      }}
+      style={{ borderColor: selected ? meta.color : '#E5E7EB' }}
     >
-      {!selected && remoteSelections.length > 0 && (
-        <RemoteSelectionBadge selections={remoteSelections} />
-      )}
       <Handle
         id={LIST_BLOCK_HANDLE.input}
         type="target"

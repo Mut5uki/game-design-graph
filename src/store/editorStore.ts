@@ -59,11 +59,11 @@ import {
   syncRelationTypeColorOverrides,
 } from '@/domain/templates/relationTypeRegistry'
 import { canvasCollabSession } from '@/collab/CanvasCollabSession'
+import { graphSnapshotEqual } from '@/collab/canvasYDoc'
 import { resolveActiveCollabServerUrl } from '@/collab/publicUrls'
 import {
   defaultDisplayName,
   loadCollabSettings,
-  type CollabPeer,
   type CollabStatus,
 } from '@/collab/types'
 
@@ -164,7 +164,6 @@ interface EditorState {
   collabEnabled: boolean
   collabStatus: CollabStatus
   collabRoomId: string | null
-  collabPeers: CollabPeer[]
   collabError: string | null
   startCollab: (roomId: string) => void
   stopCollab: () => void
@@ -272,7 +271,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   collabEnabled: false,
   collabStatus: 'offline',
   collabRoomId: null,
-  collabPeers: [],
   collabError: null,
 
   setProject: (project, canvases) => {
@@ -1100,7 +1098,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       collabRoomId: roomId,
       collabStatus: 'connecting',
       collabError: null,
-      collabPeers: [],
     })
 
     const serverUrl = resolveActiveCollabServerUrl()
@@ -1112,19 +1109,17 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       seed: { nodes, edges },
       callbacks: {
         onGraphChange: (snapshot) => {
+          const { nodes, edges } = get()
+          if (graphSnapshotEqual({ nodes, edges }, snapshot)) return
+
           applyingRemoteCollab = true
           const issues = validateGraph(snapshot.nodes, snapshot.edges)
           set({
             nodes: snapshot.nodes,
             edges: snapshot.edges,
             validationIssues: issues,
-            saveStatus: 'unsaved',
-            selectedNodeIds: [],
-            selectedEdgeId: null,
-            impactMap: new Map(),
           })
           applyingRemoteCollab = false
-          void get().persist()
         },
         onStatusChange: (status, detail) => {
           if (status === 'connected') {
@@ -1148,7 +1143,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
               collabError: detail ?? '协作已断开',
               collabEnabled: false,
               collabRoomId: null,
-              collabPeers: [],
             })
             return
           }
@@ -1156,10 +1150,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
             collabStatus: 'offline',
             collabEnabled: false,
             collabRoomId: null,
-            collabPeers: [],
           })
         },
-        onPeersChange: (peers) => set({ collabPeers: peers }),
       },
     })
   },
@@ -1170,7 +1162,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       collabEnabled: false,
       collabRoomId: null,
       collabStatus: 'offline',
-      collabPeers: [],
       collabError: null,
     })
   },

@@ -5,12 +5,15 @@ import type { DesignEdge, DesignNode } from '@/domain/types'
 import {
   COLLAB_ORIGIN_LOCAL,
   createCanvasYDoc,
+  graphSnapshotEqual,
   isRemoteCollabOrigin,
   readCanvasGraph,
   replaceCanvasGraph,
   seedCanvasGraph,
   type CanvasYDoc,
 } from '@/collab/canvasYDoc'
+import { useCollabPresenceStore } from '@/collab/collabPresenceStore'
+import { peerSelectionSignature } from '@/collab/presenceUtils'
 import {
   defaultDisplayName,
   pickPeerColor,
@@ -24,7 +27,6 @@ export interface CanvasCollabCallbacks {
     status: 'connecting' | 'connected' | 'disconnected' | 'error',
     detail?: string,
   ) => void
-  onPeersChange: (peers: CollabPeer[]) => void
 }
 
 export interface CanvasCollabConnectOptions {
@@ -45,6 +47,8 @@ interface AwarenessCursor {
   y?: number
 }
 
+const CURSOR_AWARENESS_MS = 120
+
 export class CanvasCollabSession {
   private ydoc: CanvasYDoc | null = null
   private provider: HocuspocusProvider | null = null
@@ -54,6 +58,9 @@ export class CanvasCollabSession {
   private synced = false
   private cursorFlushTimer: number | null = null
   private pendingCursor: { x: number; y: number } | null | undefined = undefined
+  private cursorPresenceTimer: number | null = null
+  private lastSelectionSignature = ''
+  private latestPeers: CollabPeer[] = []
 
   get connected(): boolean {
     return this.synced
@@ -96,7 +103,7 @@ export class CanvasCollabSession {
           this.applyInitialGraphState(options.seed)
           this.callbacks.onStatusChange('connected')
           this.publishAwareness(options.displayName)
-          this.emitPeers()
+          this.syncPresence(true)
         },
         onClose: () => {
           this.synced = false
@@ -112,7 +119,7 @@ export class CanvasCollabSession {
       })
 
       this.provider = provider
-      provider.awareness?.on('change', () => this.emitPeers())
+      provider.awareness?.on('change', () => this.syncPresence(false))
       provider.on('status', ({ status }: { status: string }) => {
         if (status === 'connected') {
           this.synced = true
@@ -171,7 +178,10 @@ export class CanvasCollabSession {
 
   pushLocalGraph(nodes: DesignNode[], edges: DesignEdge[]): void {
     if (!this.ydoc || !this.connected) return
-    replaceCanvasGraph(this.ydoc, { nodes, edges }, COLLAB_ORIGIN_LOCAL)
+    const snapshot = { nodes, edges }
+    const current = readCanvasGraph(this.ydoc.nodes, this.ydoc.edges)
+    if (graphSnapshotEqual(current, snapshot)) return
+    replaceCanvasGraph(this.ydoc, snapshot, COLLAB_ORIGIN_LOCAL)
   }
 
   publishSelection(selectedNodeIds: string[], selectedEdgeId: string | null): void {
@@ -181,20 +191,30 @@ export class CanvasCollabSession {
       nodeIds: selectedNodeIds,
       edgeId: selectedEdgeId,
     } satisfies AwarenessSelection)
-    this.emitPeers()
+    this.syncPresence(true)
   }
 
   publishCursor(cursor: { x: number; y: number } | null): void {
     this.pendingCursor = cursor
     if (this.cursorFlushTimer != null) return
+    const delay = cursor == null ? 0 : CURSOR_AWARENESS_MS
     this.cursorFlushTimer = window.setTimeout(() => {
       this.cursorFlushTimer = null
       const awareness = this.getAwareness()
       if (!awareness) return
       awareness.setLocalStateField('cursor', this.pendingCursor ?? null)
       this.pendingCursor = undefined
-      this.emitPeers()
-    }, 48)
+      this.syncPresence(false)
+    }, delay)
+  }
+
+  republishLocalPresence(
+    displayName: string,
+    selectedNodeIds: string[],
+    selectedEdgeId: string | null,
+  ): void {
+    this.publishAwareness(displayName)
+    this.publishSelection(selectedNodeIds, selectedEdgeId)
   }
 
   disconnect(): void {
@@ -203,7 +223,14 @@ export class CanvasCollabSession {
       window.clearTimeout(this.cursorFlushTimer)
       this.cursorFlushTimer = null
     }
+    if (this.cursorPresenceTimer != null) {
+      window.clearTimeout(this.cursorPresenceTimer)
+      this.cursorPresenceTimer = null
+    }
     this.pendingCursor = undefined
+    this.lastSelectionSignature = ''
+    this.latestPeers = []
+    useCollabPresenceStore.getState().clear()
     this.graphObserver?.()
     this.graphObserver = null
     this.provider?.destroy()
@@ -228,9 +255,9 @@ export class CanvasCollabSession {
     })
   }
 
-  private emitPeers(): void {
+  private buildPeers(): CollabPeer[] {
     const awareness = this.getAwareness()
-    if (!awareness || !this.callbacks) return
+    if (!awareness) return []
 
     const peers: CollabPeer[] = []
     awareness.getStates().forEach((state, clientId) => {
@@ -254,7 +281,30 @@ export class CanvasCollabSession {
         cursor,
       })
     })
-    this.callbacks.onPeersChange(peers)
+    return peers
+  }
+
+  /** 选中立即刷新；仅光标变化时节流，避免拖动画布时整图重绘 */
+  private syncPresence(force: boolean): void {
+    const peers = this.buildPeers()
+    this.latestPeers = peers
+    const selectionSig = peerSelectionSignature(peers)
+
+    if (force || selectionSig !== this.lastSelectionSignature) {
+      this.lastSelectionSignature = selectionSig
+      if (this.cursorPresenceTimer != null) {
+        window.clearTimeout(this.cursorPresenceTimer)
+        this.cursorPresenceTimer = null
+      }
+      useCollabPresenceStore.getState().setPeers(peers)
+      return
+    }
+
+    if (this.cursorPresenceTimer != null) return
+    this.cursorPresenceTimer = window.setTimeout(() => {
+      this.cursorPresenceTimer = null
+      useCollabPresenceStore.getState().setPeers(this.latestPeers)
+    }, CURSOR_AWARENESS_MS)
   }
 }
 

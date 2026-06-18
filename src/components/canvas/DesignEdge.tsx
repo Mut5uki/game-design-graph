@@ -19,8 +19,6 @@ export interface DesignEdgeData {
   targetDx?: number
   targetDy?: number
   curvature?: number
-  remoteSelectColor?: string
-  remoteSelectName?: string
   [key: string]: unknown
 }
 
@@ -62,8 +60,6 @@ function DesignEdgeComponent(props: EdgeProps) {
 
   const relationType = edgeData?.relationType ?? 'requires'
   const text = edgeData?.label || getRelationLabel(relationType)
-  const remoteColor = edgeData?.remoteSelectColor
-  const remoteName = edgeData?.remoteSelectName
 
   const onLabelClick = useCallback(
     (e: React.MouseEvent) => {
@@ -84,13 +80,8 @@ function DesignEdgeComponent(props: EdgeProps) {
         style={{
           strokeLinejoin: 'round',
           strokeLinecap: 'round',
-          ...(remoteColor && !selected ? { stroke: remoteColor, strokeWidth: 2.5 } : {}),
         }}
-        className={cn(
-          'gdg-edge-path',
-          selected && 'gdg-edge-path-selected',
-          remoteColor && !selected && 'gdg-edge-path-remote',
-        )}
+        className={cn('gdg-edge-path', selected && 'gdg-edge-path-selected')}
       />
       <EdgeLabelRenderer>
         <div
@@ -102,14 +93,6 @@ function DesignEdgeComponent(props: EdgeProps) {
           className="nodrag nopan"
           onContextMenu={(e) => e.stopPropagation()}
         >
-          {remoteName && !selected && (
-            <div
-              className="absolute -top-5 left-1/2 -translate-x-1/2 text-[9px] text-white px-1 py-0.5 rounded whitespace-nowrap pointer-events-none"
-              style={{ backgroundColor: remoteColor }}
-            >
-              {remoteName}
-            </div>
-          )}
           {editing ? (
             <select
               autoFocus
