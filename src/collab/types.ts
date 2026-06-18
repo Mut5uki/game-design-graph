@@ -1,7 +1,5 @@
 import type { DesignEdge, DesignNode } from '@/domain/types'
-import { resolveCollabServerUrl } from '@/collab/publicUrls'
-
-export type CollabMode = 'server' | 'p2p'
+import { deriveCollabWsFromInviteBase, resolveCollabServerUrl } from '@/collab/publicUrls'
 
 export type CollabStatus = 'offline' | 'connecting' | 'connected' | 'error'
 
@@ -17,103 +15,63 @@ export interface CollabPeer extends CollabUser {
 }
 
 export interface CollabSettings {
-  mode: CollabMode
-  /** 发给同事打开的编辑器地址，如 http://120.46.79.53 或 http://192.168.1.5:3888 */
+  /** 樱花公网地址（同事打开的网页），如 https://cn-xx.natfrp.cloud:51906 */
   inviteBaseUrl: string
+  /** 协作 WebSocket，由 inviteBaseUrl 自动推导为 …/collab */
   serverUrl: string
-  /** P2P 信令服务器，每行一个 URL */
-  signalingUrls: string[]
-  /** P2P 房间密码（可选，加密信令通道） */
-  roomPassword: string
   displayName: string
 }
 
-export const DEFAULT_COLLAB_SERVER_URL = 'ws://localhost:3888/collab'
-
-/** y-webrtc 公共信令（仅握手，不含画布内容） */
-export const DEFAULT_SIGNALING_URLS = [
-  'wss://y-webrtc-eu.fly.dev',
-  'wss://y-webrtc-us.fly.dev',
-] as const
-
 export const COLLAB_SETTINGS_KEY = 'gdg-collab-settings'
-
-/** 已失效的旧信令，加载设置时自动替换 */
-const DEPRECATED_SIGNALING_URLS = new Set([
-  'wss://signaling.yjs.dev',
-  'wss://y-webrtc-signaling-eu.herokuapp.com',
-  'wss://y-webrtc-signaling-us.herokuapp.com',
-])
-
-function sanitizeSignalingUrls(urls: string[]): string[] {
-  const cleaned = urls.map((u) => u.trim()).filter(Boolean)
-  const filtered = cleaned.filter((u) => !DEPRECATED_SIGNALING_URLS.has(u))
-  const base = filtered.length ? filtered : [...DEFAULT_SIGNALING_URLS]
-  return [...new Set([...base, ...DEFAULT_SIGNALING_URLS])]
-}
-
-function normalizeSignalingUrls(value: unknown): string[] {
-  if (Array.isArray(value)) {
-    const urls = value.map((u) => String(u).trim()).filter(Boolean)
-    if (urls.length) return sanitizeSignalingUrls(urls)
-  }
-  if (typeof value === 'string' && value.trim()) {
-    return sanitizeSignalingUrls(parseSignalingUrls(value))
-  }
-  return [...DEFAULT_SIGNALING_URLS]
-}
-
-export function parseSignalingUrls(text: string): string[] {
-  return text
-    .split(/[\n,]+/)
-    .map((s) => s.trim())
-    .filter(Boolean)
-}
-
-export function formatSignalingUrls(urls: string[]): string {
-  return urls.join('\n')
-}
 
 export function loadCollabSettings(): CollabSettings {
   try {
     const raw = localStorage.getItem(COLLAB_SETTINGS_KEY)
     if (!raw) {
       return {
-        mode: 'p2p',
         inviteBaseUrl: '',
         serverUrl: resolveCollabServerUrl(),
-        signalingUrls: [...DEFAULT_SIGNALING_URLS],
-        roomPassword: '',
         displayName: '',
       }
     }
-    const parsed = JSON.parse(raw) as Partial<CollabSettings> & { signalingUrls?: string[] | string }
+    const parsed = JSON.parse(raw) as Partial<CollabSettings> & {
+      mode?: string
+      signalingUrls?: unknown
+      roomPassword?: string
+    }
+    const inviteBaseUrl = parsed.inviteBaseUrl?.trim().replace(/\/$/, '') ?? ''
+    const serverUrl = parsed.serverUrl?.trim()
+      ? resolveCollabServerUrl(parsed.serverUrl)
+      : inviteBaseUrl
+        ? deriveCollabWsFromInviteBase(inviteBaseUrl)
+        : resolveCollabServerUrl()
     return {
-      mode: parsed.mode === 'server' ? 'server' : 'p2p',
-      inviteBaseUrl: parsed.inviteBaseUrl?.trim().replace(/\/$/, '') ?? '',
-      serverUrl: resolveCollabServerUrl(parsed.serverUrl),
-      signalingUrls: normalizeSignalingUrls(parsed.signalingUrls),
-      roomPassword: parsed.roomPassword?.trim() ?? '',
+      inviteBaseUrl,
+      serverUrl,
       displayName: parsed.displayName?.trim() ?? '',
     }
   } catch {
     return {
-      mode: 'p2p',
       inviteBaseUrl: '',
       serverUrl: resolveCollabServerUrl(),
-      signalingUrls: [...DEFAULT_SIGNALING_URLS],
-      roomPassword: '',
       displayName: '',
     }
   }
 }
 
 export function saveCollabSettings(settings: CollabSettings): void {
-  const normalized = {
-    ...settings,
-    signalingUrls: sanitizeSignalingUrls(settings.signalingUrls),
-  }
-  localStorage.setItem(COLLAB_SETTINGS_KEY, JSON.stringify(normalized))
+  const inviteBaseUrl = settings.inviteBaseUrl.trim().replace(/\/$/, '')
+  const serverUrl = inviteBaseUrl
+    ? deriveCollabWsFromInviteBase(inviteBaseUrl)
+    : settings.serverUrl.trim() || resolveCollabServerUrl()
+  localStorage.setItem(
+    COLLAB_SETTINGS_KEY,
+    JSON.stringify({
+      inviteBaseUrl,
+      serverUrl,
+      displayName: settings.displayName.trim(),
+    }),
+  )
 }
 
 export function buildCollabRoomId(projectId: string, canvasId: string): string {
@@ -153,8 +111,4 @@ export function defaultDisplayName(): string {
   const saved = loadCollabSettings().displayName
   if (saved) return saved
   return `策划-${Math.floor(Math.random() * 900 + 100)}`
-}
-
-export function collabModeLabel(mode: CollabMode): string {
-  return mode === 'p2p' ? 'P2P' : '服务器'
 }

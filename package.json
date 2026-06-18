@@ -8,7 +8,6 @@
     "start": "vite --host --open",
     "collab:server": "npm run start --prefix server",
     "collab:server:dev": "npm run dev --prefix server",
-    "collab:signaling": "y-webrtc-signaling",
     "collab:install": "npm install --prefix server",
     "setup": "npm install && npm run collab:install",
     "build": "tsc -p tsconfig.app.json --noEmit && vite build",
@@ -35,7 +34,6 @@
     "react-router-dom": "^7.6.2",
     "tailwind-merge": "^3.3.1",
     "uuid": "^11.1.0",
-    "y-webrtc": "^10.3.0",
     "yjs": "^13.6.31",
     "zod": "^3.25.67",
     "zustand": "^5.0.5"

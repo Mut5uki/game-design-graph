@@ -64,7 +64,6 @@ import {
   loadCollabSettings,
   type CollabPeer,
   type CollabStatus,
-  type CollabMode,
 } from '@/collab/types'
 
 let applyingRemoteCollab = false
@@ -163,13 +162,10 @@ interface EditorState {
 
   collabEnabled: boolean
   collabStatus: CollabStatus
-  collabMode: CollabMode | null
   collabRoomId: string | null
   collabPeers: CollabPeer[]
-  collabWebrtcLinks: number
-  collabBcLinks: number
   collabError: string | null
-  startCollab: (roomId: string, opts?: { mode?: CollabMode }) => void
+  startCollab: (roomId: string) => void
   stopCollab: () => void
 
   addCanvasTab: (name: string) => Promise<Canvas | null>
@@ -274,11 +270,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   isLoading: false,
   collabEnabled: false,
   collabStatus: 'offline',
-  collabMode: null,
   collabRoomId: null,
   collabPeers: [],
-  collabWebrtcLinks: 0,
-  collabBcLinks: 0,
   collabError: null,
 
   setProject: (project, canvases) => {
@@ -1088,7 +1081,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     }
   },
 
-  startCollab: (roomId, opts) => {
+  startCollab: (roomId) => {
     const { nodes, edges, canvas } = get()
     if (!canvas) {
       set({
@@ -1099,27 +1092,20 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     }
 
     const settings = loadCollabSettings()
-    const mode = opts?.mode ?? settings.mode
     const displayName = settings.displayName.trim() || defaultDisplayName()
 
     set({
       collabEnabled: true,
-      collabMode: mode,
       collabRoomId: roomId,
       collabStatus: 'connecting',
       collabError: null,
       collabPeers: [],
-      collabWebrtcLinks: 0,
-      collabBcLinks: 0,
     })
 
     canvasCollabSession.connect({
-      mode,
       roomId,
       displayName,
       serverUrl: settings.serverUrl,
-      signalingUrls: settings.signalingUrls,
-      roomPassword: settings.roomPassword || null,
       seed: { nodes, edges },
       callbacks: {
         onGraphChange: (snapshot) => {
@@ -1158,27 +1144,19 @@ export const useEditorStore = create<EditorState>((set, get) => ({
               collabStatus: 'error',
               collabError: detail ?? '协作已断开',
               collabEnabled: false,
-              collabMode: null,
               collabRoomId: null,
               collabPeers: [],
-              collabWebrtcLinks: 0,
-              collabBcLinks: 0,
             })
             return
           }
           set({
             collabStatus: 'offline',
             collabEnabled: false,
-            collabMode: null,
             collabRoomId: null,
             collabPeers: [],
-            collabWebrtcLinks: 0,
-            collabBcLinks: 0,
           })
         },
         onPeersChange: (peers) => set({ collabPeers: peers }),
-        onTransportChange: (webrtcCount, bcCount) =>
-          set({ collabWebrtcLinks: webrtcCount, collabBcLinks: bcCount }),
       },
     })
   },
@@ -1187,12 +1165,9 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     canvasCollabSession.disconnect()
     set({
       collabEnabled: false,
-      collabMode: null,
       collabRoomId: null,
       collabStatus: 'offline',
       collabPeers: [],
-      collabWebrtcLinks: 0,
-      collabBcLinks: 0,
       collabError: null,
     })
   },

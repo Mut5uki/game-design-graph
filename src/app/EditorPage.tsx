@@ -21,7 +21,6 @@ import { ExportCanvasPngHeaderButton } from '@/components/canvas/ExportCanvasPng
 import { CollabBar } from '@/components/collab/CollabBar'
 import { useCollabLifecycle, useCollabSync } from '@/collab/useCollab'
 import { buildCollabRoomId, defaultDisplayName, loadCollabSettings, saveCollabSettings } from '@/collab/types'
-import { resolveCollabModeFromUrl } from '@/collab/collabMode'
 import { isCollabJoinUrl } from '@/collab/publicUrls'
 import { useIsMobile } from '@/hooks/useMediaQuery'
 
@@ -81,8 +80,7 @@ export function EditorPage() {
       if (!settings.displayName.trim()) {
         saveCollabSettings({ ...settings, displayName: defaultDisplayName() })
       }
-      const mode = resolveCollabModeFromUrl() ?? settings.mode ?? 'p2p'
-      startCollab(buildCollabRoomId(projectId, canvasId), { mode })
+      startCollab(buildCollabRoomId(projectId, canvasId))
     }, 400)
     return () => window.clearTimeout(timer)
   }, [projectId, canvasId, isLoading])

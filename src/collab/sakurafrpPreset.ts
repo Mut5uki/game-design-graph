@@ -2,12 +2,12 @@ import type { CollabSettings } from '@/collab/types'
 import { deriveCollabWsFromInviteBase } from '@/collab/publicUrls'
 
 export interface SakuraFrpApplyInput {
-  /** 樱花面板日志里的访问地址（只需一条隧道 → 本地 3888） */
+  /** 樱花面板日志里的访问地址（一条隧道 → 本地 3888） */
   publicUrl: string
 }
 
 export interface SakuraFrpApplyResult {
-  settings: Pick<CollabSettings, 'mode' | 'inviteBaseUrl' | 'serverUrl'>
+  settings: Pick<CollabSettings, 'inviteBaseUrl' | 'serverUrl'>
   warnings: string[]
 }
 
@@ -42,17 +42,13 @@ export function applySakuraFrpPreset(input: SakuraFrpApplyInput): SakuraFrpApply
   }
 
   return {
-    settings: {
-      mode: 'server',
-      inviteBaseUrl,
-      serverUrl,
-    },
+    settings: { inviteBaseUrl, serverUrl },
     warnings,
   }
 }
 
 export const SAKURAFRP_TUNNEL_HINT = {
   single:
-    '只需 1 条隧道：本地 IP 127.0.0.1，本地端口 3888。协作 WebSocket 走同地址的 /collab（本机 Vite 会转发到 1234）。',
-  node: '建议选海外/非内地节点；可开「自动 HTTPS」。同事只打开你给的这一个链接即可。',
+    '只需 1 条樱花隧道：本地 127.0.0.1:3888。协作走同地址 /collab（本机自动转发，同事不用记端口）。',
+  node: '建议选海外/非内地节点，可开「自动 HTTPS」。',
 } as const

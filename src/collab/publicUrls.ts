@@ -1,13 +1,12 @@
 /**
- * 公网 / 局域网邀请链接与协作地址解析。
+ * 公网邀请链接与樱花协作 WebSocket 地址解析。
  */
 
-import type { CollabMode } from '@/collab/types'
-import { COLLAB_SETTINGS_KEY, loadCollabSettings } from '@/collab/types'
+import { COLLAB_SETTINGS_KEY } from '@/collab/types'
 
 export const LOCAL_COLLAB_WS_URL = 'ws://localhost:3888/collab'
 
-/** 由编辑器网页地址推导协作 WebSocket（同域 /collab） */
+/** 由樱花公网地址推导协作 WebSocket（同域 /collab） */
 export function deriveCollabWsFromInviteBase(inviteBaseUrl: string): string {
   const raw = inviteBaseUrl.trim().replace(/\/$/, '')
   const withScheme = /^https?:\/\//i.test(raw) ? raw : `http://${raw}`
@@ -57,7 +56,6 @@ export function isInviteUrlLocalhostOnly(): boolean {
   }
 }
 
-/** 根据当前访问方式推断协作 WebSocket 地址（仅服务器模式） */
 export function getSuggestedCollabWsUrl(): string {
   const fromEnv = import.meta.env.VITE_PUBLIC_COLLAB_WS_URL?.trim()
   if (fromEnv) return fromEnv
@@ -99,15 +97,11 @@ function getAppOriginAndPathPrefix(): { origin: string; pathPrefix: string } {
   }
 }
 
-export function buildPublicShareUrl(projectId: string, canvasId: string, mode?: CollabMode): string {
+export function buildPublicShareUrl(projectId: string, canvasId: string): string {
   const { origin, pathPrefix } = getAppOriginAndPathPrefix()
   const path = `${pathPrefix}/project/${projectId}/canvas/${canvasId}`.replace(/\/+/g, '/')
   const url = new URL(path, origin)
   url.searchParams.set('collab', '1')
-  const collabMode = mode ?? loadCollabSettings().mode
-  if (collabMode === 'p2p') {
-    url.searchParams.set('mode', 'p2p')
-  }
   return url.toString()
 }
 

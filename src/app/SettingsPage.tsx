@@ -3,15 +3,8 @@ import { Link } from 'react-router-dom'
 import { listProjects, updateProject } from '@/db/repositories'
 import { encryptApiKey, maskApiKey } from '@/lib/crypto'
 import type { DeepseekModel, Project } from '@/domain/types'
-import {
-  formatSignalingUrls,
-  loadCollabSettings,
-  parseSignalingUrls,
-  saveCollabSettings,
-  type CollabMode,
-} from '@/collab/types'
-import { getSuggestedCollabWsUrl, isInviteUrlLocalhostOnly } from '@/collab/publicUrls'
-import { applyLocalHostPreset, HOST_MODE_HINT } from '@/collab/hostPreset'
+import { loadCollabSettings, saveCollabSettings } from '@/collab/types'
+import { deriveCollabWsFromInviteBase, isInviteUrlLocalhostOnly } from '@/collab/publicUrls'
 import { applySakuraFrpPreset, SAKURAFRP_TUNNEL_HINT } from '@/collab/sakurafrpPreset'
 import { getDiskDataDir, isDiskStorageAvailable } from '@/db/diskSync'
 import { Button, Input, Label, Select } from '@/components/ui/primitives'
@@ -23,15 +16,9 @@ export function SettingsPage() {
   const [masked, setMasked] = useState('')
   const [model, setModel] = useState<DeepseekModel>('deepseek-chat')
   const [saved, setSaved] = useState(false)
-  const [collabMode, setCollabMode] = useState<CollabMode>('p2p')
   const [collabInviteBaseUrl, setCollabInviteBaseUrl] = useState('')
-  const [collabServerUrl, setCollabServerUrl] = useState('')
-  const [collabSignaling, setCollabSignaling] = useState('')
-  const [collabRoomPassword, setCollabRoomPassword] = useState('')
   const [collabDisplayName, setCollabDisplayName] = useState('')
   const [collabSaved, setCollabSaved] = useState(false)
-  const [hostDetectMsg, setHostDetectMsg] = useState<string | null>(null)
-  const [hostDetecting, setHostDetecting] = useState(false)
   const [sakuraPublicUrl, setSakuraPublicUrl] = useState('')
   const [sakuraMsg, setSakuraMsg] = useState<string | null>(null)
 
@@ -41,11 +28,8 @@ export function SettingsPage() {
       if (ps.length) setSelectedId(ps[0].id)
     })
     const collab = loadCollabSettings()
-    setCollabMode(collab.mode)
     setCollabInviteBaseUrl(collab.inviteBaseUrl)
-    setCollabServerUrl(collab.serverUrl)
-    setCollabSignaling(formatSignalingUrls(collab.signalingUrls))
-    setCollabRoomPassword(collab.roomPassword)
+    setSakuraPublicUrl(collab.inviteBaseUrl)
     setCollabDisplayName(collab.displayName)
   }, [])
 
@@ -74,54 +58,28 @@ export function SettingsPage() {
   }
 
   const handleSaveCollab = () => {
+    const inviteBaseUrl = (sakuraPublicUrl || collabInviteBaseUrl).trim().replace(/\/$/, '')
     saveCollabSettings({
-      mode: collabMode,
-      inviteBaseUrl: collabInviteBaseUrl.trim().replace(/\/$/, ''),
-      serverUrl: collabServerUrl.trim() || getSuggestedCollabWsUrl(),
-      signalingUrls: parseSignalingUrls(collabSignaling),
-      roomPassword: collabRoomPassword.trim(),
+      inviteBaseUrl,
+      serverUrl: inviteBaseUrl ? deriveCollabWsFromInviteBase(inviteBaseUrl) : '',
       displayName: collabDisplayName.trim(),
     })
+    setCollabInviteBaseUrl(inviteBaseUrl)
     setCollabSaved(true)
     setTimeout(() => setCollabSaved(false), 2000)
-  }
-
-  const handleApplyHostPreset = async (mode: CollabMode) => {
-    setHostDetecting(true)
-    setHostDetectMsg(null)
-    try {
-      const current = loadCollabSettings()
-      const result = await applyLocalHostPreset(mode, current)
-      if (!result) {
-        setHostDetectMsg('未能检测到局域网 IP。请手动填写，或确认浏览器允许网络访问。')
-        return
-      }
-      setCollabMode(mode)
-      setCollabInviteBaseUrl(result.inviteUrl)
-      if (result.wsUrl) setCollabServerUrl(result.wsUrl)
-      setHostDetectMsg(
-        `已填入 ${result.lanIp}。请先运行 ${
-          mode === 'server' ? 'start-with-collab.bat' : 'start.bat'
-        }，同事访问 ${result.inviteUrl}。保存后复制邀请链接。${HOST_MODE_HINT.remote}`,
-      )
-    } finally {
-      setHostDetecting(false)
-    }
   }
 
   const handleApplySakuraFrp = () => {
     setSakuraMsg(null)
     const result = applySakuraFrpPreset({ publicUrl: sakuraPublicUrl })
     if (!result) {
-      setSakuraMsg('请填写樱花面板日志里的公网访问地址（一条隧道即可）。')
+      setSakuraMsg('请填写樱花面板日志里的公网访问地址。')
       return
     }
-    setCollabMode('server')
     setCollabInviteBaseUrl(result.settings.inviteBaseUrl)
-    setCollabServerUrl(result.settings.serverUrl)
     const warn = result.warnings.length ? `\n\n⚠ ${result.warnings.join('\n⚠ ')}` : ''
     setSakuraMsg(
-      `已填入服务器模式。\n邀请：${result.settings.inviteBaseUrl}\n协作 WS：${result.settings.serverUrl}${warn}\n\n请点击下方「保存协作设置」，并确保已运行 start-with-sakurafrp.bat + 樱花隧道。`,
+      `邀请：${result.settings.inviteBaseUrl}\n协作：${result.settings.serverUrl}${warn}\n\n请保存设置，并运行 start-with-sakurafrp.bat。`,
     )
   }
 
@@ -178,20 +136,19 @@ export function SettingsPage() {
         </section>
 
         <section id="collab" className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 space-y-4">
-          <h2 className="font-medium text-gray-900">多人协作</h2>
+          <h2 className="font-medium text-gray-900">樱花协作（SakuraFrp）</h2>
           <p className="text-xs text-gray-400">
-            可以<strong>用你自己的电脑当主机</strong>：跑 <code className="text-[11px] bg-gray-100 px-1 rounded">start-with-collab.bat</code>（局域网）或{' '}
-            <code className="text-[11px] bg-gray-100 px-1 rounded">start-with-sakurafrp.bat</code>（樱花穿透，见{' '}
-            <code className="text-[11px] bg-gray-100 px-1 rounded">docs/COLLAB_SAKURAFRP.md</code>）。
+            双击 <code className="text-[11px] bg-gray-100 px-1 rounded">start-with-sakurafrp.bat</code> 启动本机服务，
+            樱花映射 <strong className="font-medium text-gray-600">3888</strong> 一条隧道即可。
+            详见 <code className="text-[11px] bg-gray-100 px-1 rounded">docs/COLLAB_SAKURAFRP.md</code>。
           </p>
 
-          <div className="rounded-md border border-pink-100 bg-pink-50/60 p-3 space-y-2">
-            <p className="text-xs font-medium text-pink-900">樱花 FRP（SakuraFrp）</p>
+          <div className="rounded-md border border-pink-100 bg-pink-50/60 p-3 space-y-3">
             <p className="text-[10px] text-pink-800/90 leading-relaxed">
               {SAKURAFRP_TUNNEL_HINT.single} {SAKURAFRP_TUNNEL_HINT.node}
             </p>
             <div>
-              <Label>公网访问地址（樱花隧道日志）</Label>
+              <Label>樱花公网地址</Label>
               <Input
                 value={sakuraPublicUrl}
                 onChange={(e) => setSakuraPublicUrl(e.target.value)}
@@ -199,109 +156,19 @@ export function SettingsPage() {
                 className="font-mono text-xs"
               />
               <p className="text-[10px] text-pink-700/70 mt-1">
-                协作 WebSocket 会自动设为同地址的 <code className="bg-pink-100/80 px-1 rounded">/collab</code>，同事无需再填端口。
+                同事只打开此地址；协作 WebSocket 自动为同域 <code className="bg-pink-100/80 px-1 rounded">/collab</code>。
+                {isInviteUrlLocalhostOnly() && !sakuraPublicUrl.trim() && (
+                  <span className="text-amber-600"> 当前未配置，邀请链接仍是 localhost。</span>
+                )}
               </p>
             </div>
             <Button size="sm" variant="secondary" onClick={handleApplySakuraFrp}>
-              套用 Sakura FRP
+              预览地址
             </Button>
             {sakuraMsg && (
               <p className="text-[10px] text-pink-900 whitespace-pre-wrap leading-snug">{sakuraMsg}</p>
             )}
           </div>
-
-          <div className="rounded-md border border-sky-100 bg-sky-50/60 p-3 space-y-2">
-            <p className="text-xs font-medium text-sky-800">本机作为主机</p>
-            <p className="text-[10px] text-sky-700/80">{HOST_MODE_HINT.server}</p>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                size="sm"
-                variant="secondary"
-                disabled={hostDetecting}
-                onClick={() => handleApplyHostPreset('server')}
-              >
-                {hostDetecting ? '检测中…' : '检测 IP · 服务器模式'}
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                disabled={hostDetecting}
-                onClick={() => handleApplyHostPreset('p2p')}
-              >
-                检测 IP · P2P 模式
-              </Button>
-            </div>
-            {hostDetectMsg && (
-              <p className="text-[10px] text-sky-800 whitespace-pre-wrap">{hostDetectMsg}</p>
-            )}
-          </div>
-
-          <div>
-            <Label>邀请链接地址（同事打开的网页）</Label>
-            <Input
-              value={collabInviteBaseUrl}
-              onChange={(e) => setCollabInviteBaseUrl(e.target.value)}
-              placeholder="http://120.46.79.53 或 http://192.168.1.5:3888"
-            />
-            <p className="text-[10px] text-gray-400 mt-1">
-              复制邀请链接时使用此地址。你在本机用 localhost 开发时<strong>必须填写</strong>公网 IP 或局域网 IP，否则同事打不开。
-              {isInviteUrlLocalhostOnly() && !collabInviteBaseUrl.trim() && (
-                <span className="text-amber-600"> 当前未设置，链接仍是 localhost。</span>
-              )}
-            </p>
-          </div>
-
-          <div>
-            <Label>协作方式</Label>
-            <Select value={collabMode} onChange={(e) => setCollabMode(e.target.value as CollabMode)}>
-              <option value="p2p">P2P（WebRTC，数据不经协作服务器）</option>
-              <option value="server">服务器（WebSocket 中继）</option>
-            </Select>
-          </div>
-
-          {collabMode === 'p2p' ? (
-            <>
-              <div>
-                <Label>信令服务器（每行一个 wss:// 地址）</Label>
-                <textarea
-                  value={collabSignaling}
-                  onChange={(e) => setCollabSignaling(e.target.value)}
-                  placeholder="wss://y-webrtc-eu.fly.dev"
-                  className="w-full min-h-[72px] rounded-md border border-gray-200 px-2.5 py-1.5 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-200 font-mono"
-                />
-                <p className="text-[10px] text-gray-400 mt-1">
-                  默认使用 Yjs 公共信令（仅握手，不含画布内容）。自建：运行
-                  <code className="mx-0.5 bg-gray-100 px-1 rounded">npm run collab:signaling</code>
-                  后填 ws://你的地址:4444
-                </p>
-              </div>
-              <div>
-                <Label>房间密码（可选）</Label>
-                <Input
-                  type="password"
-                  value={collabRoomPassword}
-                  onChange={(e) => setCollabRoomPassword(e.target.value)}
-                  placeholder="留空则不加密信令"
-                />
-              </div>
-            </>
-          ) : (
-            <>
-              <p className="text-xs text-gray-500">
-                建议 WebSocket：
-                <code className="ml-1 text-[11px] bg-gray-100 px-1 rounded">{getSuggestedCollabWsUrl()}</code>
-              </p>
-              <div>
-                <Label>协作服务器 WebSocket 地址</Label>
-                <Input
-                  value={collabServerUrl}
-                  onChange={(e) => setCollabServerUrl(e.target.value)}
-                  placeholder={getSuggestedCollabWsUrl()}
-                />
-                <p className="text-[10px] text-gray-400 mt-1">HTTPS 网站必须用 wss://</p>
-              </div>
-            </>
-          )}
 
           <div>
             <Label>你的显示名称</Label>

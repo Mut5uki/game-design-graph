@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 import { canvasCollabSession } from '@/collab/CanvasCollabSession'
-import type { CollabMode } from '@/collab/types'
 import { buildPublicShareUrl } from '@/collab/publicUrls'
 import { loadCollabSettings, type CollabPeer, type CollabStatus } from '@/collab/types'
 import { isApplyingRemoteCollab, useEditorStore } from '@/store/editorStore'
@@ -18,13 +17,11 @@ function scheduleCollabPush(
   }, 300)
 }
 
-/** 离开编辑器时断开协作 */
 export function useCollabLifecycle() {
   const stopCollab = useEditorStore((s) => s.stopCollab)
   useEffect(() => () => stopCollab(), [stopCollab])
 }
 
-/** 本地图变更 → 推送到 Yjs；选中态 → awareness */
 export function useCollabSync() {
   const collabEnabled = useEditorStore((s) => s.collabEnabled)
   const collabStatus = useEditorStore((s) => s.collabStatus)
@@ -47,8 +44,8 @@ export function useCollabSync() {
 
 export type { CollabPeer, CollabStatus }
 
-export function getCollabShareUrl(projectId: string, canvasId: string, mode?: CollabMode): string {
-  return buildPublicShareUrl(projectId, canvasId, mode)
+export function getCollabShareUrl(projectId: string, canvasId: string): string {
+  return buildPublicShareUrl(projectId, canvasId)
 }
 
 export function readCollabSettingsForUi() {
